@@ -29,13 +29,13 @@ DIコンテナ
 DIコンテナとしてSpring Frameworkを利用する。
 
 
-* `Spring Framework 4.3 <http://docs.spring.io/spring/docs/4.3.11.RELEASE/spring-framework-reference/html/beans.html>`_
+* `Spring Framework 4.3 <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/beans.html>`_
 
 MVCフレームワーク
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Web MVCフレームワークとしてSpring MVCを利用する。
 
-* `Spring MVC 4.3 <http://docs.spring.io/spring/docs/4.3.11.RELEASE/spring-framework-reference/html/mvc.html>`_
+* `Spring MVC 4.3 <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html>`_
 
 O/R Mapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -81,7 +81,7 @@ Viewには、Thymeleafを利用する。
 
   * 実装は、\ `Hibernate Validator 5.3 <http://docs.jboss.org/hibernate/validator/5.3/reference/en-US/html/>`_\ を利用する。
 
-* 相関チェックには\ `Bean Validation <http://download.oracle.com/otn-pub/jcp/bean_validation-1_1-fr-eval-spec/bean-validation-specification.pdf>`_\ 、もしくは\ `Spring Validation <http://docs.spring.io/spring/docs/4.3.11.RELEASE/spring-framework-reference/html/validation.html#validator>`_\ を利用する。
+* 相関チェックには\ `Bean Validation <http://download.oracle.com/otn-pub/jcp/bean_validation-1_1-fr-eval-spec/bean-validation-specification.pdf>`_\ 、もしくは\ `Spring Validation <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/validation.html#validator>`_\ を利用する。
 
   * 使い分けについては\ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\ を参照されたい。
 
@@ -105,7 +105,7 @@ Viewには、Thymeleafを利用する。
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.5.0.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. tip::
 
@@ -123,7 +123,7 @@ version 1.5.0.RELEASEで利用するOSSの一覧を以下に示す。
 
     \ **ただし、Thymeleafに限っては、バージョン3.0を利用する為、Spring IO platformで定義されたバージョンより上位のバージョンを採用している。**\
 
-    なお、version 1.5.0.RELEASEで指定しているSpring IO platformのバージョンは、`Brussels-SR5 <http://docs.spring.io/platform/docs/Brussels-SR5/reference/htmlsingle/>`_\ である。
+    なお、version 1.5.1.RELEASEで指定しているSpring IO platformのバージョンは、`Brussels-SR5 <http://docs.spring.io/platform/docs/Brussels-SR5/reference/htmlsingle/>`_\ である。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
@@ -140,86 +140,86 @@ version 1.5.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - Spring
       - org.springframework
       - spring-aop
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-aspects
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-beans
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-context
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-context-support
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-core
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-expression
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-jdbc
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-orm
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-tx
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-web
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-webmvc
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-jms
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework
       - spring-messaging
-      - 4.3.11.RELEASE
-      - \*
+      - 4.3.14.RELEASE
+      -
       -
     * - Spring
       - org.springframework.data
@@ -230,26 +230,26 @@ version 1.5.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - Spring
       - org.springframework.security
       - spring-security-acl
-      - 4.2.3.RELEASE
-      - \*
+      - 4.2.4.RELEASE
+      -
       -
     * - Spring
       - org.springframework.security
       - spring-security-config
-      - 4.2.3.RELEASE
-      - \*
+      - 4.2.4.RELEASE
+      -
       -
     * - Spring
       - org.springframework.security
       - spring-security-core
-      - 4.2.3.RELEASE
-      - \*
+      - 4.2.4.RELEASE
+      -
       -
     * - Spring
       - org.springframework.security
       - spring-security-web
-      - 4.2.3.RELEASE
-      - \*
+      - 4.2.4.RELEASE
+      -
       -
     * - Spring
       - org.springframework.security.oauth
@@ -507,7 +507,7 @@ version 1.5.0.RELEASEで利用するOSSの一覧を以下に示す。
 Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
 共通ライブラリは、Macchinetta Server Framework (1.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
 基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
-また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-gfw-web-blank>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
+また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
 
 .. tabularcolumns:: |p{0.05\linewidth}|p{0.15\linewidth}|p{0.40\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|
 .. list-table::
