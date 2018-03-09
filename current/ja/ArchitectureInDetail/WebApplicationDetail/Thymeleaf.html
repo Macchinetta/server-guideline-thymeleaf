@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4.1. テンプレートエンジン(Thymeleaf) &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.5.1.RELEASE documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/solar.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.5.1.RELEASE',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="4.2. 入力チェック" href="Validation.html" />
+    <link rel="prev" title="4. Webアプリ開発機能" href="index.html" /><script src="../../_static/jquery.treeview.js" type="text/javascript"></script>
+<!-- <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro|Open+Sans:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'> -->
+<link href="../../_static/solarized-dark.css" rel="stylesheet">
+<link href="../../_static/jquery.treeview.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Validation.html" title="4.2. 入力チェック"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="4. Webアプリ開発機能"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.5.1.RELEASE documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">4. Webアプリ開発機能</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><label><input id="scroll" type="checkbox"> scroll sidebar</label>
+
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4.1. テンプレートエンジン(Thymeleaf)</a><ul>
+<li><a class="reference internal" href="#overview">4.1.1. Overview</a><ul>
+<li><a class="reference internal" href="#id2">4.1.1.1. Thymeleafとは</a><ul>
+<li><a class="reference internal" href="#id4">4.1.1.1.1. Thymeleafの特性</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">4.1.1.2. Thymeleafが提供する基本的な機能</a><ul>
+<li><a class="reference internal" href="#id7">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thymeleaf-spring">4.1.1.3. Thymeleaf + Spring</a><ul>
+<li><a class="reference internal" href="#id15">4.1.1.3.1. Thymeleaf + Springを適用した処理フロー</a></li>
+<li><a class="reference internal" href="#id16">4.1.1.3.2. Thymeleaf + Springの機能</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17">4.1.1.4. Thymeleafテンプレートの実装</a><ul>
+<li><a class="reference internal" href="#html">4.1.1.4.1. テンプレートHTMLの実装</a></li>
+<li><a class="reference internal" href="#comment-blocks">4.1.1.4.2. コメント文</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-use">4.1.2. How to use</a><ul>
+<li><a class="reference internal" href="#id19">4.1.2.1. アプリケーションの設定</a><ul>
+<li><a class="reference internal" href="#configuration-of-blank-project-label">4.1.2.1.1. ブランクプロジェクトの設定</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#view">4.1.2.2. Viewの実装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-extend">4.1.3. How to extend</a><ul>
+<li><a class="reference internal" href="#id21">4.1.3.1. カスタムダイアレクトの追加</a><ul>
+<li><a class="reference internal" href="#processor">4.1.3.1.1. Processorの実装</a></li>
+<li><a class="reference internal" href="#expressionobject">4.1.3.1.2. ExpressionObjectの実装</a></li>
+<li><a class="reference internal" href="#dialect">4.1.3.1.3. Dialectの実装</a></li>
+<li><a class="reference internal" href="#custom-dialect-how-to-use">4.1.3.1.4. カスタムダイアレクトの使用方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix">4.1.4. Appendix</a><ul>
+<li><a class="reference internal" href="#id23">4.1.4.1. テンプレートキャッシュの適用</a><ul>
+<li><a class="reference internal" href="#id24">4.1.4.1.1. テンプレートキャッシュ機能の説明</a></li>
+<li><a class="reference internal" href="#id25">4.1.4.1.2. アプリケーションの設定</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">4. Webアプリ開発機能</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Validation.html"
+                        title="next chapter">4.2. 入力チェック</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/ArchitectureInDetail/WebApplicationDetail/Thymeleaf.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thymeleaf">
+<h1>4.1. テンプレートエンジン(Thymeleaf)<a class="headerlink" href="#thymeleaf" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="id1">
+<p class="topic-title first">目次</p>
+<ul class="simple">
+<li><a class="reference internal" href="#overview" id="id26">Overview</a><ul>
+<li><a class="reference internal" href="#id2" id="id27">Thymeleafとは</a><ul>
+<li><a class="reference internal" href="#id4" id="id28">Thymeleafの特性</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6" id="id29">Thymeleafが提供する基本的な機能</a><ul>
+<li><a class="reference internal" href="#id7" id="id30">Thymeleafスタンダードダイアレクト</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thymeleaf-spring" id="id31">Thymeleaf + Spring</a><ul>
+<li><a class="reference internal" href="#id15" id="id32">Thymeleaf + Springを適用した処理フロー</a></li>
+<li><a class="reference internal" href="#id16" id="id33">Thymeleaf + Springの機能</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17" id="id34">Thymeleafテンプレートの実装</a><ul>
+<li><a class="reference internal" href="#html" id="id35">テンプレートHTMLの実装</a></li>
+<li><a class="reference internal" href="#comment-blocks" id="id36">コメント文</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-use" id="id37">How to use</a><ul>
+<li><a class="reference internal" href="#id19" id="id38">アプリケーションの設定</a><ul>
+<li><a class="reference internal" href="#configuration-of-blank-project-label" id="id39">ブランクプロジェクトの設定</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#view" id="id40">Viewの実装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-extend" id="id41">How to extend</a><ul>
+<li><a class="reference internal" href="#id21" id="id42">カスタムダイアレクトの追加</a><ul>
+<li><a class="reference internal" href="#processor" id="id43">Processorの実装</a></li>
+<li><a class="reference internal" href="#expressionobject" id="id44">ExpressionObjectの実装</a></li>
+<li><a class="reference internal" href="#dialect" id="id45">Dialectの実装</a></li>
+<li><a class="reference internal" href="#custom-dialect-how-to-use" id="id46">カスタムダイアレクトの使用方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix" id="id47">Appendix</a><ul>
+<li><a class="reference internal" href="#id23" id="id48">テンプレートキャッシュの適用</a><ul>
+<li><a class="reference internal" href="#id24" id="id49">テンプレートキャッシュ機能の説明</a></li>
+<li><a class="reference internal" href="#id25" id="id50">アプリケーションの設定</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h2><a class="toc-backref" href="#id26">4.1.1. Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id27">4.1.1.1. Thymeleafとは</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.thymeleaf.org/">Thymeleaf</a>は、Javaで実装されたテンプレートエンジンである。
+Thymeleafは、その特性により主にHTML生成用のテンプレートエンジンに分類される。</p>
+<p>Spring MVCでViewに採用可能なテンプレートエンジンには、他にもApache Velocity、Apache FreeMarker等が存在する。
+また以前から利用されている類似の技術としては、Java EE標準で規定されているJSPがある。</p>
+<p>本節では、これらの既存のテンプレートエンジンと異なるThymeleafの特性を説明し、ThymeleafをSpring MVCと連携してWebアプリケーションのView（画面）に適用する方法について説明する。</p>
+<div class="section" id="id4">
+<h4><a class="toc-backref" href="#id28">4.1.1.1.1. Thymeleafの特性</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li>Thymeleafのテンプレートは、ブラウザでの静的描画が可能</li>
+</ol>
+<blockquote>
+<div><p>既存のテンプレートエンジンと比較してThymeleafの特筆すべき点は、HTMLの文法に則ってテンプレートを書ける仕様となっている事である。
+この仕様によりThymeleafではテンプレートをHTMLファイルとして作成する事が可能であり、テンプレート自体をWebブラウザで描画する事ができる。（以降、テンプレートファイルをブラウザで直接開く事を静的表示と呼ぶ。）</p>
+<p>ここで単純なテンプレートファイルをブラウザで静的表示した場合の例を示す。</p>
+<ul>
+<li><p class="first"><strong>Thymeleaf以外</strong> のテンプレートファイル（JSP、 Apache FreeMarker等）</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="c">&lt;!-- ommited --&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Chapter ${number}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
+
+<span class="c">&lt;!-- ommited --&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;h1&gt;要素にnumber変数を埋め込み、”Chapter “と連結した文字列をHTMLに出力する。実装は要素のコンテンツ部分に記述している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<blockquote>
+<div><p>テンプレートファイルをブラウザで開いた場合には、テンプレートファイルのロジックが表示されてしまう。</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../../_images/thymeleaf-other-template.png"><img alt="thymeleaf other template" src="../../_images/thymeleaf-other-template.png" style="width: 50%;" /></a>
+</div>
+</div></blockquote>
+<ul>
+<li><p class="first"><strong>Thymeleaf</strong> のテンプレートファイル</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="c">&lt;!-- ommited --&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;&#39;Chapter &#39; + ${number}&quot;</span><span class="p">&gt;</span>Chapter 1<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
+
+<span class="c">&lt;!-- ommited --&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;h1&gt;要素にnumber変数を埋め込み”Chapter “と連結した文字列をHTMLに出力する。実装は属性値に記述している。</div>
+<div class="line">また要素のコンテンツ部分には、固定文字列”Chapter 1”を記述している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>テンプレートファイルをブラウザで開いた場合にもテンプレートファイルのロジックは表示されず、&lt;h1&gt;要素に記述したコンテンツが表示される。</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../../_images/thymeleaf-template.png"><img alt="thymeleaf template" src="../../_images/thymeleaf-template.png" style="width: 50%;" /></a>
+</div>
+</li>
+</ul>
+<p>Thymeleafのテンプレートファイルを確認すると分かるが、Thymeleafでは出力内容を変更するために固有の属性を用いている。
+これはブラウザで表示する際に、ブラウザが解釈出来ない属性が無視される事を前提としている。
+この仕様により、静的表示の際にThymeleafのテンプレートファイルの実装をブラウザに無視させる事が出来、Thymeleafで動的に変更しないデザインの確認が可能となる。</p>
+<p>この特性を活かして、Thymeleafを採用した開発では設計工程で作成したHTMLに対してブラウザでデザインの確認をしつつ、動的表示の為のロジックを実装していく事ができる。（以降、画面設計時に作成するHTMLをThymeleafでの呼称に合わせてプロトタイプと呼び、HTML形式のThymeleafテンプレートファイルをテンプレートHTMLと呼ぶこととする。）</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Thymeleafの実行環境</li>
+</ol>
+<blockquote>
+<div>Thymeleafでは、JSPのようにサーブレットコンテナで提供されるテンプレートエンジンを利用して動作するのではなく、アプリケーションに含まれるThymeleafのテンプレートエンジンがテンプレートHTMLの解釈を行う。
+このため、アプリケーションサーバごとにテンプレートの解釈が異なり、動作しなくなるといった問題が発生しにくい。
+ただし、HttpServletRequestなどのサーブレットAPIを利用しているため、アプリケーションサーバごとの挙動の違いを完全に排除することはできない点に注意されたい。</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Thymeleafテンプレート</li>
+</ol>
+<blockquote>
+<div><p>Thymeleafでは、HTML形式でテンプレートファイルを作成できる。
+ThymeleafのテンプレートHTMLに記述できるHTMLの書式は、HTML5に対応しておりHTML5より追加された属性の解釈が可能である。
+また、Thymeleafの固有属性をHTML5のカスタムデータ属性として記述する事も可能である。</p>
+<p>なお、Thymeleafが提供するテンプレートモードを変える事でJAVASCRIPTやCSS用のテンプレートも作成する事が可能である。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Thymeleafで選択可能なテンプレートモード</strong></p>
+<p class="last">本ガイドラインでは、ThymeleafでHTMLを生成する為のテンプレートモードである”HTML”モードについて記述するが、他にも出力するテンプレートに応じたモードが定義されている。
+Thymeleafのテンプレートとして選択可能なテンプレートモードについては、 <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#what-kind-of-templates-can-thymeleaf-process">公式リファレンス</a> を参照されたい。</p>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id29">4.1.1.2. Thymeleafが提供する基本的な機能</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>Thymeleafのテンプレートファイルを記述する為の基本機能である、Thymeleafスタンダードダイアレクトについて説明する。</p>
+<div class="section" id="id7">
+<h4><a class="toc-backref" href="#id30">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>Thymeleafは、テンプレートファイルを記述する為に <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#dialects-the-standard-dialect">スタンダードダイアレクト</a> を提供している。
+スタンダードダイアレクトとは、テンプレートファイルに記述して動的に出力を生成する為の各種プロセッサや、式、式オブジェクトを包含した機能群である。</p>
+<p>スタンダードダイアレクトは複数の要素により構成されているため、構成要素とその概要について下表に示す。
+なお、各要素の機能詳細についてはThymeleaf公式リファレンスを参照されたい。</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="60%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">構成要素</th>
+<th class="head">説明</th>
+<th class="head">例</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">属性プロセッサ</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafテンプレート中の要素（タグ）に <em>属性</em> として記述するプロセッサ。</div>
+<div class="line">Thymeleafテンプレートを記述する為の基本的な文法であり、開発者は属性プロセッサを介してHTML出力処理を実装する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">th:text</span></code>、 <code class="docutils literal"><span class="pre">th:if</span></code>等</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">要素プロセッサ</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafテンプレートに <em>要素（タグ）</em> として記述するプロセッサ。</div>
+<div class="line">汎用要素である<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>のみが提供されている。<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>は、属性プロセッサを記述する為のHTML文法上の土台として用意されている。<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>は、Webブラウザで不明なタグとして扱われる為、HTMLの文法に則った属性プロセッサの使用だけでは実現できない場合に限定的に使用されるべきである</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#standard-expression-syntax">式（エクスプレッション）</a></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">属性プロセッサの値に記述する事で、固有の処理を提供する式。</div>
+<div class="line">Thymeleafが独自に解釈するトークン及び演算子も提供している。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">変数式 <code class="docutils literal"><span class="pre">${}</span></code>、 メッセージ式 <code class="docutils literal"><span class="pre">#{}</span></code>、 リンクURL式 <code class="docutils literal"><span class="pre">&#64;{}</span></code>等</div>
+<div class="line">テキストリテラル、数値リテラル、算術演算子、条件式等</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">式オブジェクト</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">* <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-a-expression-basic-objects">基本オブジェクト</a></div>
+<div class="line-block">
+<div class="line">1. Web コンテキスト ネームスペース : Webオブジェクトにアクセスする為の別名</div>
+<div class="line">2. Web コンテキスト ネームスペース : Webオブジェクトにアクセスする為の別名</div>
+<div class="line">3. Web オブジェクト : HttpServletRequest、 HttpSession等のServlet API</div>
+</div>
+<div class="line">* <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-b-expression-utility-objects">ユーティリティオブジェクト</a></div>
+<div class="line-block">
+<div class="line">4. Thymeleafが提供するユーティリティ機能群</div>
+</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><br /></div>
+<div class="line">1. <code class="docutils literal"><span class="pre">#ctx</span></code>, <code class="docutils literal"><span class="pre">#local</span></code></div>
+<div class="line">2. <code class="docutils literal"><span class="pre">param</span></code>, <code class="docutils literal"><span class="pre">session</span></code>, <code class="docutils literal"><span class="pre">application</span></code></div>
+<div class="line">3. <code class="docutils literal"><span class="pre">#request</span></code>, <code class="docutils literal"><span class="pre">#session</span></code>, <code class="docutils literal"><span class="pre">#servletContext</span></code></div>
+<div class="line"><br /></div>
+<div class="line">4. <code class="docutils literal"><span class="pre">#arrays</span></code>, <code class="docutils literal"><span class="pre">#strings</span></code>等</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>インライン処理について</p>
+<p class="last">テンプレートHTMLでは、多くの場合属性プロセッサに式を記述してHTML生成処理を実装する。
+その一方で、 <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining">インライン処理機能</a> が用意されており、
+属性プロセッサを介さずに要素内のコンテンツを動的に変更する事が可能である。
+ただし、静的表示した場合にインライン処理の記述がブラウザに表示される為、ブラウザで静的表示が可能であるThymeleafの利点を損なう事となる。
+その為、本ガイドラインでは利用を推奨しない。</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>th:remove属性について</p>
+<p>テンプレートHTMLでは、多くの場合属性プロセッサに式を記述してHTML生成処理を実装する。
+その為、属性プロセッサを記述する目的だけのためにデザイン上不要なHTML要素が必要となるケースがある。
+またプロトタイプにおいてダミーデータを表示する為の記述についても、Thymeleafによるテンプレート解釈時に削除したいケースがある。
+これらのような場合に<code class="docutils literal"><span class="pre">th:remove</span></code>属性を用いて、不要なHTML要素やコンテンツを削除する事ができる。
+<code class="docutils literal"><span class="pre">th:remove</span></code>属性は、属性値に削除する範囲を設定でき動的処理時に柔軟に削除範囲を決める事が可能である。</p>
+<p class="last"><code class="docutils literal"><span class="pre">th:remove</span></code>属性の詳細については、 <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#removing-template-fragments">Thymeleaf公式リファレンス</a> を参照されたい。</p>
+</div>
+</div>
+</div>
+<div class="section" id="thymeleaf-spring">
+<h3><a class="toc-backref" href="#id31">4.1.1.3. Thymeleaf + Spring</a><a class="headerlink" href="#thymeleaf-spring" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html">Thymeleaf + Spring</a> は、Thymeleafチームが提供するSpring MVCとの連携機能である。
+ブランクプロジェクトを利用した場合、Thymeleaf + Springを適用した状態で開発を進める事が出来るようになっている。
+設定の詳細は <a class="reference internal" href="#configuration-of-blank-project-label"><span class="std std-ref">ブランクプロジェクトの設定</span></a> を参照されたい。</p>
+<p>ここでは、Thymeleaf + Springを適用した場合の処理フローやThymeleaf + Springが提供する機能について説明する。</p>
+<div class="section" id="id15">
+<h4><a class="toc-backref" href="#id32">4.1.1.3.1. Thymeleaf + Springを適用した処理フロー</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<p>Thymeleaf + Springを利用し、ThymeleafとSpring MVCを連携させた場合のリクエストを受けてからレスポンスを返すまでの処理フローを以下の図に示す。
+なお、 <a class="reference internal" href="../../Overview/SpringMVCOverview.html"><span class="doc">Spring MVCアーキテクチャ概要</span></a> にて解説済みのController周りの処理については省略する。</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../../_images/thymeleaf-spring.png"><img alt="spring thymeleaf" src="../../_images/thymeleaf-spring.png" style="width: 80%;" /></a>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">DispatcherServlet</span></code>が、リクエストを受け取る。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">DispatcherServlet</span></code>は、ビュー名に対応する<code class="docutils literal"><span class="pre">View</span></code>の解決を<code class="docutils literal"><span class="pre">ViewResolver</span></code>に委譲する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">DispatcherServlet</span></code>は、返却された<code class="docutils literal"><span class="pre">View</span></code>にレンダリング処理を委譲する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">View</span></code>は、<code class="docutils literal"><span class="pre">TemplateEngine</span></code>にレンダリング処理を委譲する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(5)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">TemplateEngine</span></code>は、<code class="docutils literal"><span class="pre">TemplateManager</span></code>にレンダリング処理を委譲し、処理結果のレスポンスをコミットする。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(6)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">TemplateManager</span></code>は、テンプレートがキャッシュされていない場合は<code class="docutils literal"><span class="pre">TemplateResolver</span></code>にテンプレートファイルのロード処理を委譲する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(7)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">TemplateManager</span></code>は、パース済みのテンプレートをキャッシュする。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(8)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">TemplateManager</span></code>は、<code class="docutils literal"><span class="pre">TemplateHandler</span></code>にレンダリング処理を委譲する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(9)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">View</span></code>は、Thymeleafのレンダリング処理結果を返却する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id16">
+<h4><a class="toc-backref" href="#id33">4.1.1.3.2. Thymeleaf + Springの機能</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li>Springスタンダードダイアレクト</li>
+</ol>
+<blockquote>
+<div><p>Thymeleaf + Springを利用する場合、<a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-springstandard-dialect">Springスタンダードダイアレクト</a> を用いてテンプレートを記述できる。
+Springスタンダードダイアレクトは、Thymeleafスタンダードダイアレクトを拡張した機能群であり、
+Spring MVCと連携する為の属性プロセッサの拡張と新規追加、及び新たな式オブジェクトを提供している。
+追加された機能はHTMLモードに特化しており、Spring MVCのタグライブラリで実現する機能やEL関数を補完する機能を提供している。</p>
+<p>追加された属性プロセッサの内、最も特徴的なのは<code class="docutils literal"><span class="pre">th:field</span></code>属性でinput要素のtype属性値毎に出力結果を変える。
+これにより、Spring Framework JSP Form Tag Libraryが提供する<code class="docutils literal"><span class="pre">&lt;form:input&gt;</span></code>や<code class="docutils literal"><span class="pre">&lt;form:select&gt;</span></code>、 <code class="docutils literal"><span class="pre">&lt;form:checkbox&gt;</span></code>等の機能をカバーしている。
+また<code class="docutils literal"><span class="pre">&lt;form:errors&gt;</span></code>の代替機能を実現する<code class="docutils literal"><span class="pre">th:errors</span></code>属性、 <code class="docutils literal"><span class="pre">th:errorClass</span></code>属性も提供されており、Spring MVCの利点を享受できるように設計されている。</p>
+<p>機能の詳細については、<a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form">Creating a Form</a> 及び <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages">Validation and Error Messages</a> を参照されたい。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>その他機能</li>
+</ol>
+<blockquote>
+<div>Thymeleaf + Springを適用する場合、Thymeleaf単体で利用する場合とは以下の点で異なる。</div></blockquote>
+<ul class="simple">
+<li>式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(<a class="reference external" href="https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/expressions.html#expressions-intro">Spring Expression Language</a>)を利用する。</li>
+<li>メッセージリソースとして、SpringのMessageSourceを利用する。</li>
+<li>Thymeleafが提供するフォーマット機能の代わりに、SpringのConversionサービスを利用する。 <a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-conversion-service">The Conversion Service</a> を参照されたい。</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id17">
+<h3><a class="toc-backref" href="#id34">4.1.1.4. Thymeleafテンプレートの実装</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="html">
+<h4><a class="toc-backref" href="#id35">4.1.1.4.1. テンプレートHTMLの実装</a><a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h4>
+<p>これよりThymeleafのテンプレートHTMLの実装例を説明する。
+ここでは、設計時に画面のデザインが決定している前提とし、作成済みのHTMLファイルにThymeleaf及びThymeleaf + Springのスタンダードダイアレクトを適用してテンプレートHTMLを作成する。</p>
+<p>単純な検索画面と検索結果画面を例とする。以下が対象の画面である。（なお、以下の画面は作成後のテンプレートHTMLを静的表示したものである。）</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../../_images/thymeleaf-screen-transition.png"><img alt="thymeleaf screen transition" src="../../_images/thymeleaf-screen-transition.png" style="width: 70%;" /></a>
+</div>
+<ul class="simple">
+<li>検索画面</li>
+</ul>
+<blockquote>
+<div><p>HTML</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../../../resources/app/css/styles.css&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Search Screen<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Search Screen<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;searchForm&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;searchResult.html&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>fruits name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;fruitsName&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Search<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">テキスト入力要素を1つ保持する、単純な&lt;form&gt;要素のみを定義している。</div>
+<div class="line">action属性には、検索結果画面のHTMLファイルへの静的リンクを記述している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>テンプレートHTML</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span> <span class="na">xmlns:th</span><span class="o">=</span><span class="s">&quot;http://www.thymeleaf.org&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (1) */--&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../../../resources/app/css/styles.css&quot;</span> <span class="na">th:href</span><span class="o">=</span><span class="s">&quot;@{/resources/app/css/styles.css}&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (2) */--&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Search Screen<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Search Screen<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;searchForm&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;searchResult.html&quot;</span> <span class="na">th:action</span><span class="o">=</span><span class="s">&quot;@{/searchResult}&quot;</span> <span class="na">th:object</span><span class="o">=</span><span class="s">&quot;${searchForm}&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (3)、(4) */--&gt;</span>
+    <span class="p">&lt;</span><span class="nt">label</span><span class="p">&gt;</span>fruits name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&quot;*{fruitsName}&quot;</span><span class="p">/&gt;</span> <span class="c">&lt;!--/* (5) */--&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span>Search<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">xmlns宣言を追加し、プロセッサに付与する名前空間（”th”）を定義する。</div>
+<div class="line">この定義は無くても構わないが、定義が無い場合Eclipse等のIDEによるHTML構文バリデーションで警告される為、記述する事を推奨する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;link&gt;要素に<code class="docutils literal"><span class="pre">th:href</span></code>属性を追加する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:href</span></code>属性のようにHTMLの属性に”th:”を付加した属性プロセッサは、テンプレートの解釈時に対象のHTML属性値を上書きする。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:href</span></code>属性値には、リンクURL式<code class="docutils literal"><span class="pre">&#64;{}</span></code>を用いている。リンクURL式は、指定されたパスにWebアプリケーションのコンテキストパスを付加した値を生成する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;form&gt;要素に<code class="docutils literal"><span class="pre">th:action</span></code>属性を追加する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:action</span></code>属性値には、リンクURL式<code class="docutils literal"><span class="pre">&#64;{}</span></code>を用いている。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;form&gt;要素に<code class="docutils literal"><span class="pre">th:object</span></code>属性を追加し、&lt;form&gt;要素内からアクセスするプロパティを格納したオブジェクトを指定する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:object</span></code>属性値には、変数式<code class="docutils literal"><span class="pre">${}</span></code>を用いThymeleafのコンテキストに格納したオブジェクトを参照する。</div>
+<div class="line">変数式中の記述は、SpELによって処理される。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(5)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;input&gt;要素に<code class="docutils literal"><span class="pre">th:field</span></code>属性を追加し、サーバサイドで保持されているデータが有る場合に出力する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:field</span></code>属性値を&lt;input&gt;要素に適用すると、id属性、name属性、value属性が付加される。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:field</span></code>属性値には選択変数式<code class="docutils literal"><span class="pre">*{}</span></code>を用い、<code class="docutils literal"><span class="pre">th:object</span></code>属性で指定したオブジェクトのプロパティを参照している。</div>
+<div class="line">これは変数式を利用し、<code class="docutils literal"><span class="pre">${searchForm.fruitsName}</span></code>と実装した場合と同様の結果を得る。</div>
+<div class="line">選択変数式中の記述も変数式と同様にSpELによって処理される。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ul class="simple">
+<li>検索結果画面</li>
+</ul>
+<blockquote>
+<div><p>HTML</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../../../resources/app/css/styles.css&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Search Result Screen<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Search Result<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="c">&lt;!-- (1) --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>name<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>price<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Apple<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Apple Juice<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>100<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Apple Pie<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>500<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;search.html&quot;</span><span class="p">&gt;</span>Back<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="c">&lt;!-- (2) --&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">name、 priceヘッダを持ったn行×2列のテーブルを定義する。ここでは3行分のデータを記述している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;a&gt;要素のhref属性には、検索画面のHTMLファイルへの静的リンクを記述している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>テンプレートHTML</p>
+<div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span> <span class="na">xmlns:th</span><span class="o">=</span><span class="s">&quot;http://www.thymeleaf.org&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (1) */--&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../../../resources/app/css/styles.css&quot;</span> <span class="na">th:href</span><span class="o">=</span><span class="s">&quot;@{/resources/app/css/styles.css}&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (2) */--&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Search Result Screen<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Search Result<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>name<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>price<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&quot;item : ${items}&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (3) */--&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.name}&quot;</span><span class="p">&gt;</span>Apple<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (4) */--&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.price}&quot;</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (4) */--&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+       <span class="c">&lt;!--/* (5) */--&gt;</span>
+      <span class="c">&lt;!--/* --&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Apple Juice<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>100<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Apple Pie<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>500<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+      <span class="c">&lt;!-- */--&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;search.html&quot;</span> <span class="na">th:href</span><span class="o">=</span><span class="s">&quot;@{/search}&quot;</span><span class="p">&gt;</span>Back<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span> <span class="c">&lt;!--/* (6) */--&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">xmlns宣言を追加し、プロセッサに付与する名前空間（”th”）を定義する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;link&gt;要素に<code class="docutils literal"><span class="pre">th:href</span></code>属性を追加する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:href</span></code>属性値には、リンクURL式<code class="docutils literal"><span class="pre">&#64;{}</span></code>を用いている。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;tr&gt;要素に<code class="docutils literal"><span class="pre">th:each</span></code>属性を追加し、テーブルの&lt;tr&gt;要素及び配下の子要素を繰り返し出力している。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:each</span></code>属性では、変数式を用い<code class="docutils literal"><span class="pre">items</span></code>リストを参照し、リスト内のオブジェクトを<code class="docutils literal"><span class="pre">item</span></code>変数に格納している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">th:text</span></code>属性値には変数式を用い、<code class="docutils literal"><span class="pre">th:each</span></code>属性で定義した<code class="docutils literal"><span class="pre">item</span></code>変数の<code class="docutils literal"><span class="pre">name</span></code>フィールド、<code class="docutils literal"><span class="pre">price</span></code>フィールドを参照している。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:text</span></code>属性は、記述した要素のコンテンツを属性値で上書きする。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(5)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafのパーサーレベルコメントブロックを用いて、静的表示の為に記述したテーブル内の要素をThymeleafによるテンプレート解釈時に削除するようにしている。</div>
+<div class="line">コメントブロックについては、後述する <a class="reference internal" href="#comment-blocks"><span class="std std-ref">コメント文</span></a> の「2. Thymeleafパーサーレベルコメントブロック」を参照されたい。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(6)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">&lt;a&gt;要素に<code class="docutils literal"><span class="pre">th:href</span></code>属性を追加する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">th:href</span></code>属性値には、リンクURL式<code class="docutils literal"><span class="pre">&#64;{}</span></code>を用いている。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>テンプレートHTMLの実装において静的表示を意識すべきかについて</p>
+<p>Thymeleafの最も大きな特徴であり魅力であるのが、テンプレートファイルが静的表示可能な事である。
+この特徴は、設計時に作成したプロトタイプを元にブラウザでデザインを確認しつつ、サーバ上で動的にHTMLを生成する機能を組み込む事を可能とする。
+新規に画面テンプレートを作成する際にサーバ側のプログラムを実装する必要なくデザインが確認できるのは、他のテンプレートエンジンには無い優れた点である。
+また、開発途中にデザインの変更が生じた場合もHTMLテンプレートを修正すれば良いため、他テンプレートエンジンでの開発のようなプロトタイプとテンプレートの二重管理が不要となる。
+一方で、当機能の副作用についても考慮しておく必要がある。
+新規開発時のUI開発の効率化や管理対象資材の削減による利点は先に述べたとおりで否定のしようがないが、エンタープライズ系のシステムでは5～10年（或いはそれ以上）システムを運用する事は当然であり、
+その間に機能追加による改修を複数回行う。</p>
+<p>このようなシステムに対して、静的表示可能なテンプレートを採用した場合に考慮すべき点を挙げる。</p>
+<ol class="arabic simple">
+<li>ソースコードの可読性</li>
+</ol>
+<blockquote>
+<div>静的表示が可能なテンプレートHTMLには、商用環境におけるHTML生成後には読み込まれないCSSや遷移する事のない画面へのリンク、削除される要素等の無駄なコンテンツが含まれる。
+画面の複雑度が低い場合は気にならないが、複雑度が高くなるほど静的表示用の記述も増える為、テンプレート中に本質的には不要な実装が増えていく。
+また静的表示用の記述と動的に解釈させる記述に明確な境界が無い為、実装を読み解かない限りは、いずれの為の記述なのかは判断出来ない。
+これらの要因により、静的表示用の実装が無い場合と比較してソースコードの可読性が下がり、メンテナンスコストが高くなる恐れが有る。</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>メンテナンスに伴うデグレードのリスク</li>
+</ol>
+<blockquote>
+<div>静的表示用の記述の修正によりテンプレートにバグを埋め込む可能性があり、逆にテンプレートの修正により静的表示を損なう可能性もあり、
+両者の品質を確保し続けるには高いスキルと冗長なコストが必要とされる。
+また、エンタープライズ向けのシステムでは一度リリースしたソースコードを修正するハードルが高く、
+静的表示のみの修正のために十分なテストを行ないリリースするコストを避ける為、テンプレートHTMLとプロトタイプの二重管理が発生する危険性も否定できない。
+これらの品質・コスト面でのリスクを許容してプロトタイプをメンテナンスし続けるかどうかは、慎重に判断する必要がある。</div></blockquote>
+<p class="last">テンプレートファイルに静的表示用の実装を含める事については、ソースコードの可読性を損ない技術的な負債を作らないか、
+プロジェクトで採用する開発プロセスと合致するか、どのように品質を保持していくのか等を勘案のうえ決定するべきである。
+また、静的表示可能なテンプレートを採用する場合においては、後述する <a class="reference internal" href="#comment-blocks"><span class="std std-ref">コメント文</span></a> の機能を用い静的表示部と動的にHTMLを生成させるための処理を可能な限り分ける検討をすること。</p>
+</div>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Thymeleafには、<a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#decoupled-template-logic">Decoupled Template Logic</a> という機能が存在する。
+Decoupled Template Logicを適用すると、プロトタイプと動的処理を別ファイルに実装できる為、デザインとテンプレートエンジンによる処理を分離可能である。
+当機能については、ガイドラインの次版以降で紹介する予定である。</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="comment-blocks">
+<span id="id18"></span><h4><a class="toc-backref" href="#id36">4.1.1.4.2. コメント文</a><a class="headerlink" href="#comment-blocks" title="Permalink to this headline">¶</a></h4>
+<p>Thymeleafのテンプレートでは、プロトタイプとの両立をサポートするため3種類のコメント文が記述可能である。
+ここでは、各々のコメント文の特性及び利用場面を紹介する。</p>
+<ol class="arabic simple">
+<li>HTMLコメント</li>
+</ol>
+<blockquote>
+<div><p>通常のHTMLコメント文は、Thymeleafで特別な処理をされず、そのまま生成したHTMLに出力される。
+その為、利用者に見られても問題が無い内容以外をHTMLコメントで記述するべきではない。</p>
+<ul class="simple">
+<li>記述例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="c">&lt;!-- This is Search Form --&gt;</span> <span class="c">&lt;!--/* (1) */--&gt;</span>
+<span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;searchForm&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;searchResult.html&quot;</span> <span class="na">th:action</span><span class="o">=</span><span class="s">&quot;@{/searchResult}&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">通常のHTMLコメント文は、生成したHTMLに出力される。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ul class="simple">
+<li>出力例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="c">&lt;!-- This is Search Form --&gt;</span>
+<span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;searchForm&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;/search/searchResult&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Thymeleafパーサーレベルコメントブロック</li>
+</ol>
+<blockquote>
+<div><p>Thymeleafパーサーレベルコメントブロックは、Thymeleafでの処理時に削除され生成したHTMLには出力されない。
+これは、コメントブロック自体もコメントブロックで囲ったコンテンツに対しても同様である。
+その為、静的表示用のみに使用する。</p>
+<ul class="simple">
+<li>記述例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span> <span class="na">th:each</span><span class="o">=</span><span class="s">&quot;item : ${items}&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.name}&quot;</span><span class="p">&gt;</span>Apple<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.price}&quot;</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="c">&lt;!--/* (1) */--&gt;</span>
+  <span class="c">&lt;!--/* --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Banana<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Strawberry<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="c">&lt;!-- */--&gt;</span>
+<span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafパーサーレベルコメントブロックは、Thymeleafでの処理時に削除され生成したHTMLには出力されない。</div>
+<div class="line">本例の場合は、コメントブロックで囲われたテーブルの2～3行目は、静的表示時のみ有効でThymeleafが生成したHTMLからは削除されている。</div>
+<div class="line">また<code class="docutils literal"><span class="pre">&lt;!--/*</span> <span class="pre">(1)</span> <span class="pre">*/--&gt;</span></code>も同様に削除される。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ul class="simple">
+<li>出力例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Grape<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Grape Juice<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>100<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Grape Soda<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>100<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Thymeleafプロトタイプのみのコメントブロック</li>
+</ol>
+<blockquote>
+<div><p>Thymeleafプロトタイプのみのコメントブロックは、コメントブロック内部の記述がThymeleafで処理される。
+一方で静的表示する場合には、HTMLコメントと判断される為ブラウザには表示されない。
+静的表示した場合に解釈不可能な<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>タグを用いた場合や、<code class="docutils literal"><span class="pre">th:if</span></code>属性を用いた分岐制御の為だけに、デザイン上不要なタグを使用する場合に有用なコメントブロックである。</p>
+<ul class="simple">
+<li>記述例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="c">&lt;!--/* (1) */--&gt;</span>
+  <span class="c">&lt;!--/*/ &lt;th:block th:each=&quot;item : ${items}&quot;&gt; /*/--&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.name}&quot;</span><span class="p">&gt;</span>Apple<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.price}&quot;</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">colspan</span><span class="o">=</span><span class="s">&quot;2&quot;</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${item.amount}&quot;</span><span class="p">&gt;</span>10<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="c">&lt;!--/*/ &lt;/th:block&gt; /*/--&gt;</span>
+
+  <span class="c">&lt;!--/* omitted */--&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">プロトタイプのみのコメントブロックを使用して<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>を用いた繰り返し処理を静的表示の際には、描画されないようにしている。</div>
+<div class="line">Thymeleafによる処理時には、コメントブロックが削除され<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>に記述した<code class="docutils literal"><span class="pre">th:each</span></code>属性が処理される。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ul class="simple">
+<li>出力例</li>
+</ul>
+<blockquote>
+<div><div class="highlight-HTML"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Orange<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>300<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">colspan</span><span class="o">=</span><span class="s">&quot;2&quot;</span><span class="p">&gt;</span>5<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Orange Juice<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>100<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">colspan</span><span class="o">=</span><span class="s">&quot;2&quot;</span><span class="p">&gt;</span>15<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Orange Sherbet<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>200<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">colspan</span><span class="o">=</span><span class="s">&quot;2&quot;</span><span class="p">&gt;</span>20<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-use">
+<h2><a class="toc-backref" href="#id37">4.1.2. How to use</a><a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id19">
+<h3><a class="toc-backref" href="#id38">4.1.2.1. アプリケーションの設定</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>本節では、ThymeleafをSpring MVCと連携して使用する為の設定の説明をする。</p>
+<div class="section" id="configuration-of-blank-project-label">
+<span id="id20"></span><h4><a class="toc-backref" href="#id39">4.1.2.1.1. ブランクプロジェクトの設定</a><a class="headerlink" href="#configuration-of-blank-project-label" title="Permalink to this headline">¶</a></h4>
+<p>Thymeleafを利用する為の初期設定をブランクプロジェクトで提供している。
+ここでは、Spring MVCと組み合わせてThymeleafを使用する為のブランクプロジェクトの設定の説明をする。
+Thymeleafに係るブランクプロジェクトの設定は、以下の4点である。</p>
+<ol class="arabic simple">
+<li>Thymeleaf及び推奨ライブラリの依存関係の設定</li>
+<li>ThymeleafをSpring MVCのViewとして用いる為のBean定義</li>
+<li>テンプレートHTMLのレイアウト化 (テンプレートHTMLのレイアウト機能については、<a class="reference internal" href="TemplateLayout.html"><span class="doc">Thymeleafにおける画面レイアウト</span></a>を参照されたい。)</li>
+<li>エラー画面のテンプレートHTMLをThymeleafで処理する為の設定及びControllerの実装</li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line">テンプレートHTMLに直接遷移した場合、Thymeleafによるテンプレートの解釈がされない。</div>
+<div class="line">その為、ブランクプロジェクトではエラー画面遷移用パスを定義し、専用のControllerで受け付けるようにしている。</div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li>pom.xmlの定義</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>プロジェクトのルートのpom.xml</li>
+</ul>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;dependencyManagement&gt;</span>
+  <span class="nt">&lt;dependencies&gt;</span>
+
+    <span class="c">&lt;!-- == Begin Thymeleaf == --&gt;</span>
+    <span class="c">&lt;!-- (1) --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.thymeleaf<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>thymeleaf<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>${thymeleaf.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="c">&lt;!-- (2) --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.thymeleaf<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>thymeleaf-spring4<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>${thymeleaf.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="c">&lt;!-- (3) --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.thymeleaf.extras<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>thymeleaf-extras-springsecurity4<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>${thymeleaf-extras-springsecurity4.version}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="c">&lt;!-- == End Thymeleaf == --&gt;</span>
+
+  <span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+
+
+<span class="nt">&lt;properties&gt;</span>
+
+  <span class="c">&lt;!-- (4) --&gt;</span>
+  <span class="nt">&lt;thymeleaf.version&gt;</span>3.0.9.RELEASE<span class="nt">&lt;/thymeleaf.version&gt;</span>
+  <span class="nt">&lt;thymeleaf-extras-springsecurity4.version&gt;</span>3.0.2.RELEASE<span class="nt">&lt;/thymeleaf-extras-springsecurity4.version&gt;</span>
+
+<span class="nt">&lt;/properties&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleafのdependencyを定義する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleaf-spring4のdependencyを定義する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleaf-extras-springsecurity4のdependencyを定義する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleaf及び推奨するライブラリのバージョンを定義する。</div>
+<div class="line">本ガイドラインで採用するThymeleafのバージョンは、採用するSpring IO platform(Brussels-SR5)で管理されているバージョンと異なる為、明示的に上書き指定している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Thymeleaf 3.xを採用する理由</p>
+<p class="last">Spring IO platform(Brussels-SR5)で管理されているThymeleafのバージョンは、2.1.4.RELEASLEであるが、本ガイドラインは、3.0.9.RELEALSEを前提に記述している。
+敢えてSpring IO platformと異なるバージョンを採用する理由は、Thymeleaf 2.xから3.xへのバージョンアップの際に大幅に性能向上が図られたためである。
+3.xへのバージョンアップ情報の詳細については、<a class="reference external" href="http://forum.thymeleaf.org/Thymeleaf-3-0-is-here-td4029676.html">Thymeleaf 3.0 announcement and more info</a> を参照されたい。</p>
+</div>
+<ul class="simple">
+<li>[artifactID]-webプロジェクトのpom.xml</li>
+</ul>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;dependencies&gt;</span>
+
+  <span class="c">&lt;!-- == Begin Thymeleaf == --&gt;</span>
+  <span class="c">&lt;!-- (1) --&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.thymeleaf<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>thymeleaf<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="c">&lt;!-- (2) --&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.thymeleaf<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>thymeleaf-spring4<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="c">&lt;!-- (3) --&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.thymeleaf.extras<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>thymeleaf-extras-springsecurity4<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="c">&lt;!-- == End Thymeleaf == --&gt;</span>
+
+<span class="nt">&lt;/dependencies&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleafのdependencyを追加することで、Thymeleafが利用可能となる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleaf-spring4のdependencyを追加することで、Spring MVCとの連携機能が有効になる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">thymeleaf-extras-springsecurity4のdependencyを追加することで、Spring Securityとの連携機能が有効になる。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<ul>
+<li><p class="first">spring-mvc.xmlの定義</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="c">&lt;!-- (1) --&gt;</span>
+<span class="nt">&lt;mvc:view-resolvers&gt;</span>
+    <span class="nt">&lt;mvc:bean-name</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.view.ThymeleafViewResolver&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">ref=</span><span class="s">&quot;templateEngine&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;characterEncoding&quot;</span> <span class="na">value=</span><span class="s">&quot;UTF-8&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (2) --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;forceContentType&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (3) --&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;contentType&quot;</span> <span class="na">value=</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (3) --&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/mvc:view-resolvers&gt;</span>
+
+<span class="c">&lt;!-- (4) --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span>
+    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;prefix&quot;</span> <span class="na">value=</span><span class="s">&quot;/WEB-INF/views/&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (5) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;suffix&quot;</span> <span class="na">value=</span><span class="s">&quot;.html&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (6) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateMode&quot;</span> <span class="na">value=</span><span class="s">&quot;HTML&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (7) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;characterEncoding&quot;</span> <span class="na">value=</span><span class="s">&quot;UTF-8&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (8) --&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="c">&lt;!-- (9) --&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">ref=</span><span class="s">&quot;templateResolver&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;enableSpringELCompiler&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (10) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;additionalDialects&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;set&gt;</span>
+            <span class="nt">&lt;bean</span>
+                <span class="na">class=</span><span class="s">&quot;org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect&quot;</span> <span class="nt">/&gt;</span>  <span class="c">&lt;!-- (11) --&gt;</span>
+        <span class="nt">&lt;/set&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">ThymeleafViewResolver</span></code>をBean定義する。</div>
+<div class="line">Spring MVCのViewにThymeleafを採用する場合には、<code class="docutils literal"><span class="pre">ThymeleafViewResolver</span></code>を用いる。</div>
+<div class="line"><code class="docutils literal"><span class="pre">&lt;mvc:view-resolvers&gt;</span></code>内に記述し、<code class="docutils literal"><span class="pre">BeanNameViewResolver</span></code>の次に処理をする設定としている。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">レスポンスのエンコーディングを設定する。UTF-8を設定している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">forcedContentType</span></code>プロパティに<code class="docutils literal"><span class="pre">true</span></code>を指定し、レスポンスのContent-Typeヘッダを明示的に設定するようにしている。</div>
+<div class="line"><code class="docutils literal"><span class="pre">contentType</span></code>プロパティに<code class="docutils literal"><span class="pre">text/html;charset=UTF-8</span></code>を指定している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">SpringResourceTemplateResolver</span></code>をBean定義する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">SpringResourceTemplateResolver</span></code>は、SpringのResourceLoader経由で、Thymeleafのテンプレートファイルを検出する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(5)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafテンプレートが格納されているベースディレクトリ(ファイルパスのプレフィックス)を指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(6)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Thymeleafテンプレートの拡張子(ファイルパスのサフィックス)を設定する。HTMLファイルをテンプレートとする為、<code class="docutils literal"><span class="pre">.html</span></code>を設定している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(7)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">解釈するテンプレートモードを設定する。デフォルト値は”HTML”モードであるが、明示的に設定している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(8)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">テンプレートファイルのエンコーディングを設定する。<code class="docutils literal"><span class="pre">UTF-8</span></code>を設定している</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(9)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">SpringTemplateEngine</span></code>をBean定義する。</div>
+<div class="line"><code class="docutils literal"><span class="pre">SpringTemplateEngine</span></code>により、Thymeleaf + Springが提供する各種機能を利用可能となる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(10)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">SpEL(Spring Expression Language)のコンパイル実施可否を設定する。</div>
+<div class="line">SpELのコンパイルを実施する事で性能向上が見込める為、<code class="docutils literal"><span class="pre">true</span></code>を設定している。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(11)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">additionalDialects</span></code>に、<code class="docutils literal"><span class="pre">SpringSecurityDialect</span></code>を定義することで、テンプレートHTML内で、Spring Securityの認証・認可制御が可能となる。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>レスポンスのContent-Typeの解決方法について</p>
+<p class="last"><code class="docutils literal"><span class="pre">ThymeleafViewResolver</span></code>のデフォルトの動作では、リクエストのAcceptヘッダの値やURLを元にレスポンスのContent-Typeヘッダの値を決めている。
+例えば、URLの末尾に<code class="docutils literal"><span class="pre">.json</span></code>のような拡張子を指定したリクエストの場合、レスポンスのContent-Typeに<code class="docutils literal"><span class="pre">application/json</span></code>が設定される。
+レスポンスでHTMLのみを返却する場合は、Content-Typeが自動判定されることで思わぬ不具合が生じる可能性がある。
+本ガイドラインでは、Thymeleafを介した場合のレスポンスがHTMLのみである想定の為、ブランクプロジェクトにてContent-Typeを”text/html;charset=UTF-8”に明示的に指定している。
+Content-Typeの指定は、<code class="docutils literal"><span class="pre">ThymeleafViewResolver</span></code>のBean定義で<code class="docutils literal"><span class="pre">forcedContentType</span></code>プロパティをtrueとし、<code class="docutils literal"><span class="pre">contentType</span></code>プロパティに任意のContent-Typeを設定する事で可能である。</p>
+</div>
+</li>
+<li><p class="first">spring-security.xmlの定義</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;accessDeniedHandler&quot;</span>
+    <span class="na">class=</span><span class="s">&quot;org.springframework.security.web.access.DelegatingAccessDeniedHandler&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;map&gt;</span>
+            <span class="nt">&lt;entry</span>
+                <span class="na">key=</span><span class="s">&quot;org.springframework.security.web.csrf.InvalidCsrfTokenException&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bean</span>
+                    <span class="na">class=</span><span class="s">&quot;org.springframework.security.web.access.AccessDeniedHandlerImpl&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;errorPage&quot;</span>
+                        <span class="na">value=</span><span class="s">&quot;/common/error/invalidCsrfTokenError&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
+                <span class="nt">&lt;/bean&gt;</span>
+            <span class="nt">&lt;/entry&gt;</span>
+            <span class="nt">&lt;entry</span>
+                <span class="na">key=</span><span class="s">&quot;org.springframework.security.web.csrf.MissingCsrfTokenException&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;bean</span>
+                    <span class="na">class=</span><span class="s">&quot;org.springframework.security.web.access.AccessDeniedHandlerImpl&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;errorPage&quot;</span>
+                        <span class="na">value=</span><span class="s">&quot;/common/error/missingCsrfTokenError&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
+                <span class="nt">&lt;/bean&gt;</span>
+            <span class="nt">&lt;/entry&gt;</span>
+        <span class="nt">&lt;/map&gt;</span>
+    <span class="nt">&lt;/constructor-arg&gt;</span>
+    <span class="nt">&lt;constructor-arg</span> <span class="na">index=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;bean</span>
+            <span class="na">class=</span><span class="s">&quot;org.springframework.security.web.access.AccessDeniedHandlerImpl&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;errorPage&quot;</span>
+                <span class="na">value=</span><span class="s">&quot;/common/error/accessDeniedError&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
+        <span class="nt">&lt;/bean&gt;</span>
+    <span class="nt">&lt;/constructor-arg&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">spring-security.xmlの<code class="docutils literal"><span class="pre">AccessDeniedHandler</span></code>の<code class="docutils literal"><span class="pre">errorPage</span></code>のパスを指定する。</div>
+<div class="line">エラー画面をThymeleafに処理させるため、直接HTMLファイルのパスを指定せず、後述するエラー画面に遷移させるためのControllerでハンドリングされるようにしている。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first">web.xmlの定義</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;error-page&gt;</span>
+    <span class="nt">&lt;error-code&gt;</span>500<span class="nt">&lt;/error-code&gt;</span>
+    <span class="nt">&lt;location&gt;</span>/common/error/systemError<span class="nt">&lt;/location&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
+<span class="nt">&lt;/error-page&gt;</span>
+
+<span class="nt">&lt;error-page&gt;</span>
+    <span class="nt">&lt;error-code&gt;</span>404<span class="nt">&lt;/error-code&gt;</span>
+    <span class="nt">&lt;location&gt;</span>/common/error/resourceNotFoundError<span class="nt">&lt;/location&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
+<span class="nt">&lt;/error-page&gt;</span>
+
+<span class="nt">&lt;error-page&gt;</span>
+    <span class="nt">&lt;exception-type&gt;</span>java.lang.Exception<span class="nt">&lt;/exception-type&gt;</span>
+    <span class="nt">&lt;location&gt;</span>/WEB-INF/views/common/error/unhandledSystemError.html<span class="nt">&lt;/location&gt;</span>  <span class="c">&lt;!-- (2) --&gt;</span>
+<span class="nt">&lt;/error-page&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">遷移するパスを指定する。エラー画面をThymeleafに処理させるため、直接HTMLファイルのパスを指定せず、後述するエラー画面に遷移させるためのControllerでハンドリングされるようにしている。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">unhandledSystemError.htmlは、Thymeleafのテンプレートではない為、直接HTMLファイルのパスを指定している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first">エラーページ遷移用Controllerクラス</p>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;common/error&quot;</span><span class="o">)</span> <span class="c1">// (1)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommonErrorController</span> <span class="o">{</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;accessDeniedError&quot;</span><span class="o">)</span> <span class="c1">// (1)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">accessDeniedError</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;common/error/accessDeniedError&quot;</span><span class="o">;</span> <span class="c1">// (2)</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;businessError&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">businessError</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;common/error/businessError&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;dataAccessError&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">dataAccessError</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;common/error/dataAccessError&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/invalidCsrfTokenError&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">invalidCsrfTokenError</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;common/error/invalidCsrfTokenError&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// omitted</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">クラスレベルの<code class="docutils literal"><span class="pre">&#64;RequestMapping</span></code>アノテーションにエラー画面の共通パスを指定し、メソッドレベルの<code class="docutils literal"><span class="pre">&#64;RequestMapping</span></code>アノテーションに各種例外に応じたエラー画面遷移用パスを指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ハンドラメソッドからは、Thymeleafのテンプレートを指定する文字列を返却する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="view">
+<h3><a class="toc-backref" href="#id40">4.1.2.2. Viewの実装</a><a class="headerlink" href="#view" title="Permalink to this headline">¶</a></h3>
+<p>ThymeleafのテンプレートHTMLの実装については、<a class="reference internal" href="../../ImplementationAtEachLayer/ApplicationLayer.html"><span class="doc">アプリケーション層の実装</span></a> の<a class="reference internal" href="../../ImplementationAtEachLayer/ApplicationLayer.html#id49"><span class="std std-ref">Viewの実装</span></a>を参照されたい。</p>
+</div>
+</div>
+<div class="section" id="how-to-extend">
+<h2><a class="toc-backref" href="#id41">4.1.3. How to extend</a><a class="headerlink" href="#how-to-extend" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id21">
+<h3><a class="toc-backref" href="#id42">4.1.3.1. カスタムダイアレクトの追加</a><a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p>Thymeleafでは開発者がカスタムダイアレクトを追加することで、独自に開発したタグや属性、式オブジェクトを使用することができる。</p>
+<p>カスタムダイアレクトを追加するにはProcessorやExpressionObjectとDialectを実装する必要がある。</p>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">&#160;</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">Processor</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">テンプレート内のイベントに対して実行する処理を定義するオブジェクト。</div>
+<div class="line">タグを定義する要素プロセッサとタグの属性を定義する属性プロセッサなどの種類がある。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">ExpressionObject</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">テンプレート内の式から呼び出されるオブジェクト。</div>
+<div class="line">テンプレート内で用いるためのメソッドなどを定義する。特に制約がなく、POJOで定義できる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">Dialect</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ProcessorやExpressionObjectをまとめたライブラリ。</div>
+<div class="line">テンプレートエンジンにDialectを登録することで、ProcessorやExpressionObjectで定義された文法をテンプレート内で用いることができるようになる。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="processor">
+<h4><a class="toc-backref" href="#id43">4.1.3.1.1. Processorの実装</a><a class="headerlink" href="#processor" title="Permalink to this headline">¶</a></h4>
+<p>Processorはテンプレート内のイベントに対して実行する処理を定義するオブジェクトである。</p>
+<p>Processorを実装するためには、Thymeleafから提供されているインタフェースを実装すればよい。</p>
+<p>Thymeleafから提供されている代表的なProcessorのインタフェースを以下に示す。</p>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">processor</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.processor.element.IElementTagProcessor</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">開始タグに対して実行される処理を定義するためのインタフェース。対象のタグの内容は参照可能だが、直接変更することはできない。structureHandlerを介してのみ対象のタグの属性やボディを変更することができる。</div>
+<div class="line">通常は、<code class="docutils literal"><span class="pre">IElementTagProcessor</span></code>を直接実装するのではなく、<code class="docutils literal"><span class="pre">org.thymeleaf.processor.AbstractAttributeTagProcessor</span></code>などの<code class="docutils literal"><span class="pre">IElementTagProcessor</span></code>を実装した抽象クラスを継承する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.processor.element.IElementModelProcessor</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">開始タグから閉じタグまでの要素全体に対して実行される処理を定義するためのインタフェース。対象の要素全体をモデルとして処理するため、任意の要素を参照、直接変更することができる。また、閉じタグの後など、任意の箇所に要素を追加することもできる。</div>
+<div class="line">通常は、<code class="docutils literal"><span class="pre">IElementModelProcessor</span></code>を直接実装するのではなく、<code class="docutils literal"><span class="pre">org.thymeleaf.processor.AbstractAttributeModelProcessor</span></code>などの<code class="docutils literal"><span class="pre">IElementModelProcessor</span></code>を実装した抽象クラスを継承する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">上記のインタフェース以外にもイベントごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/extendingthymeleaf.html#processors">Tutorial: Extending Thymeleaf(Processors)</a>を参照されたい。</p>
+</div>
+<p>Processorでの処理に用いる代表的なインタフェースを以下に示す。</p>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">インタフェース</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.model.IModel</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">HTMLタグなどを抽象化したインタフェース。開始タグ、ボディ、終了タグなどのHTMLを構成する要素をリストのように保持する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.model.IModelFactory</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">IModel</span></code>の生成や組み立てをするインタフェース。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.context.ITemplateContext</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">コンテキストの情報を保持するインタフェース。<code class="docutils literal"><span class="pre">IModelFactory</span></code>などを取得することができる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.model.IProcessableElementTag</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">属性を適用したタグ自体の情報を保持するインタフェース。タグの名前や付与された属性を取得することができる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.processor.element.IElementTagStructureHandler</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">属性を適用したタグや、そのボディ部を編集するためのインタフェース。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>ラベル、入力フィールド、エラーメッセージをまとめて出力する独自属性の実装例を以下に示す。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>独自タグと独自属性どちらでも同じ機能を実装できる場合があるが、独自属性での実装を推奨する。</p>
+<p class="last">理由は、静的表示する際、独自タグは<code class="docutils literal"><span class="pre">&lt;th:block&gt;</span></code>と同様に解釈不能となってしまうが、独自属性はその属性のみが無視され、正しく表示できるためである。</p>
+</div>
+<p><strong>テンプレート記述例</strong></p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">form</span> <span class="na">th:object</span><span class="o">=</span><span class="s">&quot;${userForm}&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">input:form-input</span><span class="o">=</span><span class="s">&quot;*{userName}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p><strong>独自属性の処理結果</strong></p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">form</span> <span class="na">th:object</span><span class="o">=</span><span class="s">&quot;${userForm}&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;form-input&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;userName&quot;</span><span class="p">&gt;</span>userName<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">th:field</span><span class="o">=</span><span class="s">&quot;*{userName}&quot;</span> <span class="p">/&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">th:errors</span><span class="o">=</span><span class="s">&quot;*{userName}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">上記の処理結果は実装する独自属性のみをテンプレートエンジンで評価した結果である。
+実際に出力されるHTMLは<code class="docutils literal"><span class="pre">th:field</span></code>属性などもテンプレートエンジンで評価した形となるため上記の処理結果とは異なる。
+実際のHTML出力については <a class="reference internal" href="#custom-dialect-how-to-use"><span class="std std-ref">カスタムダイアレクトの使用方法</span></a> を参照されたい。</p>
+</div>
+<p><strong>実装例</strong></p>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="c1">// (1)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FormInputAttributeTagProcessor</span> <span class="kd">extends</span> <span class="n">AbstractAttributeTagProcessor</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">FormInputAttributeTagProcessor</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">dialectPrefix</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">TemplateMode</span><span class="o">.</span><span class="na">HTML</span><span class="o">,</span> <span class="c1">// (2)</span>
+                <span class="n">dialectPrefix</span><span class="o">,</span> <span class="c1">// (3)</span>
+                <span class="kc">null</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="c1">// (4)</span>
+                <span class="s">&quot;form-input&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="c1">// (5)</span>
+                <span class="mi">1000</span><span class="o">,</span> <span class="c1">// (6)</span>
+                <span class="kc">true</span> <span class="c1">// (7)</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doProcess</span><span class="o">(</span><span class="n">ITemplateContext</span> <span class="n">context</span><span class="o">,</span>
+            <span class="n">IProcessableElementTag</span> <span class="n">tag</span><span class="o">,</span> <span class="n">AttributeName</span> <span class="n">attributeName</span><span class="o">,</span>
+            <span class="n">String</span> <span class="n">attributeValue</span><span class="o">,</span> <span class="c1">//(8)</span>
+            <span class="n">IElementTagStructureHandler</span> <span class="n">structureHandler</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">// (9)</span>
+        <span class="n">String</span> <span class="n">classValue</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="na">getAttributeValue</span><span class="o">(</span><span class="s">&quot;class&quot;</span><span class="o">);</span>
+
+        <span class="c1">// (10)</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">classValue</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">structureHandler</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">&quot;class&quot;</span><span class="o">,</span> <span class="s">&quot;form-input&quot;</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">structureHandler</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">&quot;class&quot;</span><span class="o">,</span> <span class="n">classValue</span> <span class="o">+</span> <span class="s">&quot; form-input&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// (11)</span>
+        <span class="n">IModelFactory</span> <span class="n">modelFactory</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getModelFactory</span><span class="o">();</span>
+        <span class="n">IModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">modelFactory</span><span class="o">.</span><span class="na">createModel</span><span class="o">();</span>
+
+        <span class="c1">// (12)</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createOpenElementTag</span><span class="o">(</span><span class="s">&quot;label&quot;</span><span class="o">,</span> <span class="s">&quot;for&quot;</span><span class="o">,</span> <span class="s">&quot;userName&quot;</span><span class="o">));</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createText</span><span class="o">(</span><span class="n">createLabel</span><span class="o">(</span><span class="n">attributeValue</span><span class="o">)));</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createCloseElementTag</span><span class="o">(</span><span class="s">&quot;label&quot;</span><span class="o">));</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createStandaloneElementTag</span><span class="o">(</span><span class="s">&quot;input&quot;</span><span class="o">,</span> <span class="s">&quot;th:field&quot;</span><span class="o">,</span>
+                <span class="n">attributeValue</span><span class="o">));</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createOpenElementTag</span><span class="o">(</span><span class="s">&quot;span&quot;</span><span class="o">,</span> <span class="s">&quot;th:errors&quot;</span><span class="o">,</span>
+                <span class="n">attributeValue</span><span class="o">));</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelFactory</span><span class="o">.</span><span class="na">createCloseElementTag</span><span class="o">(</span><span class="s">&quot;span&quot;</span><span class="o">));</span>
+
+        <span class="c1">// (13)</span>
+        <span class="n">structureHandler</span><span class="o">.</span><span class="na">setBody</span><span class="o">(</span><span class="n">model</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">createLabel</span><span class="o">(</span><span class="n">String</span> <span class="n">attributeValue</span><span class="o">){</span>
+
+        <span class="c1">// omitted</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">AbstractAttributeTagProcessor</span></code>（<code class="docutils literal"><span class="pre">IElementTagProcessor</span></code>を実装した抽象クラス）を継承する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">HTMLテンプレートに適用する場合は、<code class="docutils literal"><span class="pre">TemplateMode.HTML</span></code>を指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">属性の名前に適用するプレフィックスを指定する。通常は、Dialectから引数で受け取った値を指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">独自タグを作成する場合、タグ名を設定する。この例では独自属性を作成するので<code class="docutils literal"><span class="pre">null</span></code>を設定している。booleanはタグ名にプレフィックスを適用するかを指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(5)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">独自属性を作成する場合、属性名を設定する。booleanは属性名にプレフィックスを適用するかを指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(6)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Dialect内におけるProcessorの優先順位を指定する。値が低いほど優先度が高くなる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(7)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Processor適用後に適用対象の属性の記述を削除するか指定する。基本的に適用対象の属性は出力するHTMLには不要となるので<code class="docutils literal"><span class="pre">true</span></code>を指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(8)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">適用対象の属性が持つ値が渡される。渡される値は式の処理をしていない状態で、上記のテンプレート記述例の場合は<code class="docutils literal"><span class="pre">*{userName}</span></code>が渡される。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(9)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">適用対象の属性を持つタグから<code class="docutils literal"><span class="pre">class</span></code>属性の値を取得する。<code class="docutils literal"><span class="pre">class</span></code>属性が存在しない場合は<code class="docutils literal"><span class="pre">null</span></code>になる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(10)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">適用対象の属性を持つタグの<code class="docutils literal"><span class="pre">class</span></code>属性の値に<code class="docutils literal"><span class="pre">form-input</span></code>を追加する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(11)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">IModelFactory</span></code>を取得し、<code class="docutils literal"><span class="pre">IModel</span></code>を生成する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(12)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">IModel</span></code>にラベル、入力フィールド、エラーメッセージを出力させるための要素を追加する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(13)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">渡した<code class="docutils literal"><span class="pre">IModel</span></code>適用対象の属性を持つタグのボディを置き換える。booleanは置き換えたボディをテンプレートエンジンで再評価するかを指定する。</div>
+<div class="line">上記の例では<code class="docutils literal"><span class="pre">th:field</span></code>属性と<code class="docutils literal"><span class="pre">th:errors</span></code>属性を再評価する必要があるため<code class="docutils literal"><span class="pre">true</span></code>を指定している。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">AbstractAttributeTagProcessor</span></code>を継承した抽象クラスがいくつか提供されており、より簡単にProcessorを実装することができる場合がある。詳しくは<a class="reference external" href="http://www.thymeleaf.org/apidocs/thymeleaf/3.0.8.RELEASE/org/thymeleaf/processor/element/AbstractAttributeTagProcessor.html">AbstractAttributeTagProcessor</a>を参照されたい。</p>
+</div>
+</div>
+<div class="section" id="expressionobject">
+<h4><a class="toc-backref" href="#id44">4.1.3.1.2. ExpressionObjectの実装</a><a class="headerlink" href="#expressionobject" title="Permalink to this headline">¶</a></h4>
+<p>ExpressionObjectはテンプレート内の式から呼び出すメソッドなどを定義するオブジェクトである。</p>
+<p>ExpressionObjectはインタフェース等を実装する必要がなく、POJOで定義できる。</p>
+<p>日付(<code class="docutils literal"><span class="pre">java.util.Date</span></code>)をyyyy/MM/dd形式でフォーマットして出力するメソッドを持つ式オブジェクトの実装例を以下に示す。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">日付を引数で渡した形式でフォーマットして出力する機能はthymeleafから提供されている。</p>
+</div>
+<p><strong>実装例</strong></p>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="c1">// (1)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomDateFormat</span> <span class="o">{</span>
+
+    <span class="c1">// (2)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">formatYYYYMMDD</span><span class="o">(</span><span class="n">Date</span> <span class="n">date</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">DateFormat</span> <span class="n">dateFormat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleDateFormat</span><span class="o">(</span><span class="s">&quot;yyyy/MM/dd&quot;</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">dateFormat</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">date</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">POJOとして作成する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">引数に指定された日付をyyyy/MM/dd形式でフォーマットした文字列を返す。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dialect">
+<h4><a class="toc-backref" href="#id45">4.1.3.1.3. Dialectの実装</a><a class="headerlink" href="#dialect" title="Permalink to this headline">¶</a></h4>
+<p>ProcessorやExpressionObjectで実装した処理をテンプレートに適用するためにはDialectを実装してテンプレートエンジンに追加する必要がある。</p>
+<p>Dialectを実装するためにThymeleafから提供されている代表的なインタフェースを以下に示す。</p>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">インタフェース名</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.dialect.IProcessorDialect</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Processorを登録するDialectを実装するためのインタフェース</div>
+<div class="line">通常は、<code class="docutils literal"><span class="pre">IProcessorDialect</span></code>を直接実装するのではなく、<code class="docutils literal"><span class="pre">IProcessorDialect</span></code>を実装した抽象クラス<code class="docutils literal"><span class="pre">org.thymeleaf.dialect.AbstractProcessorDialect</span></code>を継承する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.dialect.IExpressionObjectDialect</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ExpressionObjectを登録するDialectを実装するためのインタフェース</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">上記のインタフェース以外にも登録内容ごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/extendingthymeleaf.html#dialects">Tutorial: Extending Thymeleaf(Dialects)</a>を参照されたい。</p>
+</div>
+<p>ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す。</p>
+<p><strong>実装例（Processorの登録）</strong></p>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="c1">// (1)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InputFormDialect</span> <span class="kd">extends</span> <span class="n">AbstractProcessorDialect</span> <span class="o">{</span>
+
+    <span class="c1">// (2)</span>
+    <span class="kd">public</span> <span class="nf">InputFormDialect</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="s">&quot;Input Form Dialect&quot;</span><span class="o">,</span> <span class="s">&quot;input&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">IProcessor</span><span class="o">&gt;</span> <span class="nf">getProcessors</span><span class="o">(</span><span class="n">String</span> <span class="n">dialectPrefix</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">IProcessor</span><span class="o">&gt;</span> <span class="n">processors</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">IProcessor</span><span class="o">&gt;();</span>
+
+        <span class="c1">// (3)</span>
+        <span class="n">processors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">FormInputAttributeTagProcessor</span><span class="o">(</span><span class="n">dialectPrefix</span><span class="o">));</span>
+
+        <span class="c1">// (4)</span>
+        <span class="n">processors</span><span class="o">.</span><span class="na">add</span><span class="o">(</span>
+                <span class="k">new</span> <span class="n">StandardXmlNsTagProcessor</span><span class="o">(</span><span class="n">TemplateMode</span><span class="o">.</span><span class="na">HTML</span><span class="o">,</span> <span class="n">dialectPrefix</span><span class="o">));</span>
+
+        <span class="k">return</span> <span class="n">processors</span><span class="o">;</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">Processorを登録する場合は、<code class="docutils literal"><span class="pre">AbstractProcessorDialect</span></code>（<code class="docutils literal"><span class="pre">IProcessorDialect</span></code>を実装した抽象クラス）を継承する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">引数はDialect名、登録するProcessorのプレフィックス、Dialectの優先順位である。</div>
+<div class="line">Processorの適用順序はDialectの優先順位、Processorの優先順位の順番で比較して決められる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">実装したProcessorを登録する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">HTMLの最初につける<code class="docutils literal"><span class="pre">xmlns:th=&quot;http://www.thymeleaf.org&quot;</span></code>のようなネームスペース表記を削除するために<code class="docutils literal"><span class="pre">org.thymeleaf.standard.processor.StandardXmlNsTagProcessor</span></code>を登録する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>実装例（ExpressionObjectの登録）</strong></p>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="c1">// (1)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomFormatDialect</span> <span class="kd">implements</span> <span class="n">IExpressionObjectDialect</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">names</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+        <span class="o">{</span>
+            <span class="n">add</span><span class="o">(</span><span class="s">&quot;customdateformat&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">IExpressionObjectFactory</span> <span class="nf">getExpressionObjectFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">IExpressionObjectFactory</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="c1">// (2)</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getAllExpressionObjectNames</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">names</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// (3)</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="n">Object</span> <span class="nf">buildObject</span><span class="o">(</span><span class="n">IExpressionContext</span> <span class="n">context</span><span class="o">,</span>
+                    <span class="n">String</span> <span class="n">expressionObjectName</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="s">&quot;customdateformat&quot;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">expressionObjectName</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="k">new</span> <span class="n">CustomDateFormat</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// (4)</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isCacheable</span><span class="o">(</span><span class="n">String</span> <span class="n">expressionObjectName</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+
+        <span class="o">};</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;Date Format(yyyy/MM/dd) Dialect&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ExpressionObjectを登録する場合は、<code class="docutils literal"><span class="pre">IExpressionObjectDialect</span></code>を実装する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ExpressionObjectの名前を登録する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">実装したExpressionObjectを登録する。引数の<code class="docutils literal"><span class="pre">expressionObjectName</span></code>に入る値が(2)で登録した名前に存在する場合、このメソッドが呼ばれる。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ExpressionObjectをキャッシュするか指定する。ExpressionObjectが状態によって異なる値を返す場合は<code class="docutils literal"><span class="pre">false</span></code>、状態にかかわらず返す値が一定である場合は<code class="docutils literal"><span class="pre">true</span></code>を指定する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">上記の例ではProcessorとExpressionObjectを別のDialectで登録する例を示しているが、意味的にまとめられる機能であれば一つのDialectで登録することも可能である。</p>
+</div>
+</div>
+<div class="section" id="custom-dialect-how-to-use">
+<span id="id22"></span><h4><a class="toc-backref" href="#id46">4.1.3.1.4. カスタムダイアレクトの使用方法</a><a class="headerlink" href="#custom-dialect-how-to-use" title="Permalink to this headline">¶</a></h4>
+<p>作成したカスタムダイアレクトを使用するために必要なアプリケーション設定と出力画面の実装を以下に示す。</p>
+<p><strong>spring-mvc.xml</strong></p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+    <span class="c">&lt;!-- (1) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;additionalDialects&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;set&gt;</span>
+            <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;com.example.sample.dialect.InputFormDialect&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;com.example.sample.dialect.CustomFormatDialect&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/set&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">テンプレートエンジンに作成したカスタムダイアレクトを<code class="docutils literal"><span class="pre">java.util.Set&lt;IDialect&gt;</span></code>で追加する。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>view.html</strong></p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">xmlns:th</span><span class="o">=</span><span class="s">&quot;http://www.thymeleaf.org&quot;</span> <span class="na">xmlns:input</span><span class="o">=</span><span class="s">&quot;http://inputform.sample.example.com&quot;</span><span class="p">&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+    <span class="c">&lt;!-- (2) --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">th:object</span><span class="o">=</span><span class="s">&quot;${userForm}&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">input:form-input</span><span class="o">=</span><span class="s">&quot;*{userName}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${#customdateformat.formatYYYYMMDD(date)}&quot;</span><span class="p">&gt;</span>yyyy/MM/dd<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span> <span class="c">&lt;!-- (3) --&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">作成したDialectの名前空間を定義する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">作成した<code class="docutils literal"><span class="pre">input:form-input</span></code>属性を指定する。</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">作成した式オブジェクト<code class="docutils literal"><span class="pre">customdateformat</span></code>を呼び出す。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>出力結果</strong></p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">form</span><span class="p">&gt;</span>
+        <span class="c">&lt;!-- (1) --&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;form-input&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;userName&quot;</span><span class="p">&gt;</span>userName<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">input</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;userName&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;userName&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">/&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>2017/10/30<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+
+    <span class="c">&lt;!-- omitted --&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">見やすくするために改行とインデントを入れてあるが、実際には開始タグから閉じタグまで1行で出力される。</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="appendix">
+<h2><a class="toc-backref" href="#id47">4.1.4. Appendix</a><a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id23">
+<h3><a class="toc-backref" href="#id48">4.1.4.1. テンプレートキャッシュの適用</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p>テンプレートキャッシュの機能および設定方法について説明する。</p>
+<div class="section" id="id24">
+<h4><a class="toc-backref" href="#id49">4.1.4.1.1. テンプレートキャッシュ機能の説明</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h4>
+<p>テンプレートキャッシュとは、パースしたテンプレート(HTML)をキャッシュする機能である。
+テンプレートが呼び出される度にパースを行わないため、処理時間を削減することができる。</p>
+<p>Controllerから渡されたView名をキーとしてキャッシュの判定が行われる。キャッシュにヒットした場合は、キャッシュからパースされたテンプレートが読み込まれる。
+キャッシュにヒットしない場合は、テンプレートをパースしてキャッシュに追加する。</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">org.thymeleaf.spring4.view.ThymeleafViewResolver</span></code>にはViewオブジェクトをキャッシュする機能が備わっているが、本機能と直接関係はないので、ここでの説明は省略する。</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="id25">
+<h4><a class="toc-backref" href="#id50">4.1.4.1.2. アプリケーションの設定</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
+<p>キャッシュの有効化、対象および期間の設定は、<code class="docutils literal"><span class="pre">org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver</span></code>で実施する。
+主要な設定項目の一覧を以下に示す。</p>
+<blockquote>
+<div><table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="30%" />
+<col width="40%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">設定項目</th>
+<th class="head">内容</th>
+<th class="head">デフォルト値</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">cacheable</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">全テンプレートに対するキャッシュの有効化を<code class="docutils literal"><span class="pre">true</span></code>か<code class="docutils literal"><span class="pre">false</span></code>で指定する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">true</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">cacheTTLMs</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">キャッシュの生存時間をミリ秒単位で指定する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">null</span></code>(時間経過でのキャッシュ削除を行わない)</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">cacheablePatterns</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">キャッシュ対象のテンプレートをView名で指定する。<code class="docutils literal"><span class="pre">cacheable</span></code>に<code class="docutils literal"><span class="pre">false</span></code>を指定した場合に用いる。”<code class="docutils literal"><span class="pre">*</span></code>”などのワイルドカードを使用することができる。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">-</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">nonCacheablePatterns</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">キャッシュ対象から除外するテンプレートをView名で指定する。<code class="docutils literal"><span class="pre">cacheable</span></code>に<code class="docutils literal"><span class="pre">true</span></code>を指定した場合に用いる。”<code class="docutils literal"><span class="pre">*</span></code>”などのワイルドカードを使用することができる。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">-</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">頻繁にアクセスするテンプレートをキャッシュ対象とし、アクセス頻度が低いテンプレートはキャッシュ対象から除外することで、メモリ負荷を抑えて効率的にキャッシュ機能を働かせることを推奨する。</p>
+</div>
+</div></blockquote>
+<p>以下に特定のテンプレートのみキャッシュ対象から除外する場合の設定例を示す。</p>
+<ul class="simple">
+<li>spring-mvc.xml</li>
+</ul>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;nonCacheablePatterns&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;set&gt;</span>
+            <span class="nt">&lt;value&gt;</span>welcome/home<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>sample/*<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;/set&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;cacheTTLMs&quot;</span> <span class="na">value=</span><span class="s">&quot;300000&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>さらにキャッシュサイズ等の詳細な設定については、<code class="docutils literal"><span class="pre">org.thymeleaf.cache.StandardCacheManager</span></code>で実施する。
+主要な設定項目の一覧を以下に示す。</p>
+<blockquote>
+<div><table border="1" class="colwidths-given longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="30%" />
+<col width="40%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">項番</th>
+<th class="head">設定項目</th>
+<th class="head">内容</th>
+<th class="head">デフォルト値</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(1)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">templateCacheInitialSize</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">キャッシュの初期サイズをテンプレート数単位で指定する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">20</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(2)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">templateCacheMaxSize</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">キャッシュの最大サイズをテンプレート数単位で指定する。<code class="docutils literal"><span class="pre">-1</span></code>を指定した場合は制限なしになる。”<code class="docutils literal"><span class="pre">0</span></code>”を指定した場合はキャッシュが無効になる。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">200</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><div class="first last line-block">
+<div class="line">(3)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">templateCacheLoggerName</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ログを出力するロガー名を指定する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">org.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE</span></code></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><div class="first last line-block">
+<div class="line">(4)</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">templateCacheName</span></code></div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line">ログに出力するキャッシュ名を指定する。</div>
+</div>
+</td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">TEMPLATE_CACHE</span></code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>以下にキャッシュの初期サイズ、最大サイズをデフォルト値から変更する場合の設定例を示す。</p>
+<ul class="simple">
+<li>spring-mvc.xml</li>
+</ul>
+<blockquote>
+<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring4.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- ... --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;cacheManager&quot;</span> <span class="na">ref=</span><span class="s">&quot;cacheManager&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;cacheManager&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.cache.StandardCacheManager&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateCacheInitialSize&quot;</span> <span class="na">value=</span><span class="s">&quot;90&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateCacheMaxSize&quot;</span> <span class="na">value=</span><span class="s">&quot;100&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><code class="docutils literal"><span class="pre">StandardCacheManager</span></code>を利用する場合、キャッシュの初期サイズに指定した値を初期容量としてキャッシュの初期化が行われる。
+キャッシュされたテンプレート数がキャッシュ容量の9割を超えるごとにキャッシュ容量が自動で段階的に拡張されるため、一時的に性能が劣化する場合がある。
+そのため、全テンプレートに満遍なくアクセスがあるような場合、全テンプレートをキャッシュできる十分なサイズになるように初期サイズを指定することを推奨する。
+また、少数のテンプレートのみにアクセスが集中するような場合には、アクセス集中が考えられるテンプレート数の初期サイズを指定することを推奨する。
+どちらの場合においても<code class="docutils literal"><span class="pre">SpringResourceTemplateResolver</span></code>で生存時間を適切に指定することで、レスポンス性能の向上を期待できる。</p>
+<p>キャッシュの最大サイズについても、テンプレート数単位で指定するため、1テンプレートの容量が大きいアプリではメモリ負荷が大きくなる場合がある。
+テンプレートキャッシュに割り当てることができるメモリ容量に応じて、適切な値で指定する必要がある。</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>キャッシュされたテンプレート数がキャッシュの最大サイズを超過する場合は、キャッシュ上でテンプレートの入れ替えが行われる。</p>
+<p class="last"><a class="reference external" href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#template-resolvers">15.1 Template Resolver</a>には、
+「キャッシュの生存時間を指定しない場合にはLRU(Least Recently Used)方式でのみキャッシュの削除が行われる」と記述されているが、実際にはFIFO(First-In First-Out)方式で実装されている。</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>ログを出力する</strong></p>
+<p>Thymeleafの<code class="docutils literal"><span class="pre">StandardCacheManager</span></code>はデフォルトで<code class="docutils literal"><span class="pre">org.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE</span></code>というロガー名でトレースログを出力する。
+このトレースログには、テンプレートがキャッシュに追加、および削除されたこと、また一定時間ごとにキャッシュのヒット回数やヒット率などをまとめたキャッシュレポートが出力される。
+キャッシュサイズの計算などに参考にされたい。</p>
+<p>以下にログの出力例を示す。</p>
+<ul class="simple">
+<li>キャッシュに追加される場合</li>
+</ul>
+<blockquote>
+<div><div class="highlight-text"><div class="highlight"><pre><span></span>date:2017-10-30 11:07:11    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf844259d94d7dcd9f292f5    level:TRACE    logger:o.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE    message:[THYMELEAF][CACHE_INITIALIZE] Initializing cache TEMPLATE_CACHE. Max size: 200. Soft references are used.
+date:2017-10-30 11:07:11    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf844259d94d7dcd9f292f5    level:TRACE    logger:o.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE    message:[THYMELEAF][http-nio-8080-exec-2][TEMPLATE_CACHE][CACHE_MISS] Cache miss in cache &quot;TEMPLATE_CACHE&quot; for key &quot;welcome/home&quot;.
+date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf844259d94d7dcd9f292f5    level:TRACE    logger:o.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE    message:[THYMELEAF][http-nio-8080-exec-2][TEMPLATE_CACHE][CACHE_ADD][1] Adding cache entry in cache &quot;TEMPLATE_CACHE&quot; for key &quot;welcome/home&quot;.
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li>キャッシュにヒットした場合</li>
+</ul>
+<blockquote>
+<div><div class="highlight-text"><div class="highlight"><pre><span></span>date:2017-10-30 11:07:15    thread:http-nio-8080-exec-5    X-Track:aa6b912177ed483e87270f38d479b9a9    level:TRACE    logger:o.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE    message:[THYMELEAF][http-nio-8080-exec-5][TEMPLATE_CACHE][CACHE_HIT] Cache hit in cache &quot;TEMPLATE_CACHE&quot; for key &quot;welcome/home&quot;.
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li>キャッシュレポート</li>
+</ul>
+<blockquote>
+<div><div class="highlight-text"><div class="highlight"><pre><span></span>date:2017-10-30 11:13:15    thread:http-nio-8080-exec-3    X-Track:7377e5e09aff4d35ab391efe6f6b9958    level:TRACE    logger:o.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE    message:[THYMELEAF][*][*][*][CACHE_REPORT]        4 elements |            4 puts |           21 gets |           13 hits |            8 misses | 0.62 hit ratio | 0.38 miss ratio - [TEMPLATE_CACHE]
+</pre></div>
+</div>
+</div></blockquote>
+<p>logback.xmlで以下のように設定することで、トレースログを出力することができる。
+<code class="docutils literal"><span class="pre">org.thymeleaf.TemplateEngine.cache</span></code>以下のロガーを出力するように設定することで、<code class="docutils literal"><span class="pre">org.thymeleaf.TemplateEngine.cache.EXPRESSION_CACHE</span></code>などのトレースログも出力することができる。
+詳細については、「<a class="reference internal" href="../GeneralFuncDetail/Logging.html"><span class="doc">ロギング</span></a>」を参照されたい。</p>
+<ul class="last">
+<li><p class="first">logback.xml</p>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;configuration&gt;</span>
+    <span class="c">&lt;!-- ･･･ --&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;org.thymeleaf.TemplateEngine.cache&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;level</span> <span class="na">value=</span><span class="s">&quot;trace&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/logger&gt;</span>
+    <span class="c">&lt;!-- ･･･ --&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Validation.html" title="4.2. 入力チェック"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="4. Webアプリ開発機能"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.5.1.RELEASE documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >4. Webアプリ開発機能</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2018, NTT Corporation.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.6.2.Theme is <a href="http://github.com/vimalkvn/solar-theme">Solar</a>
+    </div>
+    
+    <script>
+     
+     $(function() {
+    	   var $sidebar	= $('.sphinxsidebar'),
+    		     $window		= $(window),
+    		     offset		= $sidebar.offset(),
+    		     topPadding	= 3,
+    		     $scroll		= $('#scroll');
+    	   
+    	   $window.scroll(function() {
+    		     if ($scroll.is(':checked')) {
+				         if ($window.scrollTop() > offset.top) {
+					           $sidebar.stop().animate({
+						             marginTop:$window.scrollTop() - offset.top + topPadding
+					           });
+				         } else {
+					           $sidebar.stop().animate({
+						             marginTop:0
+					           });
+				         }
+			       }
+		     });
+    	   
+    	   var $navList = $('ul:first', $sidebar);
+    	   $('li:first', $navList).addClass('open');
+    	   
+    	   $navList.treeview({
+    		     persist: "location",
+    		     collapsed: true,
+    		     unique: false
+    	   });
+    	   
+	   });
+    </script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113850349-3"></script>
+    <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+
+     gtag('config', 'UA-113850349-3');
+    </script>
+  </body>
+</html>
