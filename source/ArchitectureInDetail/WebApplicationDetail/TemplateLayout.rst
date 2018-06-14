@@ -9,6 +9,9 @@ Thymeleafにおける画面レイアウト
 
 Overview
 --------------------------------------------------------------------------------
+
+.. _templatelayout_overview_fragment:
+
 Thymeleafのテンプレートレイアウト機能を使用したHTMLの部品化
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Thymeleafのテンプレートレイアウト機能を使用すると共通的に使用するHTMLを部品化することが出来る。
@@ -38,13 +41,13 @@ Thymeleafのテンプレートレイアウト機能を使用したHTMLの部品�
 
   上記以外に、``th:include`` 属性が使用可能だが、Thymeleaf3.2で削除される予定のため推奨しない。
   ``th:include`` 属性を指定すると、``th:fragment`` 属性を設定したタグの子要素のみが挿入される。
-  ``th:include`` と同様の処理を行いたい場合は、``th:fragment`` を設定したタグに、
-  ``th:remove="tag"`` を設定した上で、``th:insert`` を使用することで実現可能である。
+  ``th:include`` 属性と同様の処理を行いたい場合は、``th:fragment`` 属性を設定したタグに、
+  ``th:remove="tag"`` を設定した上で、``th:insert`` 属性を使用することで実現可能である。
 
 
 | また、HTMLの部品化と関連して、フラグメント式という機能がある。
 | フラグメント式は変数式などと同様にテンプレートHTML内で使用することができ、テンプレートHTMLの断片を取得することができる。
-| ``th:insert`` 、``th:replace`` と組み合わせて使うことで、フラグメントやテンプレートHTMLの一部を他のテンプレートHTMLに埋め込むことができる。
+| ``th:insert`` 属性、``th:replace`` 属性と組み合わせて使うことで、フラグメントやテンプレートHTMLの一部を他のテンプレートHTMLに埋め込むことができる。
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.35\linewidth}|p{0.55\linewidth}|
  .. list-table:: **フラグメント式の記述パターン**
@@ -274,32 +277,32 @@ Thymeleafのテンプレートレイアウト機能を使用した画面レイ�
           <table>
               <tr>
                   <td>Staff First Name</td>
-                  <td><input type="text" th:field="*{firstName}" /></td>
+                  <td><input type="text" th:field="*{firstName}"></td>
               </tr>
               <tr>
                   <td>Staff Family Name</td>
-                  <td><input type="text" th:field="*{familyName}" /></td>
+                  <td><input type="text" th:field="*{familyName}"></td>
               </tr>
               <tr>
                   <td rowspan="5">Staff Authorities</td>
-                  <td><input type="checkbox" value="01" th:field="*{authorities}" /> Staff Management</td>
+                  <td><input type="checkbox" value="01" th:field="*{authorities}"> Staff Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="02" th:field="*{authorities}" /> Master Management</td>
+                  <td><input type="checkbox" value="02" th:field="*{authorities}"> Master Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="03" th:field="*{authorities}" /> Stock Management</td>
+                  <td><input type="checkbox" value="03" th:field="*{authorities}"> Stock Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="04" th:field="*{authorities}" /> Order Management</td>
+                  <td><input type="checkbox" value="04" th:field="*{authorities}"> Order Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="05" th:field="*{authorities}" /> Show Shopping Management</td>
+                  <td><input type="checkbox" value="05" th:field="*{authorities}"> Show Shopping Management</td>
               </tr>
           </table>
 
-          <input type="submit" value="cancel" />
-          <input type="submit" value="confirm" />
+          <input type="submit" value="cancel">
+          <input type="submit" value="confirm">
       </form>
   </body>
   </html>
@@ -403,36 +406,36 @@ Thymeleafのテンプレートレイアウト機能を使用した画面レイ�
     
     
       <h2>Create Staff Information</h2>
-      <form method="post" action="/staff-management-web/staff/create"><input type="hidden" name="_csrf" value="2557dc95-6f36-4c2c-9900-9e0efd411ad7"/>
+      <form method="post" action="/staff-management-web/staff/create"><input type="hidden" name="_csrf" value="2557dc95-6f36-4c2c-9900-9e0efd411ad7">
           <table>
               <tr>
                   <td>Staff First Name</td>
-                  <td><input type="text" id="firstName" name="firstName" value="" /></td>
+                  <td><input type="text" id="firstName" name="firstName" value=""></td>
               </tr>
               <tr>
                   <td>Staff Family Name</td>
-                  <td><input type="text" id="familyName" name="familyName" value="" /></td>
+                  <td><input type="text" id="familyName" name="familyName" value=""></td>
               </tr>
               <tr>
                   <td rowspan="5">Staff Authorities</td>
-                  <td><input type="checkbox" value="01" id="authorities1" name="authorities" /><input type="hidden" name="_authorities" value="on"/> Staff Management</td>
+                  <td><input type="checkbox" value="01" id="authorities1" name="authorities"><input type="hidden" name="_authorities" value="on"> Staff Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="02" id="authorities2" name="authorities" /><input type="hidden" name="_authorities" value="on"/> Master Management</td>
+                  <td><input type="checkbox" value="02" id="authorities2" name="authorities"><input type="hidden" name="_authorities" value="on"> Master Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="03" id="authorities3" name="authorities" /><input type="hidden" name="_authorities" value="on"/> Stock Management</td>
+                  <td><input type="checkbox" value="03" id="authorities3" name="authorities"><input type="hidden" name="_authorities" value="on"> Stock Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="04" id="authorities4" name="authorities" /><input type="hidden" name="_authorities" value="on"/> Order Management</td>
+                  <td><input type="checkbox" value="04" id="authorities4" name="authorities"><input type="hidden" name="_authorities" value="on"> Order Management</td>
               </tr>
               <tr>
-                  <td><input type="checkbox" value="05" id="authorities5" name="authorities" /><input type="hidden" name="_authorities" value="on"/> Show Shopping Management</td>
+                  <td><input type="checkbox" value="05" id="authorities5" name="authorities"><input type="hidden" name="_authorities" value="on"> Show Shopping Management</td>
               </tr>
           </table>
 
-          <input type="submit" value="cancel" />
-          <input type="submit" value="confirm" />
+          <input type="submit" value="cancel">
+          <input type="submit" value="confirm">
       </form>
 
     
@@ -481,7 +484,7 @@ Thymeleafのテンプレートレイアウト機能を使用した画面レイ�
       * - | (1)
         - | ``layout`` フラグメントに、個別画面の\ ``script`` タグの内容をパラメータとして受け取るための引数\ ``script`` を追加する。
       * - | (2)
-        - | ``th:replace`` を使用して、(1)でパラメータとして受け取った\ ``script`` タグの内容で置換する。
+        - | ``th:replace`` 属性を使用して、(1)でパラメータとして受け取った\ ``script`` タグの内容で置換する。
           | なお、タグごと置換されるので\ ``script`` タグ以外のダミーのタグに同様の設定をしても問題なく動作する。
 
    - createForm.html(body部分の例)
@@ -569,7 +572,7 @@ How to extend
    * - | (2)
      - | ``th:each`` 属性は、コレクションや配列に対して繰り返し処理を行うための属性である。
        | ``ResultMessages`` には、複数件の結果メッセージを格納できるので、それを1件づつ取得し、\ ``li`` タグを生成している。
-       | メッセージの取得はThymeleafの\ ``#messages`` オブジェクトを使用する。
+       | メッセージの取得はThymeleafの\ ``#messages`` を使用する。
        | その\ ``#messages.msgWithParams({メッセージID},{置換文字列})`` メソッドを使用することで、プロパティファイルからメッセージを取得することができる。
 
 |

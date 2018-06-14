@@ -371,7 +371,7 @@ Maven Archetypeで作成したプロジェクトでは、\ ``x.xx.fw.9999``\ 形
         ``artifactId/artifactId-web/src/main/resources/i18n/application-messages.properties``
       - プロパティキーに指定しているメッセージIDのプロジェクト区分の暫定値「\ ``xx``\ 」を、適切な値に修正する。
     * - 2.
-      - エラー画面用のテンプレートHTML
+      - エラー画面用のThymeleafのテンプレートHTML
 
         ``artifactId/artifactId-web/src/main/webapp/WEB-INF/views/common/error/*.html（unhandledSystemError.htmlを除く）``
       - \ ``<div>``\ 要素の\ ``th:text``\ 属性に指定しているメッセージIDのプロジェクト区分の暫定値「\ ``xx``\ 」を、適切な値に修正する。

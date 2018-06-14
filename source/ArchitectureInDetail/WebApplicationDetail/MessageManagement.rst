@@ -606,13 +606,13 @@ How to use
 
         <form th:object="${sampleForm}" method="post">
             <label for="year" th:text="#{label.aa.bb.year}">
-            </label>: <input th:field="*{year}"/>
+            </label>: <input th:field="*{year}">
             <br>
             <label for="month" th:text="#{label.aa.bb.month}">
-            </label>: <input th:field="*{month}" />
+            </label>: <input th:field="*{month}">
             <br>
             <label for="day" th:text="#{label.aa.bb.day}">
-            </label>: <input th:field="*{day}" />
+            </label>: <input th:field="*{day}">
         </form>
 
 
@@ -1277,9 +1277,9 @@ ResultMessagesを使用しない結果メッセージの表示
     </head>
     <body>
         <div th:if="${!param.keySet().contains('error')}" th:remove="tag">
-            <div th:if="${#request.getAttribute('SPRING_SECURITY_LAST_EXCEPTION') != null}" class="alert alert-error" /> <!-- (3) -->
+            <div th:if="${SPRING_SECURITY_LAST_EXCEPTION != null}" class="alert alert-error" /> <!-- (3) -->
                 <ul>
-                    <li th:text="${#request.getAttribute('SPRING_SECURITY_LAST_EXCEPTION').message}"></li>
+                    <li th:text="${SPRING_SECURITY_LAST_EXCEPTION.message}"></li>
                 </ul>
             </div>
         </div>
@@ -1295,7 +1295,7 @@ ResultMessagesを使用しない結果メッセージの表示
                         type="password" id="password" name="password">
                 </div>
                 <div>
-                    <input type="submit" value="Login" />
+                    <input type="submit" value="Login">
                 </div>
             </fieldset>
         </form>
@@ -1315,7 +1315,7 @@ ResultMessagesを使用しない結果メッセージの表示
   * - | (2)
     - | 結果メッセージ表示用のCSSを再掲する。実際はCSSファイルに記述することを強く推奨する。
   * - | (3)
-    - | ``Exception`` オブジェクトが格納されている属性名をThymeleafの ``#request.getAttribute`` メソッドを使用して指定する。
+    - | ``Exception`` オブジェクトが格納されている属性名をThymeleafの変数式 ``${}`` に指定する。
       | また、 ``ResultMessages`` オブジェクトとは異なり、メッセージタイプの情報をもたないため、 ``class`` 属性で ``alert alert-error`` を明示的に指定している。
 
 認証エラー時に出力されるHTMLは
@@ -1466,4 +1466,3 @@ ResultMessagesを使用しない結果メッセージの表示
 .. raw:: latex
 
    \newpage
-

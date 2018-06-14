@@ -4650,7 +4650,7 @@ Filterでエラーが発生した場合や\ ``HttpServletResponse#sendError``\�
 CSRF対策
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-* RESTful Web Serviceに対してCSRF対策を行う場合の設定方法については、\ :ref:`CSRF対策 <csrf_spring-security-setting>`\ を参照されたい。
+* RESTful Web Serviceに対してCSRF対策を行う場合の設定方法については、\ :doc:`../../Security/CSRF`\ を参照されたい。
 
 * RESTful Web Serviceに対してCSRF対策を行わない場合の設定方法については、:ref:`RESTAppendixDisabledCSRFProtection`\ を参照されたい。
 

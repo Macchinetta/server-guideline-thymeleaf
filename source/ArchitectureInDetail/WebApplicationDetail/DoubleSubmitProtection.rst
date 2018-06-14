@@ -636,7 +636,7 @@ PRG(Post-Redirect-Get)パターンの適用
      - | 完了画面を表示するためのハンドラメソッド。
        | **GETメソッドでリクエストを受け取る。**
    * - | (8)
-     - | 完了画面を表示するView(テンプレートHTML)を呼び出し、完了画面を応答する。
+     - | 完了画面を表示するView(ThymeleafのテンプレートHTML)を呼び出し、完了画面を応答する。
        | HTMLの拡張子は :file:`spring-mvc.xml` に定義されている \ ``TemplateResolver``\によって付与されるため、ハンドラメソッドの返却値からは省略している。
 
  .. note::
@@ -653,9 +653,9 @@ PRG(Post-Redirect-Get)パターンの適用
       <form th:action="@{/prgExample/create}"
         method="post" th:object="${postRedirectGetForm}">
         <label for="firstName">FirstName</label>
-        <input th:field="*{firstName}" /><br>
+        <input th:field="*{firstName}"><br>
         <label for="lastName">LastName:</label>
-        <input th:field="*{lastName}" /><br>
+        <input th:field="*{lastName}"><br>
         <button name="confirm">Confirm Create User</button>
       </form>
     </div>
@@ -670,9 +670,9 @@ PRG(Post-Redirect-Get)パターンの適用
       <form th:action="@{/prgExample/create}"
         method="post" th:object="${postRedirectGetForm}">
         <span th:text="|FirstName: *{firstName}|"></span><br>
-        <input type="hidden" th:field="*{firstName}" />
+        <input type="hidden" th:field="*{firstName}">
         <span th:text="|LastName: *{lastName}|"></span><br>
-        <input type="hidden" th:field="*{lastName}" />
+        <input type="hidden" th:field="*{lastName}">
         <button type="submit">Create User</button> <!-- (6) -->
       </form>
     </div>
@@ -1121,7 +1121,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
 .. _doubleSubmit_how_to_use_transaction_token_check_jsp:
 
-トランザクショントークンチェックのView(Thymeleaf)での利用方法
+トランザクショントークンチェックのView(テンプレートHTML)での利用方法
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 | トランザクショントークンチェックを行う場合、払い出されたトランザクショントークンが、リクエストパラメータとして送信されるようにView(テンプレートHTML)を実装する必要がある。
@@ -1133,7 +1133,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
     <h1>First</h1>
     <form method="post" th:action="@{/transactionTokenCheckExample}">
-      <input type="submit" name="second" value="second" />
+      <input type="submit" name="second" value="second">
     </form>
 
 - :file:`secondView.html`
@@ -1143,7 +1143,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
     <h1>Second</h1>
     <form method="post" th:action="@{/transactionTokenCheckExample}"><!-- (1) -->
-      <input type="submit" name="third" value="third" />
+      <input type="submit" name="third" value="third">
     </form>
 
 - :file:`thirdView.html`
@@ -1153,7 +1153,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
     <h1>Third</h1>
     <form method="post" th:action="@{/transactionTokenCheckExample}"><!-- (1) -->
-      <input type="submit" name="fourth" value="fourth" />
+      <input type="submit" name="fourth" value="fourth">
     </form>
 
 - :file:`fourthView.html`
@@ -1163,7 +1163,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
     <h1>Fourth</h1>
     <form method="post" th:action="@{/transactionTokenCheckExample}"><!-- (1) -->
-      <input type="submit" name="fifth" value="fifth" />
+      <input type="submit" name="fifth" value="fifth">
     </form>
 
 - :file:`fifthView.html`
@@ -1172,7 +1172,7 @@ PRG(Post-Redirect-Get)パターンの適用
 
     <h1>Fifth</h1>
     <form method="get" th:action="@{/transactionTokenCheckExample}">
-      <input type="submit" name="first" value="first" />
+      <input type="submit" name="first" value="first">
     </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1624,7 +1624,7 @@ HTTPレスポンスヘッダの\ ``Cache-Control``\ の設定により、ブラ�
    :width: 60%
 
 この場合でも二重送信自体は防止されているため、問題はない。
-バージョン5.0.0.RELEASE以降の\ :doc:`雛形プロジェクト <../../ImplementationAtEachLayer/CreateWebApplicationProject>`\ では、
+バージョン1.5.0.RELEASE以降の\ :doc:`雛形プロジェクト <../../ImplementationAtEachLayer/CreateWebApplicationProject>`\ では、
 \ :ref:`Spring Securityの機能 <SpringSecurityLinkageWithBrowser>`\ でキャッシュが無効になる設定が行われている。
 
 もしこの画面の表示が出る代わりにトランザクショントークンエラー画面を表示したい場合は、
@@ -1734,7 +1734,7 @@ Controllerの実装
 * HTMLの出力例
 
  | テンプレートHTMLは、\ :ref:`doubleSubmit_how_to_use_transaction_token_check_jsp`\で用意したテンプレートHTMLと同等のものを用意する。
- |  ``th:action`` を、\ ``@{/transactionTokenCheckExample}``\から\ ``@{/globalTokenCheckExample}``\に変更したのみで、他は同じである。
+ |  ``th:action`` 属性を、\ ``@{/transactionTokenCheckExample}``\から\ ``@{/globalTokenCheckExample}``\に変更したのみで、他は同じである。
 
  .. figure:: ./images/transaction-token-global-html.png
    :alt: transaction token global html

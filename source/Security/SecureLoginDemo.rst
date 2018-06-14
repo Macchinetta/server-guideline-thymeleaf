@@ -579,7 +579,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.model;
+       package com.example.securelogin.domain.model;
 
        // omitted
 
@@ -614,7 +614,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.repository.passwordhistory;
+       package com.example.securelogin.domain.repository.passwordhistory;
 
        // omitted
 
@@ -653,7 +653,7 @@ ER図
        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
-           namespace="org.terasoluna.securelogin.domain.repository.passwordhistory.PasswordHistoryRepository">
+           namespace="com.example.securelogin.domain.repository.passwordhistory.PasswordHistoryRepository">
 
            <resultMap id="PasswordHistoryResultMap" type="PasswordHistory">
                <id property="username" column="username" />
@@ -714,7 +714,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordhistory;
+       package com.example.securelogin.domain.service.passwordhistory;
 
        // omitted
 
@@ -749,7 +749,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.account;
+       package com.example.securelogin.domain.service.account;
 
        // omitted
 
@@ -812,7 +812,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.account;
+     package com.example.securelogin.domain.service.account;
 
      // omitted
 
@@ -910,7 +910,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.common.interceptor;
+     package com.example.securelogin.app.common.interceptor;
 
      // omitted
 
@@ -988,7 +988,7 @@ ER図
             <mvc:exclude-mapping path="/resources/**" />
             <mvc:exclude-mapping path="/**/*.html" />
             <bean
-                class="org.terasoluna.securelogin.app.common.interceptor.PasswordExpirationCheckInterceptor" /> <!-- (4) -->
+                class="com.example.securelogin.app.common.interceptor.PasswordExpirationCheckInterceptor" /> <!-- (4) -->
         </mvc:interceptor>
 
         <!-- omitted -->
@@ -1019,7 +1019,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.welcome;
+     package com.example.securelogin.app.welcome;
 
      // omitted
 
@@ -1069,24 +1069,26 @@ ER図
 
   Viewの実装は以下の通り。
 
-  **トップ画面(home.jsp)**
+  **トップ画面(home.html)**
 
-  .. code-block:: jsp
+  .. code-block:: html
 
-     <!-- omitted -->
+    <!--/* omitted */-->
 
-     <body>
-        <div id="wrapper">
-            <span id="expiredMessage">
-                <t:messagesPanel /> <!-- (1) -->
-            </span>
+    <body>
+      <div id="wrapper">
+           <div th:if="${resultMessages} != null" id="expiredMessage"
+               th:class="|alert alert-${resultMessages.type}|"> <!--/* (1) */-->
+               <ul>
+                   <li th::each="message : ${resultMessages}"
+                       th:text="${#messages.msgWithParams(message.code, message.args)}"></li>
+               </ul>
+           </div>
+           <!--/* omitted */-->
+       </div>
+    </body>
 
-            <!-- omitted -->
-
-        </div>
-     </body>
-
-     <!-- omitted -->
+    <!--/* omitted */-->
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
   .. list-table::
@@ -1096,7 +1098,8 @@ ER図
      * - 項番
        - 説明
      * - | (1)
-       - | messagesPanelタグを用いて、Controllerから渡されたパスワード有効期限切れメッセージを表示する。
+       - | Controllerから渡された\ ``resultMessages`` \から、パスワード有効期限切れメッセージを表示する。
+         | ここでは\ ``resultMessages`` \はControllerで直接作成しているため、\ ``message.code`` \に値は必ず格納される。そのため、\ ``message.code`` \がnullだった場合のmessage.textでの表示処理は不要である。
 
 .. _password-strength:
 
@@ -1171,7 +1174,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.common.validation.rule;
+     package com.example.securelogin.app.common.validation.rule;
 
      // omitted
 
@@ -1252,7 +1255,7 @@ ER図
      </bean>
      <bean id="usernameRule" class="org.passay.UsernameRule" /> <!-- (7) -->
      <bean id="encodedPasswordHistoryRule"
-         class="org.terasoluna.securelogin.app.common.validation.rule.EncodedPasswordHistoryRule"> <!-- (8) -->
+         class="com.example.securelogin.app.common.validation.rule.EncodedPasswordHistoryRule"> <!-- (8) -->
          <constructor-arg name="passwordEncoder" ref="passwordEncoder" />
      </bean>
 
@@ -1327,7 +1330,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -1336,7 +1339,7 @@ ER図
        @Target({ TYPE, ANNOTATION_TYPE })
        @Retention(RUNTIME)
        public @interface StrongPassword {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.StrongPassword.message}";
+           String message() default "{com.example.securelogin.app.common.validation.StrongPassword.message}";
 
            Class<?>[] groups() default {};
 
@@ -1370,7 +1373,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -1444,14 +1447,14 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        @Documented
        @Constraint(validatedBy = { NotReusedPasswordValidator.class }) // (1)
        @Target({ TYPE, ANNOTATION_TYPE })
        @Retention(RUNTIME)
        public @interface NotReusedPassword {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.NotReusedPassword.message}";
+           String message() default "{com.example.securelogin.app.common.validation.NotReusedPassword.message}";
 
            Class<?>[] groups() default {};
 
@@ -1485,7 +1488,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -1635,7 +1638,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.passwordchange;
+     package com.example.securelogin.app.passwordchange;
 
      // omitted
 
@@ -1682,7 +1685,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.passwordchange;
+     package com.example.securelogin.app.passwordchange;
 
      // omitted
 
@@ -1852,7 +1855,7 @@ ER図
 
     .. code-block:: java
 
-      package org.terasoluna.securelogin.domain.model;
+      package com.example.securelogin.domain.model;
 
       // omitted
 
@@ -1883,7 +1886,7 @@ ER図
 
     .. code-block:: java
 
-      package org.terasoluna.securelogin.domain.repository.authenticationevent;
+      package com.example.securelogin.domain.repository.authenticationevent;
 
       // omitted
 
@@ -1920,7 +1923,7 @@ ER図
       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
       <mapper
-        namespace="org.terasoluna.securelogin.domain.repository.authenticationevent.FailedAuthenticationRepository">
+        namespace="com.example.securelogin.domain.repository.authenticationevent.FailedAuthenticationRepository">
 
         <resultMap id="failedAuthenticationResultMap"
                 type="FailedAuthentication">
@@ -1970,7 +1973,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.authenticationevent;
+       package com.example.securelogin.domain.service.authenticationevent;
 
        // omitted
 
@@ -2041,7 +2044,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.account;
+     package com.example.securelogin.domain.service.account;
 
      // omitted
 
@@ -2082,7 +2085,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.account;
+     package com.example.securelogin.domain.service.account;
 
      // omitted
 
@@ -2152,7 +2155,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.userdetails;
+     package com.example.securelogin.domain.service.userdetails;
 
      // omitted
 
@@ -2191,7 +2194,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.userdetails;
+     package com.example.securelogin.domain.service.userdetails;
 
      // omitted
 
@@ -2269,7 +2272,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.authenticationevent;
+       package com.example.securelogin.domain.service.authenticationevent;
 
        // omitted
 
@@ -2308,7 +2311,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.account;
+       package com.example.securelogin.domain.service.account;
 
        // omitted
 
@@ -2386,7 +2389,7 @@ ER図
 
       .. code-block:: java
 
-         package org.terasoluna.securelogin.domain.service.unlock;
+         package com.example.securelogin.domain.service.unlock;
 
          // omitted
 
@@ -2421,7 +2424,7 @@ ER図
 
       .. code-block:: java
 
-        package org.terasoluna.securelogin.app.unlock;
+        package com.example.securelogin.app.unlock;
 
         @Data
         public class UnlockForm implements Serializable {
@@ -2434,31 +2437,27 @@ ER図
 
     * Viewの実装
 
-      **トップ画面(home.jsp)**
+      **トップ画面(home.html)**
 
-      .. code-block:: jsp
+      .. code-block:: html
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
         <body>
             <div id="wrapper">
 
-                <!-- omitted -->
+                <!--/* omitted */-->
 
-                <sec:authorize url="/unlock"> <!-- (1) -->
-                <div>
-                    <a id="unlock" href="${f:h(pageContext.request.contextPath)}/unlock?form">
-                        Unlock Account
-                    </a>
+                <div sec:authorize-url="/unlock"> <!--/* (1) */-->
+                    <a id="unlock" th:href="@{/unlock?form}">Unlock Account</a>
                 </div>
-                </sec:authorize>
 
-                <!-- omitted -->
+                <!--/* omitted */-->
 
             </div>
         </body>
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
       .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
       .. list-table::
@@ -2470,55 +2469,61 @@ ER図
          * - | (1)
            - | /unlock 以下のアクセス権限を持つユーザに対してのみ表示する。
 
-      **ロックアウト解除フォーム(unlokcForm.jsp)**
+      **ロックアウト解除フォーム(unlockForm.html)**
 
-      .. code-block:: jsp
+      .. code-block:: html
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
         <body>
             <div id="wrapper">
                 <h1>Unlock Account</h1>
-                <t:messagesPanel />
-                <form:form action="${f:h(pageContext.request.contextPath)}/unlock"
-                    method="POST" modelAttribute="unlockForm">
+                <div th:if="${resultMessages} != null" id="expiredMessage"
+                    th:class="|alert alert-${resultMessages.type}|">
+                    <ul>
+                        <li th:each="message : ${resultMessages}"
+                            th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
+                    </ul>
+                </div>
+                <form th:action="@{/unlock}"
+                    method="POST" th:object="${unlockForm}">
                     <table>
                         <tr>
-                            <th><form:label path="username" cssErrorClass="error-label">Username</form:label>
+                            <th><label for="username" th:errorclass="error-label">Username</label>
                             </th>
-                            <td><form:input path="username" cssErrorClass="error-input" /></td>
-                            <td><form:errors path="username" cssClass="error-messages" /></td>
+                            <td><input th:field="*{username}" th:errorclass="error-input"></td>
+                            <td th:errors="*{username}" class="error-messages"></td>
                         </tr>
                     </table>
 
-                    <input id="submit" type="submit" value="Unlock" />
-                </form:form>
-                <a href="${f:h(pageContext.request.contextPath)}/">go to Top</a>
+                    <input id="submit" type="submit" value="Unlock">
+                </form>
+                <a th:href="@{/}">go to Top</a>
             </div>
         </body>
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
-      **ロックアウト解除完了画面(unlockComplete.jsp)**
+      **ロックアウト解除完了画面(unlockComplete.html)**
 
-      .. code-block:: jsp
+      .. code-block:: html
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
         <body>
             <div id="wrapper">
-                <h1>${f:h(username)}'s account was successfully unlocked.</h1>
-                <a href="${f:h(pageContext.request.contextPath)}/">go to Top</a>
+                <h1 th:text ="|*{username}'s account was successfully unlocked.|"></h1>
+                <a th:href="@{/}">go to Top</a>
             </div>
         </body>
 
-        <!-- omitted -->
+        <!--/* omitted */-->
 
     * Controllerの実装
 
       .. code-block:: java
 
-         package org.terasoluna.securelogin.app.unlock;
+         package com.example.securelogin.app.unlock;
 
          // omitted
 
@@ -2599,7 +2604,7 @@ ER図
 * 前回ログイン日時の取得と表示
 
   認証時に、アカウントにおける最新の認証成功イベントエンティティをデータベースから取得し、イベントエンティティから認証成功日時を取得して\ ``org.springframework.security.core.userdetails.UserDetails`` \に設定する。
-  jspに\ ``UserDetails`` \が保持している認証成功日時をフォーマットして渡し、表示する。
+  \ ``UserDetails`` \が保持している認証成功日時をThymeleafのテンプレートHTMLに渡し、テンプレートHTMLで認証成功日時をフォーマットして表示する。
 
 コード解説
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -2615,7 +2620,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.model;
+       package com.example.securelogin.domain.model;
 
        // omitted
 
@@ -2648,7 +2653,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.repository.authenticationevent;
+       package com.example.securelogin.domain.repository.authenticationevent;
 
        // omitted
 
@@ -2681,7 +2686,7 @@ ER図
        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
-           namespace="org.terasoluna.securelogin.domain.repository.authenticationevent.SuccessfulAuthenticationRepository">
+           namespace="com.example.securelogin.domain.repository.authenticationevent.SuccessfulAuthenticationRepository">
 
            <resultMap id="successfulAuthenticationResultMap"
                    type="SuccessfulAuthentication">
@@ -2722,7 +2727,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.authenticationevent;
+       package com.example.securelogin.domain.service.authenticationevent;
 
        // omitted
 
@@ -2768,7 +2773,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.account;
+     package com.example.securelogin.domain.service.account;
 
      // omitted
 
@@ -2809,7 +2814,7 @@ ER図
 
    .. code-block:: java
 
-      package org.terasoluna.securelogin.domain.service.account;
+      package com.example.securelogin.domain.service.account;
 
       // omitted
 
@@ -2857,7 +2862,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.userdetails;
+     package com.example.securelogin.domain.service.userdetails;
 
      // omitted
 
@@ -2901,7 +2906,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.userdetails;
+     package com.example.securelogin.domain.service.userdetails;
 
      // omitted
 
@@ -2947,7 +2952,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.welcome;
+     package com.example.securelogin.app.welcome;
 
      // omitted
 
@@ -2966,8 +2971,7 @@ ER図
 
             LocalDateTime lastLoginDate = userDetails.getLastLoginDate(); // (2)
             if (lastLoginDate != null) {
-                model.addAttribute("lastLoginDate", lastLoginDate
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))); // (3)
+                model.addAttribute("lastLoginDate", lastLoginDate); // (3)
             }
 
             return "welcome/home";
@@ -2988,24 +2992,22 @@ ER図
      * - | (2)
        - | \ ``LoggedInUserDetails`` \から最終ログイン日時を取得する。
      * - | (3)
-       - | 最終ログイン日時をフォーマットしてModelに設定し、Viewに渡す。
+       - | 最終ログイン日時をModelに設定し、Viewに渡す。
 
-  **トップ画面(home.jsp)**
+  **トップ画面(home.html)**
 
-  .. code-block:: jsp
+  .. code-block:: html
 
     <body>
       <div id="wrapper">
 
-          <!-- omitted -->
+          <!--/* omitted */-->
 
-          <c:if test="${!empty lastLoginDate}"> <!-- (1) -->
-              <p id="lastLogin">
-                  Last login date is ${f:h(lastLoginDate)}. <!-- (2) -->
-              </p>
-          </c:if>
+          <!--/* (1) */-->
+          <p id="lastLogin" th:if="${lastLoginDate} !=null"
+              th:text="|Last login date is ${#temporals.format(lastLoginDate, 'yyyy/MM/dd HH:mm:ss')}.|" ></p> <!--/* (2) */-->
 
-          <!-- omitted -->
+          <!--/* omitted */-->
 
       </div>
     </body>
@@ -3020,7 +3022,9 @@ ER図
      * - | (1)
        - | 前回ログイン日時がnullの場合は表示しない。
      * - | (2)
-       - | Controllerから渡された前回ログイン日時を表示する。
+       - | Controllerから渡された前回ログイン日時をフォーマットして表示する。
+         | 前回ログイン日時（\ ``LocalDateTime`` \）はDate and Time APIで保持されているため、\ ``#temporals.format`` \メソッドを使ってフォーマットしている。
+
 
 .. _reissue-info-create:
 
@@ -3084,7 +3088,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.model;
+       package com.example.securelogin.domain.model;
 
        // omitted
 
@@ -3123,7 +3127,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.repository.passwordreissue;
+       package com.example.securelogin.domain.repository.passwordreissue;
 
        // omitted
 
@@ -3162,7 +3166,7 @@ ER図
       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
       <mapper
-          namespace="org.terasoluna.securelogin.domain.repository.passwordreissue.PasswordReissueInfoRepository">
+          namespace="com.example.securelogin.domain.repository.passwordreissue.PasswordReissueInfoRepository">
 
           <resultMap id="PasswordReissueInfoResultMap" type="PasswordReissueInfo">
               <id property="username" column="username" />
@@ -3252,7 +3256,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordreissue;
+       package com.example.securelogin.domain.service.passwordreissue;
 
        // omitted
 
@@ -3358,7 +3362,7 @@ ER図
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.passwordreissue;
+       package com.example.securelogin.app.passwordreissue;
 
        // omitted
 
@@ -3373,40 +3377,44 @@ ER図
 
   * Viewの実装
 
-    **パスワード再発行のための認証情報生成画面(createReissueInfoForm.xml)**
+    **パスワード再発行のための認証情報生成画面(createReissueInfoForm.html)**
 
-    .. code-block:: jsp
+    .. code-block:: html
 
-       <!-- omitted -->
+       <!--/* omitted */-->
 
        <body>
            <div id="wrapper">
                <h1>Reissue password</h1>
-               <t:messagesPanel />
-               <form:form
-                   action="${f:h(pageContext.request.contextPath)}/reissue/create"
-                   method="POST" modelAttribute="createReissueInfoForm">
+               <div th:if="${resultMessages} != null" id="expiredMessage"
+                   th:class="|alert alert-${resultMessages.type}|">
+                   <ul>
+                       <li th:each="message : ${resultMessages}"
+                           th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li> <!--/* (3) */-->
+                   </ul>
+               </div>
+               <form th:action="@{/reissue/create}"
+                   method="POST" th:object="${createReissueInfoForm}">
                    <table>
                        <tr>
-                           <th><form:label path="username" cssErrorClass="error-label">Username</form:label>
+                           <th><label th:field="*{username}" th:errorclass="error-label">Username</label>
                            </th>
-                           <td><form:input path="username" cssErrorClass="error-input" /></td>
-                           <td><form:errors path="username" cssClass="error-messages" /></td>
+                           <td><input th:field="*{username}" th:errorclass="error-input"></td>
+                           <td th:errors="*{username}" class="error-messages"></td>
                        </tr>
                    </table>
-
-                   <input id="submit" type="submit" value="Reissue password" />
-               </form:form>
+                   <input id="submit" type="submit" value="Reissue password">
+               </form>
            </div>
        </body>
 
-       <!-- omitted -->
+       <!--/* omitted */-->
 
   * Controllerの実装
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.passwordreissue;
+       package com.example.securelogin.app.passwordreissue;
 
        // omitted
 
@@ -3505,7 +3513,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.passwordreissue;
+     package com.example.securelogin.app.passwordreissue;
 
      // omitted
 
@@ -3556,22 +3564,22 @@ ER図
        - | パスワード再発行用の認証情報完了画面にリダイレクトする。
 
 
-  **パスワード再発行用の認証情報生成完了画面(createReissueInfoComplete.jsp)**
+  **パスワード再発行用の認証情報生成完了画面(createReissueInfoComplete.html)**
 
-  .. code-block:: jsp
+  .. code-block:: html
 
-     <!-- omitted -->
+     <!--/* omitted */-->
 
      <body>
          <div id="wrapper">
              <h1>Your Password Reissue URL was successfully generated.</h1>
-             The URL was sent to your registered E-mail address.<br /> Please
+             The URL was sent to your registered E-mail address.<br> Please
              access the URL and enter the secret shown below.
-             <h3>Secret : <span id=secret>${f:h(secret)}</span></h3> <!-- (1) -->
+             <h3>Secret : <span id=secret th:text="${secret}"></span></h3> <!--/* (1) */-->
          </div>
      </body>
 
-     <!-- omitted -->
+     <!--/* omitted */-->
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
   .. list-table::
@@ -3590,7 +3598,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.mail;
+     package com.example.securelogin.domain.service.mail;
 
      // omitted
 
@@ -3634,7 +3642,7 @@ ER図
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.passwordreissue;
+     package com.example.securelogin.domain.service.passwordreissue;
 
      // omitted
 
@@ -3780,7 +3788,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordreissue;
+       package com.example.securelogin.domain.service.passwordreissue;
 
        // omitted
 
@@ -3848,7 +3856,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordreissue;
+       package com.example.securelogin.domain.service.passwordreissue;
 
        // omitted
 
@@ -3905,7 +3913,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.passwordreissue;
+       package com.example.securelogin.app.passwordreissue;
 
        // omitted
 
@@ -3955,7 +3963,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordreissue;
+       package com.example.securelogin.domain.service.passwordreissue;
 
        // omitted
 
@@ -3983,7 +3991,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.service.passwordreissue;
+       package com.example.securelogin.domain.service.passwordreissue;
 
        // omitted
 
@@ -4047,7 +4055,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.passwordreissue;
+       package com.example.securelogin.app.passwordreissue;
 
        // omitted
 
@@ -4089,52 +4097,53 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   * Viewの実装
 
-    **パスワード再発行画面(passwordResetForm.jsp)**
+    **パスワード再発行画面(passwordResetForm.html)**
 
-    .. code-block:: jsp
+    .. code-block:: html
 
        <body>
            <div id="wrapper">
                <h1>Reset Password</h1>
-               <t:messagesPanel />
-               <form:form
-                   action="${f:h(pageContext.request.contextPath)}/reissue/resetpassword"
-                   method="POST" modelAttribute="passwordResetForm">
-                   <table>
-                       <tr>
-                           <th><form:label path="username">Username</form:label></th>
-                           <td>${f:h(passwordResetForm.username)} <form:hidden
-                                   path="username" value="${f:h(passwordResetForm.username)}" />  <!-- (1) -->
-                           </td>
-                           <td></td>
-                       </tr>
-                       <form:hidden path="token" value="${f:h(passwordResetForm.token)}" /> <!-- (2) -->
-                       <tr>
-                           <th><form:label path="secret" cssErrorClass="error-label">Secret</form:label>
-                           </th>
-                           <td><form:password path="secret" cssErrorClass="error-input" /></td> <!-- (3) -->
-                           <td><form:errors path="secret" cssClass="error-messages" /></td>
-                       </tr>
-                       <tr>
-                           <th><form:label path="newPassword" cssErrorClass="error-label">New password</form:label>
-                           </th>
-                           <td><form:password path="newPassword"
-                                   cssErrorClass="error-input" /></td>
-                           <td><form:errors path="newPassword" cssClass="error-messages"
-                                   htmlEscape="false" /></td>
-                       </tr>
-                       <tr>
-                           <th><form:label path="confirmNewPassword"
-                                   cssErrorClass="error-label">New password(Confirm)</form:label></th>
-                           <td><form:password path="confirmNewPassword"
-                                   cssErrorClass="error-input" /></td>
-                           <td><form:errors path="confirmNewPassword"
-                                   cssClass="error-messages" /></td>
-                       </tr>
-                   </table>
-
-                   <input id="submit" type="submit" value="Reset password" />
-               </form:form>
+                   <div th:if="${resultMessages} != null" id="expiredMessage"
+                       th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}">
+                       <ul>
+                           <li th:each="message : ${resultMessages}"
+                               th:text="${#messages.msgWithParams(message.code, message.args)}"></li>
+                       </ul>
+                   </div>
+                   <form th:action="@{/reissue/resetpassword}"
+                       method="POST" th:object="${passwordResetForm}">
+                       <input type="hidden" th:field="*{token}">  <!--/* (1) */-->
+                       <table>
+                           <tr>
+                               <th><label for="username">Username</label></th>
+                               <td th:field="*{username}"><input type="hidden" th:field="*{username}">
+                               </td>
+                               <td></td>
+                           </tr>
+                           <tr>
+                               <th><label for="secret" th:errorclass="error-label">Secret</label>
+                               </th>
+                               <td><input type="password" th:field="*{secret}" th:cssErrorClass="error-input"></td>
+                               <td th:errors="*{secret}" class="error-messages"></td>
+                           </tr>
+                           <tr>
+                               <th><label for="newPassword" th:errorclass="error-label">New password</label>
+                               </th>
+                               <td><input type="password" th:field="*{newPassword}"
+                                       th:cssErrorClass="error-input" /></td>
+                               <td th:errors="*{newPassword}" class="error-messages"></td>
+                           </tr>
+                           <tr>
+                               <th><label for="confirmNewPassword"
+                                       th:errorclass="error-label">New password(Confirm)</label></th>
+                               <td><input type="password" th:field="*{confirmNewPassword}"
+                                       th:errorclass="error-input" /></td>
+                               <td th:errors="*{confirmNewPassword}" class="error-messages"></td>
+                           </tr>
+                       </table>
+                   <input id="submit" type="submit" value="Reset password">
+               </form>
            </div>
        </body>
 
@@ -4146,20 +4155,20 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        * - 項番
          - 説明
        * - | (1)
-         - | ユーザ名をhidden項目として保持する。
-       * - | (2)
          - | トークンをhidden項目として保持する。
+       * - | (2)
+         - | ユーザ名をhidden項目として保持する。
        * - | (3)
          - | ユーザの確認のために、秘密情報を入力させる。
 
-    **パスワード再発行画面(passwordResetComplete.jsp)**
+    **パスワード再発行画面(passwordResetComplete.html)**
 
-    .. code-block:: jsp
+    .. code-block:: html
 
        <body>
            <div id="wrapper">
                <h1>Your password was successfully reset.</h1>
-               <a href="${f:h(pageContext.request.contextPath)}/">go to Top</a>
+               <a th:href="@{/}">go to Top</a>
            </div>
        </body>
 
@@ -4167,7 +4176,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.passwordreissue;
+       package com.example.securelogin.app.passwordreissue;
 
        // omitted
 
@@ -4269,7 +4278,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.model;
+       package com.example.securelogin.domain.model;
 
        // omitted
 
@@ -4300,7 +4309,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.domain.repository.passwordreissue;
+       package com.example.securelogin.domain.repository.passwordreissue;
 
        // omitted
 
@@ -4339,7 +4348,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
-        namespace="org.terasoluna.securelogin.domain.repository.passwordreissue.FailedPasswordReissueRepository">
+        namespace="com.example.securelogin.domain.repository.passwordreissue.FailedPasswordReissueRepository">
 
         <select id="countByToken" resultType="_int">
            <![CDATA[
@@ -4383,7 +4392,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.passwordreissue;
+     package com.example.securelogin.domain.service.passwordreissue;
 
      public interface PasswordReissueFailureSharedService {
 
@@ -4393,7 +4402,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.passwordreissue;
+     package com.example.securelogin.domain.service.passwordreissue;
 
      // omitted
 
@@ -4440,7 +4449,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.passwordreissue;
+     package com.example.securelogin.domain.service.passwordreissue;
 
      // omitted
 
@@ -4502,7 +4511,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.service.passwordreissue;
+     package com.example.securelogin.domain.service.passwordreissue;
 
      // omitted
 
@@ -4624,7 +4633,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.common.filter;
+     package com.example.securelogin.app.common.filter;
 
      // omitted
 
@@ -4760,8 +4769,8 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      <!-- omitted -->
 
      <error-page>
-         <exception-type>org.terasoluna.securelogin.app.common.filter.exception.InvalidCharacterException</exception-type>  <!-- (3) -->
-         <location>/WEB-INF/views/common/error/invalidCharacterError.jsp</location>
+         <exception-type>com.example.securelogin.app.common.filter.exception.InvalidCharacterException</exception-type>  <!-- (3) -->
+         <location>/common/error/invalidCharacterError</location>
      </error-page>
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -4774,28 +4783,34 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      * - | (1)
        - | \ ``InputValidationFilter`` \ の使用の前提となっている \ ``MultipartFilter`` \ を設定する
          | \ ``MultipartFilter`` \を\ ``InputValidationFilter`` \よりも前に定義する必要があることに注意すること
-     * - | (2) 
+     * - | (2)
        - | \ ``DelegatingFilterProxy`` \ を用いて、Bean定義した \ ``InputValidationFilter`` \ を設定する
          | \ ``<filter-name>`` \にはBean名を指定すること
-     * - | (3) 
-       - | \ ``InvalidCharacterException`` \ がスローされた際に表示するエラー画面を設定する
+     * - | (3)
+       - | \ ``InvalidCharacterException`` \ がスローされた際に遷移するパスを指定する。エラー画面をThymeleafで処理させるため、直接HTMLファイルのパスを指定せず、後述するエラー画面に遷移させるためのControllerでハンドリングされるようにしている
 
   .. note::
 
      ファイル名の入力チェックのために\ ``MultipartFilter`` \を利用しているため、ここに記述した内容に加えて :ref:`file-upload_how_to_usr_application_settings` に記したServlet 3.0のアップロード機能を有効化するための設定が必要となる。
 
-  **invalidCharacterError.jsp**
+  **CommonErrorController.java**
 
-  .. code-block:: jsp
+  .. code-block:: java
 
-     <% response.setStatus(HttpServletResponse.SC_BAD_REQUEST); %>  <!-- (1) -->
-     <!DOCTYPE html>
-     <html>
-     <head>
-     <meta charset="utf-8">
-     <title>Invalid Character Error!</title>
+     // omitted
 
-     <!-- omitted -->
+     @Controller
+     @RequestMapping("common/error")
+     public class CommonErrorController {
+
+         // omitted
+
+         @RequestMapping("/invalidCharacterError")
+         @ResponseStatus(HttpStatus.BAD_REQUEST)   // (1)
+         public String invalidCharacterError(HttpServletResponse response) {
+             return "common/error/invalidCharacterError";
+         }
+     }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
   .. list-table::
@@ -4805,13 +4820,26 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      * - 項番
        - 説明
      * - | (1)
-       - | \ ``InvalidCharacterException`` \はクライアントの入力に起因して発生する例外であるため、のHTTPステータスコードを\ ``400`` \(Bad Request)に設定する
+       - | \ ``InvalidCharacterException`` \はクライアントの入力に起因して発生する例外であるため、HTTPステータスコードを\ ``400`` \(Bad Request)に設定する。HTTPステータスコードは、\ ``@ResponseStatus``\ のアノテーションを付与して設定する
+
+
+  **invalidCharacterError.html**
+
+  .. code-block:: html
+
+     <!--/* omitted */-->
+
+     <body>
+         <div id="wrapper">
+             <h1>Invalid Character Error!</h1>
+
+             <!--/* omitted */-->
 
   **applicationContext.xml**
 
   .. code-block:: xml
 
-     <bean id="inputValidationFilter" class="org.terasoluna.securelogin.app.common.filter.InputValidationFilter">
+     <bean id="inputValidationFilter" class="com.example.securelogin.app.common.filter.InputValidationFilter">
          <constructor-arg index="0" value="${app.security.prohibitedChars}"/>  <!-- (1) -->
          <constructor-arg index="1" value="${app.security.prohibitedCharsForFileName}"/>  <!-- (2) -->
      </bean>
@@ -4862,7 +4890,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
        @Documented
@@ -4872,7 +4900,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @ReportAsSingleViolation  // (1)
        @Pattern(regexp = "^\\P{Cntrl}*$") // (2)
        public @interface NotContainControlChars {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.NotContainControlChars.message}";
+           String message() default "{com.example.securelogin.app.common.validation.NotContainControlChars.message}";
 
            Class<?>[] groups() default {};
 
@@ -4903,7 +4931,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
        @Documented
@@ -4913,7 +4941,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @ReportAsSingleViolation
        @Pattern(regexp = "^[\\r\\n\\P{Cntrl}]*$") // (1)
        public @interface NotContainControlCharsExceptNewlines {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.NotContainControlCharsExceptNewlines.message}";
+           String message() default "{com.example.securelogin.app.common.validation.NotContainControlCharsExceptNewlines.message}";
 
            Class<?>[] groups() default {};
 
@@ -4947,7 +4975,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -4956,7 +4984,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @Target({ ElementType.FIELD })
        @Retention(RetentionPolicy.RUNTIME)
        public @interface FileExtension {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.FileExtension.message}";
+           String message() default "{com.example.securelogin.app.common.validation.FileExtension.message}";
 
            Class<?>[] groups() default {};
 
@@ -4988,7 +5016,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block :: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5053,7 +5081,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5063,7 +5091,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @Retention(RetentionPolicy.RUNTIME)
        public @interface FileNamePattern {
 
-           String message() default "{org.terasoluna.securelogin.app.common.validation.FileNamePattern.message}";
+           String message() default "{com.example.securelogin.app.common.validation.FileNamePattern.message}";
 
            Class<?>[] groups() default {};
 
@@ -5092,7 +5120,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5143,7 +5171,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5154,7 +5182,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @URL  // (1)
        public @interface DomainRestrictedURL {
 
-           String message() default "{org.terasoluna.securelogin.app.common.validation.DomainRestrictedURL.message}";
+           String message() default "{com.example.securelogin.app.common.validation.DomainRestrictedURL.message}";
 
            Class<?>[] groups() default {};
 
@@ -5185,7 +5213,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5250,7 +5278,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5260,7 +5288,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @Retention(RUNTIME)
        @Email  // (1)
        public @interface DomainRestrictedEmail {
-           String message() default "{org.terasoluna.securelogin.app.common.validation.DomainRestrictedEmail.message}";
+           String message() default "{com.example.securelogin.app.common.validation.DomainRestrictedEmail.message}";
 
            Class<?>[] groups() default {};
 
@@ -5294,7 +5322,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     .. code-block:: java
 
-       package org.terasoluna.securelogin.app.common.validation;
+       package com.example.securelogin.app.common.validation;
 
        // omitted
 
@@ -5353,7 +5381,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.app.account;
+     package com.example.securelogin.app.account;
 
      // omitted
 
@@ -5554,7 +5582,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      <!-- omitted -->
 
      <logger 
-        name="org.terasoluna.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor"
+        name="com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor"
         additivity="false">  <!-- (3) -->
         <level value="info" />
         <appender-ref ref="AUDIT_LOG_FILE" />
@@ -5575,7 +5603,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        - | pattern定義内に"USER:%X{USER}"を記述する
      * - | (3)
        - | 監査ログ出力用のloggerを定義する
-         | \ ``org.terasoluna.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor`` \の実装については以降で説明する
+         | \ ``com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor`` \の実装については以降で説明する
 
 * メソッド呼び出し時および実行後にログ出力を行うアドバイスを作成する
 
@@ -5583,7 +5611,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. code-block:: java
 
-     package org.terasoluna.securelogin.domain.common.interceptor;
+     package com.example.securelogin.domain.common.interceptor;
 
      // omitted
 
@@ -5656,7 +5684,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      <!-- omitted -->
 
      <bean id="serviceCallLoggingInterceptor"
-         class="org.terasoluna.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor" />  <!-- (1) -->
+         class="com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor" />  <!-- (1) -->
      <aop:config>
          <aop:advisor advice-ref="serviceCallLoggingInterceptor"
              pointcut="@within(org.springframework.stereotype.Service)" />  <!-- (2) -->

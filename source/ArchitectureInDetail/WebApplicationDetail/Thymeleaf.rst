@@ -168,16 +168,16 @@ Thymeleafは、テンプレートファイルを記述する為に `スタンダ
        | 4. \ ``#arrays``\ , \ ``#strings``\ 等
 
 
-.. note:: インライン処理について
+.. note:: **インライン処理について**
 
   テンプレートHTMLでは、多くの場合属性プロセッサに式を記述してHTML生成処理を実装する。
   その一方で、 `インライン処理機能 <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining>`_ が用意されており、
   属性プロセッサを介さずに要素内のコンテンツを動的に変更する事が可能である。
   ただし、静的表示した場合にインライン処理の記述がブラウザに表示される為、ブラウザで静的表示が可能であるThymeleafの利点を損なう事となる。
-  その為、本ガイドラインでは利用を推奨しない。
+  そのため、本ガイドラインではHTMLにおけるインライン処理機能の利用を推奨しない。
+  なお、JavaScriptのテンプレートを記述するにはインライン処理が必須でありブラウザでの静的表示にも対応されている為、:ref:`thymeleaf-javascript-template` では、インライン処理を利用している。
 
-
-.. note:: th:remove属性について
+.. note:: **th:remove属性について**
 
   テンプレートHTMLでは、多くの場合属性プロセッサに式を記述してHTML生成処理を実装する。
   その為、属性プロセッサを記述する目的だけのためにデザイン上不要なHTML要素が必要となるケースがある。
@@ -264,6 +264,8 @@ Thymeleaf + Springの機能
 Thymeleafテンプレートの実装
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. _ThymeleafOverviewImplementationOfTemplateHtml:
+
 テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -291,7 +293,7 @@ Thymeleafテンプレートの実装
    <body>
      <h1>Search Screen</h1>
      <form id="searchForm" action="searchResult.html"> <!-- (1) -->
-       <label>fruits name:</label> <input type="text" name="fruitsName" />
+       <label>fruits name:</label> <input type="text" name="fruitsName">
        <button>Search</button>
      </form>
    </body>
@@ -322,7 +324,7 @@ Thymeleafテンプレートの実装
    <body>
      <h1>Search Screen</h1>
      <form id="searchForm" action="searchResult.html" th:action="@{/searchResult}" th:object="${searchForm}"> <!--/* (3)、(4) */-->
-       <label>fruits name:</label> <input type="text" th:field="*{fruitsName}"/> <!--/* (5) */-->
+       <label>fruits name:</label> <input type="text" th:field="*{fruitsName}"> <!--/* (5) */-->
        <button>Search</button>
      </form>
    </body>
@@ -481,7 +483,46 @@ Thymeleafテンプレートの実装
         | \ ``th:href``\属性値には、リンクURL式\ ``@{}``\を用いている。
 
 
- .. note:: テンプレートHTMLの実装において静的表示を意識すべきかについて
+ .. note:: **テンプレートHTMLのデバッグについて**
+
+   テンプレートHTMLをThymeleafで処理する際には、テンプレートの実装の不備による例外が発生する事がある。
+   テンプレートHTMLに記載された\ ``th:text``\などのプロセッサの処理に問題があった場合には、\ ``org.thymeleaf.exceptions.TemplateProcessingException``\にテンプレート名と例外発生個所（行、列番号）が示されるため、
+   ログに出力されたこの情報を元にテンプレートの不備の特定が可能となっている。
+   
+   以下に出力されるログの例を示す。
+
+   * テンプレートHTMLで存在しないプロパティ・フィールドを指定した場合
+    
+     テンプレートHTMLで参照するオブジェクトに存在しないプロパティやフィールドを指定した場合には、以下のようなエラーログが出力される。
+     
+    .. code-block:: text
+         
+     date:yyyy-mm-dd  level:ERROR  logger:o.t.gfw.common.exception.ExceptionLogger  message:[e.xx.fw.9001] Request processing failed; nested exception is org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluating SpringEL expression: "customer.birthDay" (template: "customer/list" - line 6, col 7)
+     
+         中略
+         
+     Caused by: org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluating SpringEL expression: "customer.birthDay" (template: "customer/list" - line 6, col 7)
+         
+         中略
+         
+     Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property or field 'birthDay' cannot be found on object of type 'com.example.xxxxx.domain.model.CustomerBean' - maybe not public?
+         ：
+
+    このログより、テンプレート名が\ ``"customer/list"``\の 6行, 7列目に書かれた\ ``"customer.birthDay"``\の\ ``birthDay``\プロパティが、対象のクラス(当例では\ ``CustomerBean``\)から参照出来ない為、例外が発生している事が分かる。
+
+   * テンプレートHTMLで参照するプロパティ値が\ ``null``\だった場合
+
+    Controller等での設定漏れや画面での表示条件の不整合によりテンプレートHTMLで参照するプロパティ値が\ ``null``\だった場合の挙動は、参照元のプロセッサや式オブジェクトによって異なるが、
+    例外が発生しない場合は開発時に不具合の発見が遅れる恐れがある為、注意が必要である。
+    特に変数式や選択変数式でnull値を参照し出力時に文字列連結をした場合には"null"文字列として扱われ、文字列連結しない場合では、空文字として扱われる挙動の差がある。
+    
+    代表的な例について以下に記述があるため参照されたい。
+    
+    * :ref:`view_thymeleaf_requesturl-label` のNote *パスの一部に変数を埋め込む際の注意点について*
+    * :ref:`view_thymeleaf_textcombine-label` のNote *文字列を結合する際の注意点について*
+
+
+ .. note:: **テンプレートHTMLの実装において静的表示を意識すべきかについて**
 
    Thymeleafの最も大きな特徴であり魅力であるのが、テンプレートファイルが静的表示可能な事である。
    この特徴は、設計時に作成したプロトタイプを元にブラウザでデザインを確認しつつ、サーバ上で動的にHTMLを生成する機能を組み込む事を可能とする。
@@ -512,12 +553,6 @@ Thymeleafテンプレートの実装
    プロジェクトで採用する開発プロセスと合致するか、どのように品質を保持していくのか等を勘案のうえ決定するべきである。
    また、静的表示可能なテンプレートを採用する場合においては、後述する :ref:`comment-blocks` の機能を用い静的表示部と動的にHTMLを生成させるための処理を可能な限り分ける検討をすること。
 
-
- .. todo::
-
-     Thymeleafには、`Decoupled Template Logic <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#decoupled-template-logic>`_ という機能が存在する。
-     Decoupled Template Logicを適用すると、プロトタイプと動的処理を別ファイルに実装できる為、デザインとテンプレートエンジンによる処理を分離可能である。
-     当機能については、ガイドラインの次版以降で紹介する予定である。
 
 .. _comment-blocks:
 
@@ -688,6 +723,63 @@ Thymeleafのテンプレートでは、プロトタイプとの両立をサポ�
        </tbody>
 
 
+.. _ThymeleafOverviewDecoupledTemplateLogic:
+
+テンプレートHTMLからのテンプレートロジックの分離
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+ThymeleafのDecoupled Template Logicを利用すると、テンプレートHTMLからテンプレートロジックを完全に分離することができる。
+ここでは、Decoupled Template Logicの概要や適用する場合の考慮事項について説明する。
+
+Decoupled Template Logicは、HTML（プロトタイプ）とテンプレートロジックを別々のファイルとして作成しておき、実行時にそれら2つのファイルを組み合わせて1つのテンプレートHTMLとして処理する機能である。
+これにより、完全にロジックレスな（つまりThymeleafの文法を一切含まない）HTML（プロトタイプ）を作成することが可能となっている。
+Decoupled Template Logicはデフォルトでは有効になっていないが、\ ``TemplateResolver``\ の設定を変更するだけで有効にすることが可能である。
+Decoupled Template Logicを有効にする方法の詳細については :ref:`ThymeleafApplyDecoupledTemplateLogic` を参照されたい。
+
+ .. note::
+
+  Decoupled Template Logicを有効にした場合でも、HTML（プロトタイプ）にテンプレートロジックを含めることは可能である。
+  また、HTML（プロトタイプ）の対となるテンプレートロジックのファイルが存在しなくてもエラーとはならず、その場合はHTML（プロトタイプ）のみで処理される。
+  このため、Decoupled Template Logicを適用した資材と適用していない資材を混在させることも可能ではあるが、開発者の混乱を招くので避けるべきである。
+
+
+テンプレートロジックはXMLファイル（以降「ロジックXML」と呼ぶ。）として作成する。
+ロジックXMLに記述する主な内容は、「HTML（プロトタイプ）上のどのタグに」「Thymeleafのどの属性を適用するか」である。
+対象のタグを指定する方法は、Thymeleaf標準のセレクタと同じであり、タグ名や\ ``id``\ 属性、\ ``class``\ 属性などを指定できるほか、HTML（プロトタイプ）のタグに\ ``th:ref``\ 属性を付与してそれを参照することもできる。
+ロジックXMLの実装方法の詳細については :ref:`ThymeleafImplementationByDecoupledTemplateLogic` を参照されたい。
+
+ .. note:: **th:ref属性について**
+
+  セレクタの記述方法としてタグ構造に依存した記述をするとデザインの変更に弱くなる。
+  しかし、要素を特定するために\ ``id``\ 属性や\ ``class``\ 属性を多数付与するとHTML（プロトタイプ）の可読性やメンテナンス性が低下する。
+  これを解決するために、HTML（プロトタイプ）に要素を特定するためのアンカーとして\ ``th:ref``\ 属性を付与することができる。
+  ただし、\ ``th:ref``\ 属性を使用した場合、HTML（プロトタイプ）にもThymeleafの属性を記述することになるという点に留意する必要がある。
+  ロジックXMLにセレクタを記述しHTML（プロトタイプ）の要素を特定するか、HTML（プロトタイプ）に\ ``th:ref``\ 属性を記述し要素を特定するかは、アーキテクトがプロジェクトの開発プロセスを考慮して選択されたい。
+  
+  なお、本ガイドラインでは\ ``th:ref``\ 属性を使用せず、ロジックXMLにセレクタを記述しHTML（プロトタイプ）の要素を特定する実装例を紹介する。
+  \ ``th:ref``\ 属性の詳細については `公式リファレンスのThe th:ref attribute <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#the-thref-attribute>`_ を参照されたい。
+
+Decoupled Template Logic適用のメリットとデメリットは、以下の通りである。
+
+* **メリット**
+
+  * | テンプレートHTMLからテンプレートロジックが独立することにより、HTML（プロトタイプ）単体での変更が容易になり、画面デザインという視点においてメンテナンス性が高いといえる。
+  * | 画面のデザインとテンプレートロジックの作成作業を分離できる。
+
+* **デメリット**
+
+  * | HTML（プロトタイプ）上のタグに直接テンプレートロジックを記述するのに比べてコードが冗長になり、コード記述量が増加する。
+  * | 1つの画面に対してHTML（プロトタイプ）とロジックXMLの2ファイルを作成することになるため、管理対象資材が倍になり資材管理コストが増加する。
+  * | EclipseなどのIDEによるThymeleafのコードアシストがXMLファイルに対して対応していない場合がある。
+
+ .. note:: **Decoupled Template Logicを適用した開発時の留意点**
+
+  Decoupled Template Logicを適用した開発を行う際は、以下のような点に留意する必要がある。
+  
+  * HTML（プロトタイプ）とロジックXMLの作成を別担当者にアサインすることを計画している場合、タグの\ ``id``\ 属性の付与ルールなどを事前に決めておくことを推奨する。
+  * HTML（プロトタイプ）やロジックXMLを修正した場合、ファイルが別々であることによるもう一方の修正漏れが発生しやすくなるため注意が必要である。
+
+
 How to use
 --------------------------------------------------------------------------------
 
@@ -743,6 +835,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
          <artifactId>thymeleaf-extras-springsecurity4</artifactId>
          <version>${thymeleaf-extras-springsecurity4.version}</version>
        </dependency>
+       <!-- omitted -->
        <!-- == End Thymeleaf == -->
 
      </dependencies>
@@ -777,7 +870,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
         |  本ガイドラインで採用するThymeleafのバージョンは、採用するSpring IO platform(Brussels-SR5)で管理されているバージョンと異なる為、明示的に上書き指定している。
 
 
- .. note:: Thymeleaf 3.xを採用する理由
+ .. note:: **Thymeleaf 3.xを採用する理由**
 
    Spring IO platform(Brussels-SR5)で管理されているThymeleafのバージョンは、2.1.4.RELEASLEであるが、本ガイドラインは、3.0.9.RELEALSEを前提に記述している。
    敢えてSpring IO platformと異なるバージョンを採用する理由は、Thymeleaf 2.xから3.xへのバージョンアップの際に大幅に性能向上が図られたためである。
@@ -807,6 +900,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
          <groupId>org.thymeleaf.extras</groupId>
          <artifactId>thymeleaf-extras-springsecurity4</artifactId>
        </dependency>
+       <!-- omitted -->
        <!-- == End Thymeleaf == -->
 
      </dependencies>
@@ -858,8 +952,8 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
           <property name="enableSpringELCompiler" value="true" /> <!-- (10) -->
           <property name="additionalDialects">
               <set>
-                  <bean
-                      class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />  <!-- (11) -->
+                  <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />  <!-- (11) -->
+                  <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />  <!-- (12) -->
               </set>
           </property>
       </bean>
@@ -901,9 +995,11 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
          | SpELのコンパイルを実施する事で性能向上が見込める為、\ ``true``\を設定している。
      * - | (11)
        - | \ ``additionalDialects``\に、\ ``SpringSecurityDialect``\を定義することで、テンプレートHTML内で、Spring Securityの認証・認可制御が可能となる。
+     * - | (12)
+       - | \ ``additionalDialects``\に、\ ``Java8TimeDialect``\を定義することで、テンプレートHTML内でJSR-310 Date and Time APIのオブジェクトをフォーマットして出力することが可能となる。
 
 
-  .. note:: レスポンスのContent-Typeの解決方法について
+  .. note:: **レスポンスのContent-Typeの解決方法について**
     
     \ ``ThymeleafViewResolver``\のデフォルトの動作では、リクエストのAcceptヘッダの値やURLを元にレスポンスのContent-Typeヘッダの値を決めている。
     例えば、URLの末尾に\ ``.json``\のような拡張子を指定したリクエストの場合、レスポンスのContent-Typeに\ ``application/json``\が設定される。
@@ -1049,6 +1145,8 @@ ThymeleafのテンプレートHTMLの実装については、\ :doc:`../../Imple
 How to extend
 --------------------------------------------------------------------------------
 
+.. _thymeleaf_how_to_extend_add_custom_dialect:
+
 カスタムダイアレクトの追加
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1146,7 +1244,7 @@ Processorでの処理に用いる代表的なインタフェースを以下に�
     <form th:object="${userForm}">
         <div class="form-input">
             <label for="userName">userName</label>
-            <input th:field="*{userName}" />
+            <input th:field="*{userName}">
             <span th:errors="*{userName}"></span>
         </div>
     </form>
@@ -1257,7 +1355,7 @@ Processorでの処理に用いる代表的なインタフェースを以下に�
 
 .. note:: 
 
-  \ ``AbstractAttributeTagProcessor``\を継承した抽象クラスがいくつか提供されており、より簡単にProcessorを実装することができる場合がある。詳しくは\ `AbstractAttributeTagProcessor <http://www.thymeleaf.org/apidocs/thymeleaf/3.0.8.RELEASE/org/thymeleaf/processor/element/AbstractAttributeTagProcessor.html>`_\ を参照されたい。
+  \ ``AbstractAttributeTagProcessor``\を継承した抽象クラスがいくつか提供されており、より簡単にProcessorを実装することができる場合がある。詳しくは\ `AbstractAttributeTagProcessor <http://www.thymeleaf.org/apidocs/thymeleaf/3.0.9.RELEASE/org/thymeleaf/processor/element/AbstractAttributeTagProcessor.html>`_\ を参照されたい。
 
 
 ExpressionObjectの実装
@@ -1466,6 +1564,7 @@ ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す
         <property name="additionalDialects">
             <set>
                 <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
                 <bean class="com.example.sample.dialect.InputFormDialect" />
                 <bean class="com.example.sample.dialect.CustomFormatDialect" />
             </set>
@@ -1546,7 +1645,7 @@ ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す
             <!-- (1) -->
             <div class="form-input">
                 <label for="userName">userName</label>
-                <input id="userName" name="userName" value=""/>
+                <input id="userName" name="userName" value="">
             </div>
         </form>
 
@@ -1574,6 +1673,8 @@ ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す
 
 Appendix
 --------------------------------------------------------------------------------
+
+.. _ThymeleafAppendixTemplateCache:
 
 テンプレートキャッシュの適用
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1633,7 +1734,7 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
  .. code-block:: xml
 
     <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
-        <!-- ... -->
+        <!-- omitted -->
         <property name="nonCacheablePatterns">
             <set>
                 <value>welcome/home</value>
@@ -1680,7 +1781,7 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
  .. code-block:: xml
 
     <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-        <!-- ... -->
+        <!-- omitted -->
         <property name="cacheManager" ref="cacheManager" />
     </bean>
     
@@ -1753,4 +1854,780 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
        </configuration>
      
    
+
+.. _ThymeleafAppendixDecoupledTemplateLogic:
+
+Decoupled Template Logicの適用
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Decoupled Template Logicを有効化するための設定方法や、実装方法について説明する。
+
+.. _ThymeleafApplyDecoupledTemplateLogic:
+
+アプリケーションの設定
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+Decoupled Template Logicを有効化するために、以下の設定を行う。
+
+- spring-mvc.xml
+
+ .. code-block:: xml
+
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <!-- omitted -->
+        <property name="useDecoupledLogic" value="true" /> <!-- (1) -->
+    </bean>
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+    :header-rows: 1
+    :widths: 10 90
+    :class: longtable
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - | \ ``TemplateResolver``\ の\ ``useDecoupledLogic``\ プロパティを設定する。
+
+上記設定を行った場合のHTML（プロトタイプ）とロジックXMLの格納場所および命名規則は、デフォルトで下記となる。
+
+* HTML（プロトタイプ）はDecoupled Template Logicを適用しない場合と同様、"searchResult.html"のようなファイル名で作成する。
+* ロジックXMLは、HTML（プロトタイプ）のファイル名の拡張子部分（"html"）を\ ``.th.xml``\ に置き換えた"searchResult.th.xml"のようなファイル名で作成する。
+* HTML（プロトタイプ）と対になるロジックXMLは同一ディレクトリに格納する。
+
+以下にファイル構成例を示す。
+
+ .. code-block:: console
+
+     WEB-INF
+       └─views
+          └── goods
+              ├── searchResult.html
+              └── searchResult.th.xml
+
+ .. note:: **ロジックXMLのファイルを解決する方法を変更するための拡張ポイント**
+
+  ロジックXMLのファイルを解決する方法を変更するための拡張ポイントとして\ ``org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver``\ が用意されている。
+  ロジックXMLのファイル名の末尾を\ ``.th.xml``\ から変更する設定例を以下に示す。
+
+  - spring-mvc.xml
+
+     .. code-block:: xml
+
+        <bean id="templateResolver"
+            class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+            <!-- omitted -->
+            <property name="useDecoupledLogic" value="true" />
+        </bean>
+        <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+            <!-- omitted -->
+            <property name="decoupledTemplateLogicResolver" ref="decoupledResolver" /> <!-- (1) -->
+        </bean>
+        <bean id="decoupledResolver"
+            class="org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver"> <!-- (2) -->
+            <property name="suffix" value="-viewlogic.xml" />
+        </bean>
+
+     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+     .. list-table::
+        :header-rows: 1
+        :widths: 10 90
+
+        * - 項番
+          - 説明
+        * - | (1)
+          - ``TemplateResolver``\ で使用する\ ``SpringTemplateEngine``\ が\ ``StandardDecoupledTemplateLogicResolver``\ を利用するように設定している。
+        * - | (2)
+          - ロジックXMLのファイルを解決する方法を定義する。
+            上記例では、\ ``suffix``\ プロパティを指定することで、ファイル名の末尾が"-viewlogic.xml"であるファイルが解決されるようにしている。
+
+  上記例の場合のファイル構成例は以下のようになる。
+
+     .. code-block:: console
+
+         WEB-INF
+           └─views
+              └── goods
+                  └── searchResult.html
+                  └── searchResult-viewlogic.xml
+
+  なお、\ ``prefix``\ プロパティに相対パスを指定することでHTML（プロトタイプ）と異なるディレクトリにロジックXMLを配置することも可能であるが、
+  \ ``StandardDecoupledTemplateLogicResolver``\ では、HTML（プロトタイプ）と同ディレクトリ（views/goodsディレクトリ）を基点とする相対パスの指定となる。
+  下記例のように、viewsディレクトリと同レベルにロジックXML専用のディレクトリ（viewlogicsディレクトリ）配下し、その配下にviewディレクトリと同じ階層構造をもつような構成を実現するには、
+  \ ``StandardDecoupledTemplateLogicResolver``\ を拡張する必要がある。
+
+     .. code-block:: console
+
+         WEB-INF
+           └─views
+              └── goods
+                  └── searchResult.html
+           └─viewlogics
+              └── goods
+                  └── searchResult-viewlogic.xml
+
+  本ガイドラインではHTMLファイルの格納ディレクトリに階層構造を採用しているため、\ ``prefix``\ プロパティを利用して格納ディレクトリを分離することは推奨しない。
+
+ .. warning:: **性能への影響について**
+
+  Decoupled Template Logicを有効化した場合、HTML（プロトタイプ）とロジックXMLを統合するプロセスが追加で行われることになるが、
+  テンプレートキャッシュを有効にすると統合されたテンプレートHTMLがキャッシュされるため、Decoupled Template Logicによる性能への影響はなくなる。
+  そのため、テンプレートキャッシュの設定を適切に実施することが重要となる。
+  テンプレートキャッシュの詳細については :ref:`ThymeleafAppendixTemplateCache` を参照されたい。
+
+
+
+.. _ThymeleafImplementationByDecoupledTemplateLogic:
+
+HTML（プロトタイプ）とロジックXMLの実装
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+1つの画面に対しHTML（プロトタイプ）とロジックXMLの2ファイルを作成する。
+
+**HTML（プロトタイプ）作成のポイント**
+
+* HTML（プロトタイプ）は、テンプレートロジックを含まない静的なHTMLファイルとして作成する。
+ 
+**ロジックXML作成のポイント**
+
+* ロジックXMLは、XMLファイルとして作成する。
+* ロジックXMLは、\ ``<thlogic>``\ タグと\ ``<attr>``\ タグで構成される。
+* \ ``<attr>``\ タグには、1つの\ ``sel``\ 属性と1つ以上のThymeleafの属性を記述する。
+* \ ``sel``\ 属性にはHTML（プロトタイプ）のどのタグを対象にThymeleafの属性を適用するかを指定するセレクタを記述する。
+  セレクタの書式はThymeleaf標準のセレクタと同じである。
+  詳細については `公式リファレンスのAppendix C: Markup Selector Syntax <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-c-markup-selector-syntax>`_ を参照されたい。
+* \ ``<attr>``\ タグはネストすることが可能であり、子要素は親要素のセレクタを含めて解釈される。
+
+|
+
+本章の :ref:`ThymeleafOverviewImplementationOfTemplateHtml` で説明した検索結果画面をDecoupled Template Logicを用いて実装した例を以下に示す。
+なお、後に作成するロジックXMLからセレクタで指定するため、\ ``id``\ 属性、\ ``class``\ 属性を追加で付与している。
+
+**HTML（プロトタイプ）の実装例**
+
+ Thymeleafの属性やネームスペースを記載しない静的なHTMLファイルである。
+
+ .. code-block:: html
+
+  <html>
+  <head>
+      <link id="css" rel="stylesheet" href="../../../resources/app/css/styles.css"> <!-- (1) -->
+      <title>Search Result Screen</title>
+  </head>
+  <body>
+      <h1>Search Result</h1>
+      <table id="resultTable"> <!-- (1) -->
+          <thead>
+              <tr>
+                  <th>name</th>
+                  <th>price</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td class="itemName">Apple</td> <!-- (2) -->
+                  <td class="itemPrice">300</td> <!-- (2) -->
+              </tr>
+              <tr>
+                  <td class="itemName">Apple Juice</td> <!-- (2) -->
+                  <td class="itemPrice">100</td> <!-- (2) -->
+              </tr>
+              <tr>
+                  <td class="itemName">Apple Pie</td> <!-- (2) -->
+                  <td class="itemPrice">500</td> <!-- (2) -->
+              </tr>
+          </tbody>
+      </table>
+      <a id="back" href="search.html">Back</a>
+  </body>
+  </html>
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+   :header-rows: 1
+   :widths: 10 90
+
+   * - 項番
+     - 説明
+   * - | (1)
+     - | ロジックXMLのセレクタで指定するため、\ ``id``\ 属性を追加している。
+   * - | (2)
+     - | ロジックXMLのセレクタで指定するため、\ ``class``\ 属性を追加している。
+
+
+**ロジックXMLの実装例**
+
+ .. code-block:: xml
+
+  <?xml version="1.0"?>
+  <!DOCTYPE thlogic>
+  <thlogic>
+      <attr sel="#css" th:href="@{/resources/app/css/styles.css}" /> <!-- (1) --> 
+      <attr sel="#resultTable/tbody" th:remove="all-but-first">
+          <attr sel="tr[0]" th:each="item : ${items}"> <!-- (2) --> 
+              <attr sel="td.itemName" th:text="${item.name}" /> <!-- (3) --> 
+              <attr sel="td.itemPrice" th:text="${item.price}" />
+          </attr>
+      </attr>
+      <attr sel="#back" th:href="@{/search}" />
+  </thlogic>
+
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+   :header-rows: 1
+   :widths: 10 90
+
+
+   * - 項番
+     - 説明
+   * - | (1)
+     - | ``id`` 属性が"css"である\ ``<link>``\ タグに\ ``th:href``\ 属性が適用されるようにしている。
+   * - | (2)
+     - | ``sel``\ 属性に"tr[0]"を指定しているが、\ ``<attr>``\ タグをネストさせているので"#resultTable/tbody//tr[0]"というセレクタとして解釈される。
+       | 上記例ではidが"resultTable"であるテーブルの1行目にあたる\ ``<tr>``\ タグに\ ``th:each``\ 属性が適用されることになる。
+   * - | (3)
+     - | (2)と同様に\ ``<attr>``\ タグをネストさせているので"#resultTable/tbody//tr[0]//td.itemName"というセレクタとして解釈される。
+
+ .. warning::
+
+  セレクタに\ ``id``\ 属性や\ ``class``\ 属性などを利用せず、HTMLのタグ構造のみで指定することも可能であるが、タグ構造の変更に弱くなるため濫用しないよう注意されたい。
+
+
+
+|
+
+なお、上記の実装例は、Decoupled Template Logicを適用せずに以下に示すテンプレートHTMLのみで実装した場合と同等である。
+
+.. code-block:: html
+
+ <html xmlns:th="http://www.thymeleaf.org">
+ <head>
+     <link id="css" rel="stylesheet" href="../../../resources/app/css/styles.css"
+         th:href="@{/resources/app/css/styles.css}">
+     <title>Search Result Screen</title>
+ </head>
+ <body>
+     <h1>Search Result</h1>
+     <table id="resultTable">
+         <thead>
+             <tr>
+                 <th>name</th>
+                 <th>price</th>
+             </tr>
+         </thead>
+         <tbody th:remove="all-but-first">
+             <tr th:each="item : ${items}">
+                 <td class="itemName" th:text="${item.name}">Apple</td>
+                 <td class="itemPrice" th:text="${item.price}">300</td>
+             </tr>
+             <tr>
+                 <td class="itemName">Apple Juice</td>
+                 <td class="itemPrice">100</td>
+             </tr>
+             <tr>
+                 <td class="itemName">Apple Pie</td>
+                 <td class="itemPrice">500</td>
+             </tr>
+         </tbody>
+     </table>
+     <a id="back" href="search.html" th:href="@{/search}">Back</a>
+ </body>
+ </html>
+
+
+.. _thymeleaf-javascript-template:
+
+JavaScriptのテンプレート化
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ThymeleafによるJavaScriptのテンプレート化について説明する。
+
+.. _thymeleaf-javascript-template-overview:
+
+JavaScriptテンプレートの適用
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+ThymeleafはJavaScriptをテンプレートとする機能を提供しており、この機能を用いる事でJavaScriptのソースコードをサーバ上で動的に生成可能となる。
+JavaScriptをテンプレート化する方法には以下の2種類が有る。
+
+1. テンプレートHTMLの\ ``<script>``\タグ中に記述したJavaScriptをテンプレート化する方法
+2. JavaScriptファイル自体をThymeleafのテンプレートとする方法
+
+以下に、それぞれの方法の実装イメージを記載する。記載内容の詳細については後述する。
+
+1. テンプレートHTMLの\ ``<script>``\タグ中に記述したJavaScriptのテンプレート化イメージ
+
+* テンプレートHTMLの実装例
+
+ .. code-block:: html
+
+   <script th:inline="javascript"> // (1)
+    
+        // ommited
+    
+        var itemName = [[${item.name}]]; // (2)
+    
+        // ommited
+    
+   </script>
+
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+     :class: longtable
+
+     * - 項番
+       - 説明
+     * - | (1)
+       - | \ ``<script>``\要素内にJavaScriptのテンプレートを記述する為、\ ``th:inline="javascript"``\を設定する。
+     * - | (2)
+       - | JavaScriptの変数\ ``itemName``\に\ ``item``\オブジェクトの\ ``name``\属性値を設定するようにJavaScriptのソースコードを生成する。
+
+2. JavaScriptファイルのテンプレート化イメージ
+
+* JavaScriptファイル(\*.js)の実装例
+
+ .. code-block:: html
+
+        // ommited
+    
+        var itemName = [[${item.name}]]; // (1)
+    
+        // ommited
+
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+     :class: longtable
+
+     * - 項番
+       - 説明
+     * - | (1)
+       - | JavaScriptの変数\ ``itemName``\に\ ``item``\オブジェクトの\ ``name``\属性値を設定するようにJavaScriptのソースコードを生成する。
+         | JavaScriptファイルには、特別な定義は不要である。
+
+これらの実装イメージを見ると分かるが、いずれの場合においてもThymeleafの `インライン処理機能 <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining>`_ を用いて実装している。その為、まずインライン処理の記法について簡単に説明する。
+（以降、インライン処理用の記法をインライン記法と呼ぶこととする。）
+
+* インライン記法
+
+ インライン記法とは、XMLやHTMLの文法とは独立した記法でテンプレートにロジックを記述する方法である。
+ インライン記法には、大きく分けるとテキスト出力用のインライン記法と、テキスト出力以外のインライン記法の２種類が存在する。それぞれのインライン記法について説明する。
+
+ 1. テキスト出力用のインライン記法
+
+  テキストを出力するインライン記法は、[[xxx]]、[(xxx)]という二つの形式で記述することができ、この記法は、特別な設定をせずとも用いる事ができる。
+  
+  * [[xxx]]の形式を使用すると、値をエスケープして出力する
+  * [(xxx)]の形式を使用すると、値をエスケープせずに出力する
+  
+  それぞれ、\ ``th:text``\、\ ``th:utext``\に対応しており、カッコ内に式（変数式など）を記述する。
+  なお、テキスト出力の際には、XSSを防ぐために、[[xxx]]の形式を使用すること。
+  
+  使用例を下記に示す。
+  
+  **HTML**
+  
+    .. code-block:: html
+    
+      <p>[[${item.name}]]</p>
+    
+    .. tabularcolumns:: |p{0.20\linewidth}|p{0.80\linewidth}|
+    .. list-table::
+       :header-rows: 1
+       :widths: 20 80
+    
+       * - 変数名
+         - 値
+       * - | item.name
+         - | `Apple`
+  
+  **出力結果**
+  
+    .. code-block:: html
+    
+      <p>Apple</p>
+
+
+ 2. テキスト出力以外のインライン記法
+
+  テキスト出力以外のインライン記法は、テンプレートモードを\ ``TEXT``\、\ ``JAVASCRIPT``\、\ ``CSS``\のいずれかにするか、HTMLモードにおいて要素に\ ``th:inline``\属性を付与する事で利用可能となる。
+  （\ ``th:inline``\属性の値には、\ ``text``\、\ ``javascript``\、\ ``css``\が設定できる。）
+  
+  テキスト出力以外のインライン記法では、各種プロセッサを利用してロジックを記述する事が可能である。
+  プロセッサを利用したロジックの記述は、インライン記法における\ ``th:block``\要素プロセッサを用いて、ここに各種属性プロセッサを記述する要領で実装が可能である。
+  具体的な記述例を元に記法について説明する。
+
+  .. code-block:: html
+  
+    [#th:block th:if="${item} != null"] // (1)
+      [[${item}]]を購入しました。 // (2)
+    [/th:block] // (3)
+
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+      :header-rows: 1
+      :widths: 10 90
+      :class: longtable
+
+      * - 項番
+        - 説明
+      * - | (1)
+        - | ブロックの開始要素\ ``[#th:block]``\を記述し、属性プロセッサの記述を可能としている。ここでは、\ ``th:if``\属性を記述している。
+      * - | (2)
+        - | インライン記法によりテキスト出力している。
+      * - | (3)
+        - | ブロックの終了要素\ ``[/th:block]``\を記述し、ブロックの終了を宣言する。
+
+ なお、ブロックの開始要素\ ``[#th:block]``\とブロックの終了要素\ ``[/th:block]``\は、\ ``th:block``\を省略してそれぞれ\ ``[# ]``\、 \ ``[/]``\のように記述可能である。
+ インライン記法の詳細については、`Inlining <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining>`_ を参照されたい。
+
+
+.. _thymeleaf-javascript-template-in-html:
+
+HTMLファイル内のJavaScriptのテンプレート化
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+テンプレートHTML内にJavaScriptのテンプレートを記述する方法を説明する。
+テンプレートHTMLにJavaScriptのテンプレートを記述するには、テンプレートHTMLの\ ``<script>``\要素に\ ``th:inline="javascript"``\を付与すればよい。
+
+\ ``<script>``\要素に\ ``th:inline="javascript"``\を記述する事でJavaScriptをテンプレート化する為の機能が有効となる。
+以下に有効となる機能について説明し、これを用いた実装例を示す。
+
+* 有効となる機能
+
+ 1. 文字列のエスケープ
+  
+  インライン記法によるテキスト出力の際にJavaScriptに適したエスケープがされる。
+  エスケープ内容の詳細は、:ref:`xss_how_to_use_javascript_escaping` を参照されたい。
+
+ 2. JavaScriptの静的表示対応
+  
+  テンプレートHTMLを静的表示した際にも、テンプレート化したJavaScriptが動作するようにデフォルト値を設定する事が可能となる。
+  
+  .. code-block:: html
+
+    <script th:inline="javascript"> // (1)
+     
+         // ommited
+     
+         var itemName = /*[[${item.name}]]*/ 'Apple'; // (2)
+     
+         // ommited
+     
+    </script>
+
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+      :header-rows: 1
+      :widths: 10 90
+      :class: longtable
+
+      * - 項番
+        - 説明
+      * - | (1)
+        - | \ ``<script>``\要素内にJavaScriptのテンプレートを記述する為、\ ``th:inline="javascript"``\を設定する。
+      * - | (2)
+        - | JavaScriptコメント\ ``/* */``\内にインライン記法による式（Expression）を記述し、\ ``*/``\と\ ``;``\の間に静的表示用の値を記述する。
+          | 上記の例では、Thymeleafより生成されるJavaScriptでは、変数式\ ``${item.name}``\の結果をエスケープした結果が代入され、静的表示用の文字列Appleは無視される。
+          | 反対に静的表示の際には、Appleが代入され、変数式は無視される。
+  
+  テンプレートHTMLの :ref:`comment-blocks` に対応する機能として、インライン記法におけるコメントブロックが存在する。
+  詳細については、
+  `Textual prototype-only comment blocks: adding code <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#textual-prototype-only-comment-blocks-adding-code>`_ と、
+  `Textual parser-level comment blocks: removing code <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#textual-parser-level-comment-blocks-removing-code>`_ を参照されたい。
+
+
+  .. note:: **JavaScriptのテンプレートの静的表示について**
+
+    テンプレートHTMLと同様にJavaScriptのテンプレートも静的表示が可能である。
+    この機能を用いる事で、プロトタイプ作成時に実装したJavaScriptからJavaScriptのテンプレートを作成する事ができる。
+    一方で、テンプレートHTMLの静的表示と同様に静的表示用の記法を多用した場合には、JavaScriptのソースコードの可読性を損なう為、採用においては事前に検討が必要である。
+    
+    本ガイドラインにおいては、静的表示の採用を強制していない為、他の章のJavaScriptのテンプレートについては静的表示を意識した記述としていない。
+    
+
+ 3. Javaオブジェクトの変換
+  
+  サーバ側で生成したJavaの各種オブジェクトをJavaScriptで使用できる形式に変換して出力する。
+  扱えるデータ型は以下のとおりである。
+
+  * 文字列
+  * 数値
+  * 真偽値
+  * 配列
+  * コレクション
+  * Map
+  * Java Bean
+
+  ・テンプレートHTMLの記述（変換前）
+
+   .. code-block:: html
+   
+      <script th:inline="javascript">
+      
+          // ommited
+          
+          var str = [[${strAttr}]];       /*[- String -]*/
+          
+          var num = [[${numberAttr}]];    /*[- double -]*/
+
+          var bool = [[${booleanAttr}]];  /*[- boolean -]*/
+
+          var ary = [[${arrayAttr}]];     /*[- 配列・コレクション -]*/
+
+          var map = [[${mapAttr}]];       /*[- Map -]*/
+
+          var bean = [[${beanAttr}]];     /*[- Java Bean -]*/
+          
+          // ommited
+      
+      </script>
+
+
+  ・生成されたHTML（変換後）
+
+   .. code-block:: html
+   
+      <script>
+      
+          // ommited
+      
+          var str = "2018\/01\/25";
+          
+          var num = 123.456;
+          
+          var bool = true;
+          
+          var ary = ["Apple","Orange","Grape"];
+          
+          var map = {"a":"abc","d":"def","g":"ghi"};
+          
+          var bean = {"item":"Boxed apples","amount":30,"isInStock":true,"relateItem":{"item":"Apple","price":100,"isInStock":true}};
+      
+          // ommited
+      
+      </script>
+
+ 4. テキスト出力以外のインライン記法の有効化
+  
+  テキスト出力以外のインライン記法が記述可能となる。
+  （テキスト出力以外のインライン記法については、:ref:`thymeleaf-javascript-template-overview` ・インライン記法 「2.テキスト出力以外のインライン記法」を参照されたい。）
+
+  .. note::
+    テキスト出力以外のインライン記法を用いる事でJavaScriptのソースコードを生成するロジックを記述できるが、JavaScriptソースコードの可読性や保守性を損なう為、
+    極力使用しない事を推奨する。
+
+
+* JavaScriptのテンプレートの実装例
+
+ これらの機能を用いたテンプレートHTML内のJavaScriptのテンプレートの実装例を以下に示す。
+
+ * 実装例
+
+   .. code-block:: html
+   
+      <script th:inline="javascript"> // (1)
+      
+          // ommited
+          
+          // itemオブジェクトの配列
+          var items = /*[[${items}]]*/ [{"name" : "Apple", "price" : 300}, {"name" : "Apple Juice", "price" : 100}, {"name" : "Apple Pie", "price" : 500}]; // (2)
+          
+          // テーブルへのデータ追加
+          for(var i = 0; i < items.length; i++){
+              
+              // ommited
+              
+          }
+          
+          // ommited
+      
+      </script>
+
+
+ * 出力例
+
+   .. code-block:: html
+   
+      <script>
+      
+          // ommited
+          
+          var items = [{"name":"Peach","price":1000},{"name":"Grape","price":2000},{"name":"Melon","price":3000}]; // (3)
+          
+          for(var i = 0; i < items.length; i++){
+              
+              // ommited
+              
+          }
+          
+          // ommited
+      
+      </script>
+
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+      :header-rows: 1
+      :widths: 10 90
+      :class: longtable
+      
+      * - 項番
+        - 説明
+      * - | (1)
+        - | \ ``<script>``\要素内にJavaScriptのテンプレートを記述する為、\ ``th:inline="javascript"``\を設定する。
+      * - | (2)
+        - | JavaScriptコメント\ ``/* */``\内にインライン記法を用いて変数式\ ``${items}``\を記述し、\ ``*/``\と\ ``;``\の間に静的表示用の値を記述する。
+      * - | (3)
+        - | 変数式\ ``${items}``\のデータが展開され、静的表示用の記述が削除されている。
+
+
+JavaScriptファイルのテンプレート化
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+JavaScriptファイルをThymeleafのテンプレートとする方法について説明する。
+なおJavaScriptファイルのテンプレートを実装する上でThymeleafより提供される機能は、 :ref:`thymeleaf-javascript-template-in-html` に記載した内容と同等であるため、そちらを参照されたい。
+
+テンプレート化したJavaScriptファイルをThymeleafで解釈させるには、テンプレートモードを\ ``JAVASCRIPT``\に設定した\ ``TemplateResolver``\が必要である。
+また、動作にあたってはJavaScriptのテンプレートへのリクエストをハンドリングするControllerを用意する必要があるため、これらについて説明する。
+（これ以降、テンプレート化したJavaScriptファイルをテンプレートJavaScriptと呼ぶこととする。）
+
+* Bean定義の変更
+
+ テンプレートJavaScriptをThymeleafに処理させる為には、ブランクプロジェクトで提供する\ ``ThymeleafViewResolver``\と\ ``SpringResourceTemplateResolver``\のBean定義を変更する必要がある。
+ 変更点について以下に示す。
+
+* spring-mvc.xmlの定義
+
+  .. code-block:: xml
+
+      <mvc:view-resolvers>
+          <mvc:bean-name />
+          <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+              <property name="templateEngine" ref="templateEngine" />
+              <property name="characterEncoding" value="UTF-8" />
+              <property name="forceContentType" value="true" /> <!-- (1) -->
+              <property name="contentType" value="application/javascript;charset=UTF-8" /> <!-- (1) -->
+          </bean>
+      </mvc:view-resolvers>
+
+      <bean id="templateResolver"
+          class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+          <property name="prefix" value="/WEB-INF/js/" /> <!-- (2) -->
+          <property name="suffix" value=".js" /> <!-- (3) -->
+          <property name="templateMode" value="JAVASCRIPT" /> <!-- (4) -->
+          <property name="characterEncoding" value="UTF-8" />
+      </bean>
+
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+     :class: longtable
+
+     * - 項番
+       - 説明
+     * - | (1)
+       - | \ ``forcedContentType``\プロパティに\ ``true``\を指定し、レスポンスのContent-Typeヘッダを明示的に設定するようにしている。
+         | \ ``contentType``\プロパティに\ ``application/javascript;charset=UTF-8``\を指定している。
+     * - | (2)
+       - | テンプレートJavaScriptが格納されているベースディレクトリ(ファイルパスのプレフィックス)を指定する。
+         | 静的コンテンツと格納場所を分ける為、"/WEB-INF/js/"配下に格納した例としている。
+     * - | (3)
+       - | Thymeleafテンプレートの拡張子(ファイルパスのサフィックス)を設定する。JavaScriptファイルをテンプレートとする為、\ ``.js``\を設定している。
+     * - | (4)
+       - | 解釈するテンプレートモードに\ ``JAVASCRIPT``\モードを設定する。
+  
+|
+
+* テンプレートJavaScriptのハンドリング用Controllerクラス
+
+ テンプレートJavaScriptをThymeleafに解釈させるため、テンプレートJavaScriptへのリクエストをハンドリングするControllerクラスを用意する。当例では汎用的に扱えるようにリクエストパスからテンプレート名を指定するようにしている。
+
+  .. code-block:: java
+
+    @Controller
+    public class JsController {
+
+        @RequestMapping(value="javascript/{jsTemplate}.js", method=RequestMethod.GET) // (1)
+        public String handleJsTemplates(@PathVariable("jsTemplate") String jsTemplate) { // (1)
+            
+            return jsTemplate; // (2)
+            
+        }
+    }
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+     :class: longtable
+
+     * - 項番
+       - 説明
+     * - | (1)
+       - | \ ``@RequestMapping``\アノテーションにJavaScriptのテンプレート用の共通パスを指定する。
+         | また、\ ``@PathVariable``\アノテーションでJavaScirptのテンプレート名をハンドラメソッドの引数に渡す。
+     * - | (2)
+       - | ハンドラメソッドからは、JavaScirptのテンプレートを指定する文字列を返却する。
+
+
+ .. note:: **JavaScriptファイルのリクエストパスと配置場所について**
+   
+   * テンプレートJavaScriptのリクエストパスについて
+   
+    ブランクプロジェクトでは静的JavaScriptのリクエストパスを\ ``/resources/**``\としているが、これに合わせてテンプレートJavaScriptへのリクエストパスも\ ``/resources/**``\とすると、
+    \ ``<mvc:resources>``\の設定とリクエストマッピングの設定が競合してしまう。
+    この場合、設定上はControllerのリクエストマッピングが優先され、ThymeleafによってテンプレートJavaScriptが解釈される為、
+    意図した通りに静的JavaScriptを取得・キャッシュなどすることができない。
+    この問題を回避する為、テンプレートJavaScriptへのリクエストパスは静的JavaScript用のパスと分けて定義する事を推奨する。
+    
+   * テンプレートJavaScriptの配置場所について
+   
+    テンプレートJavaScriptと静的JavaScriptとは配置場所を分けて管理するべきである。
+    配置場所が同一の場合、\ ``<mvc:resources>``\の設定によってテンプレートJavaScriptも静的JavaScriptと同様に取得が可能となる為、
+    悪意を持った利用者からのアクセスによりテンプレートのソースコードが流出する危険がある。
+    
+    当ガイドラインの例では、ブランクプロジェクトの静的コンテンツ配置場所（[artifactId]-web/webapps/resources配下）とは異なる
+    "/WEB-INF/js/"配下にテンプレートJavaScriptを格納している。
+
+
+ .. warning:: **JavaScriptファイルのテンプレート化の採用について**
+
+   HTMLファイルとJavaScriptファイルをともにテンプレート化したいケースが想定されるが、併用するにあたって注意すべき点があるためこれを示す。
+   
+   * データの引き継ぎについて
+   
+     テンプレートHTMLを処理するリクエストとテンプレートJavaScriptを処理するリクエストが異なる為、
+     テンプレートHTMLを処理する際に生成したデータをテンプレートJavaScriptに埋め込むには、セッション領域等のリクエストを跨いで参照可能な領域を用いなければならない。
+   
+   * Bean定義の変更について
+   
+    HTMLモードとJAVASCRIPTモードを併用する場合には、HTMLモードを設定した\ ``TemplateResolver``\とJAVASCRIPTモードを設定した\ ``TemplateResolver``\を用意する必要がある。
+    併用する場合のBean定義としては、以下の3種類の設定法が考えられる。
+    
+    1. \ ``TemplateResolver``\のみを複数定義し、これを１つの\ ``TemplateEngine``\に設定する
+    2. \ ``TemplateResolver``\、\ ``TemplateEngine``\、\ ``ViewResolver``\をHTMLモード用とJAVASCRIPTモード用にそれぞれ分けて設定する
+    3. \ ``DispatcherServlet``\レベルでBean定義を分割する
+    
+    上記の段階ごとに設定の自由度は増すが、設定は冗長になる。
+    なお、それぞれの設定法で制約が存在する為、設定法の採用においてはこれらを加味する事。
+    
+    制約事項（制約は、上記の設定法の項番に対応している。）
+    
+    1. \ ``ViewResolver``\を共用する為、レスポンスのContentTypeを固定してはならない。また、テンプレートHTMLとテンプレートJavaScriptのテンプレート名が重複してはならない。重複した場合は、先に定義した\ ``TemplateResolver``\により同名のテンプレートが処理される。
+    2. \ ``ViewResolver``\毎に解釈する対象をView名によって判定する必要が生じる為、View名を判断する為の情報を\ ``ViewResolver``\の\ ``viewNames``\プロパティとControllerからの返却値に付与する必要が有る。
+    3. アプリケーション層のDIコンテナが異なる為、それぞれのアプリケーション層のBeanの参照が出来ない。
+
+   上記のとおり、テンプレートHTMLとテンプレートJavaScriptの併用には様々な留意点や制約が有るが、これに対して得られるメリットは少ない。
+   また、テンプレートJavaScriptのみを単独で利用すべき要件も思い当たらない為、本ガイドラインではJavaScriptファイルのテンプレート化の採用を推奨しない。
 

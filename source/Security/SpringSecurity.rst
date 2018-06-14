@@ -474,6 +474,7 @@ Spring Securityのコンポーネントをbean定義するため、以下のよ�
       <property name="additionalDialects">
         <set>
           <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" /> <!-- (1) -->
+          <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
         </set>
       </property>
     </bean>

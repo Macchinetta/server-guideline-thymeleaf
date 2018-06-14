@@ -243,7 +243,7 @@ Spring Securityはフォーム認証用のログインフォームをデフォ�
         <h3>Login Screen</h3>
         <!--/* (1) */-->
         <div th:if="${param.keySet().contains('error')}"
-            th:with="exception=${#request.getAttribute('SPRING_SECURITY_LAST_EXCEPTION')} ?: ${session[SPRING_SECURITY_LAST_EXCEPTION]}">
+            th:with="exception=${SPRING_SECURITY_LAST_EXCEPTION} ?: ${session[SPRING_SECURITY_LAST_EXCEPTION]}">
             <div th:if="${exception != null}" class="alert alert-error">
                 <span th:text="${exception.message}"></span><!--/* (2) */-->
             </div>
@@ -282,10 +282,16 @@ Spring Securityはフォーム認証用のログインフォームをデフォ�
     * - | (3)
       - | ユーザー名とパスワードを入力するためのログインフォーム。
         | ここではユーザー名を\ ``username``\、パスワードを\ ``passowrd``\ というリクエストパラメータで送信する。
-        | また、\ ``th:action``\ を使用することで、CSRF対策用のトークン値がリクエストパラメータで送信される。
+        | また、\ ``th:action``\ 属性を使用することで、CSRF対策用のトークン値がリクエストパラメータで送信される。
         | CSRF対策については、「:ref:`SpringSecurityCsrf`」で説明する。
 
 |
+
+.. warning:: **リクエストパラメータの存在チェックについて**
+
+    \ `Thymeleaf 3.0の公式リファレンス <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#web-context-namespaces-for-requestsession-attributes-etc.>`_\ では、リクエストパラメータの存在チェック方法について\ ``param.containsKey``\ が紹介されているが、
+    \ ``org.thymeleaf.context.WebEngineContext.RequestParametersMap`` \ の実装により、\ ``param.containsKey``\  は\ `一律true <https://github.com/thymeleaf/thymeleaf/blob/thymeleaf-3.0.9.RELEASE/src/main/java/org/thymeleaf/context/WebEngineContext.java#L567-L574>`_\ が返却されるため、\ ``param.keySet().contains``\ を使用してパラメータの有無を判断する必要がある。
+    なお、リクエストパラメータ以外にセッション(\ ``session.containsKey``\)、サーブレットコンテキスト(\ ``application.containsKey``\)についても同様である。
 
 つぎに、作成したログインフォームをSpring Securityに適用する。
 
@@ -1278,7 +1284,7 @@ Spring Securityのデフォルトの動作では、\ ``/logout``\ というパ�
       - 説明
     * - | (1)
       - | ログアウト用のフォームを作成する。
-        | また、\ ``th:action``\ を使用することで、CSRF対策用のトークン値がリクエストパラメータで送信される。
+        | また、\ ``th:action``\ 属性を使用することで、CSRF対策用のトークン値がリクエストパラメータで送信される。
         | CSRF対策については、「:ref:`SpringSecurityCsrf`」で説明する。
 
 .. note:: **CSRFトークンの送信**
@@ -1425,11 +1431,11 @@ Thymeleafからのアクセス
         | アクセスしたいプロパティへのパスを指定する。
         | ネストしているオブジェクトへアクセスしたい場合は、プロパティ名を"\ ``.``\" でつなげればよい。
 
-.. tip:: **#authenticationオブジェクトの紹介**
+.. tip:: **#authenticationの紹介**
 
     ここでは、\ ``sec:authentication``\ 属性を用いて認証情報が保持するユーザー情報を表示する際の実装例を説明したが、
-    Spring Security Dialectから提供されている\ ``#authentication``\ オブジェクトを用いても、テンプレートHTMLから認証情報にアクセスする事が可能である。
-    \ ``#authentication``\ オブジェクトは、 ${...} 式にて使用できるため、条件判定やリテラル置換等\ ``sec:authentication``\ 属性より複雑な使い方が可能である。
+    Spring Security Dialectから提供されている\ ``#authentication``\ を用いても、ThymeleafのテンプレートHTMLから認証情報にアクセスする事が可能である。
+    \ ``#authentication``\ は、 変数式 ``${}`` 式にて使用できるため、条件判定やリテラル置換等\ ``sec:authentication``\ 属性より複雑な使い方が可能である。
 
     上記の例は、以下のように記述できる
 
@@ -1448,9 +1454,9 @@ Thymeleafからのアクセス
            - 説明
          * - | (1)
            - | \ ``sec:authentication``\ 属性を使用する際には\ ``<html>``\ タグに\ ``xmlns:sec``\ 属性を定義していたが、
-             | \ ``#authentication``\ オブジェクトを使用する際には、\ ``xmlns:sec``\ 属性の定義は不要である。
+             | \ ``#authentication``\ を使用する際には、\ ``xmlns:sec``\ 属性の定義は不要である。
          * - | (2)
-           - | \ ``#authentication``\ オブジェクトにて認証情報よりlastNameを取得し、lastNameの前後にリテラル置換を行っている。
+           - | \ ``#authentication``\ にて認証情報よりlastNameを取得し、lastNameの前後にリテラル置換を行っている。
 
 |
 
@@ -2861,4 +2867,3 @@ Remember Me認証を利用する場合は、\ ``<sec:remember-me>``\ タグを�
 .. raw:: latex
 
    \newpage
-

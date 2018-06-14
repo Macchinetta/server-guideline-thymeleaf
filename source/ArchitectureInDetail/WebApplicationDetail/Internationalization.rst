@@ -19,7 +19,7 @@ Overview
 * 画面内のテキスト要素（コード値の名称、メッセージ、GUIコンポーネントのラベルなど）は、プログラム内でハードコードせずに、プロパティファイルなどの外部定義から取得する。
 * クライアントからLocaleを指定する仕組みを提供する。
 
-クライアントからLocaleを指定する方法は通りである。
+クライアントからLocaleを指定する方法は以下の通りである。
 
 * 標準のリクエストヘッダを使用する。(ブラウザの言語設定で指定)
 * リクエストパラメータを使用してCookieに保存する。
@@ -34,13 +34,6 @@ Localeの切り替えイメージを以下に示す。
 .. note::
 
     Codelistの国際化方法については、 :doc:`../WebApplicationDetail/Codelist` を参照されたい。
-
-.. note::
-
-    エラー画面を国際化する必要がある場合、Spring MVCのControllerを使用してエラー画面に遷移すること。
-    Spring MVCを介さずエラー画面に直接遷移した場合、メッセージが意図した言語で出力されない場合がある。
-
-    詳細については\ :ref:`case_Internationalization_can_not_be_done`\ を参照されたい。
 
 .. tip::
 
@@ -102,7 +95,7 @@ How to use
 プロパティファイルは、以下のルールに則って作成する。
 
 * Locale毎のファイル名は、\ :file:`application-messages_XX.properties`\という形式で作成する。(XX部分はLocaleを指定)
-* \ :file:`application-messages.properties`\は **必ず作成する** 。もし存在しない場合、\ ``MessageSource``\ からメッセージを取得できず、JSPにメッセージを設定する際に、\ ``JspTagException``\ が発生する。
+* \ :file:`application-messages.properties`\は **必ず作成する** 。もし存在しない場合、\ ``MessageSource``\ からメッセージを取得できず、\ ``??メッセージID??``\ という形式でメッセージIDが出力される。
 * \ :file:`application-messages.properties`\に定義するメッセージは、デフォルトで使用する言語で作成する。
 
 上記ルールに則ってプロパティファイルを作成すると、以下のような動作になる。
@@ -179,23 +172,16 @@ AcceptHeaderLocaleResolverの設定
 
 |
 
-JSPの実装
+ThymeleafのテンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-以下に、JSPの実装例を示す。
+以下に、テンプレートHTMLの実装例を示す。
 
-**include.jsp(インクルード用の共通jspファイル)**
+**テンプレートHTMLファイル**
 
-.. code-block:: jsp
+.. code-block:: html
 
-  <%@ page session="false"%>
-  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-  <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-  <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>  <!-- (1) -->
-  <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-  <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
-  <%@ taglib uri="http://terasoluna.org/functions" prefix="f"%>
-  <%@ taglib uri="http://terasoluna.org/tags" prefix="t"%>
+  <span th:text="#{title.admin.top}"></span>  <!-- (1) -->
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -205,31 +191,7 @@ JSPの実装
     * - | 項番
       - | 説明
     * - | (1)
-      - | JSPで出力する場合、Springのタグライブラリを用いてメッセージ出力を行うため、カスタムタグを定義する必要がある。
-        | ``<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>`` を定義すること。
-
-.. note::
-
-  インクルード用の共通jspファイルの詳細はインクルード用の共通JSPの作成を参照されたい。
-
-|
-
-**画面表示用JSPファイル**
-
-.. code-block:: jsp
-
-  <spring:message code="title.admin.top" />  <!-- (2) -->
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - | 項番
-      - | 説明
-    * - | (2)
-      - | JSPでは、Springのタグライブラリである、 ``<spring:message>`` を用いてメッセージ出力を行う。
-        | code属性に、プロパティで指定したキーを設定する。
+      - | メッセージ式\ ``#{}``\ を用いてメッセージ出力を行う。
         | 本例では、Localeが、jaの場合、"管理画面 Top"、それ以外のLocaleの場合、"Admin Top"が出力される。
 
 |
@@ -304,7 +266,7 @@ LocaleChangeInterceptorの設定
       - | 説明
     * - | (1)
       - | Spring MVCのインタセプターに、 ``org.springframework.web.servlet.i18n.LocaleChangeInterceptor`` を定義する。
-        | この設定により、"リクエストURL?locale=xx"で :ref:`使用可能<i18n_set_locale_jsp>` となる。
+        | この設定により、"リクエストURL?locale=xx"で :ref:`使用可能<i18n_set_locale_view>` となる。
 
 .. note::
 
@@ -327,6 +289,12 @@ LocaleChangeInterceptorの設定
           - | 説明
         * - | (2)
           - | \ ``paramName``\ プロパティにリクエストパラメータ名を指定する。上記例では、"リクエストURL?lang=xx"となる。
+
+.. note::
+
+ \ ``LocaleChangeInterceptor``\ はSpring MVCのControllerの処理実行時に呼ばれるインターセプタであるため、Controllerを経由しない遷移の場合は適用されないことに注意されたい。
+ なお、\ ``LocaleChangeInterceptor``\ だけでなくViewResolver(\ ``ThymeleafViewResolver``\ など)も同様にControllerを経由しない遷移の場合は適用されない。
+ 詳細は「:ref:`configuration-of-blank-project-label`」を参照されたい。
 
 |
 
@@ -422,20 +390,20 @@ Localeをクライアントに保存する場合は、\ ``CookieLocaleResolver``
 
 |
 
-.. _i18n_set_locale_jsp:
+.. _i18n_set_locale_view:
 
-JSPの実装
+ThymeleafのテンプレートHTML実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-以下に、JSPの実装例を示す。
+以下に、テンプレートHTMLの実装例を示す。
 
-**画面表示用JSPファイル**
+**テンプレートHTMLファイル**
 
-.. code-block:: jsp
+.. code-block:: html
 
-    <a href='${pageContext.request.contextPath}?locale=en'>English</a>  <!-- (1) -->
-    <a href='${pageContext.request.contextPath}?locale=ja'>Japanese</a>
-    <spring:message code="i.xx.yy.0001" />
+    <a th:href="@{/(locale='en')}">English</a>  <!-- (1) -->
+    <a th:href="@{/(locale='ja')}">Japanese</a>
+    <span th:text="#{i.xx.yy.0001}"></span>
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -450,115 +418,6 @@ JSPの実装
         | 上記例の場合、Englishリンクで英語Locale、Japaneseリンクで日本語Localeに変更している。
         | 以降は、選択したLocaleが有効になる。
         | 英語Localeは"en"用のプロパティファイルが存在しないため、デフォルトのプロパティファイルから読み込まれる。
-
-.. tip::
-
-    * インクルード用の共通jspにSpringのタグライブラリを定義する必要がある。
-    * インクルード用の共通jspファイルの詳細はインクルード用の共通JSPの作成を参照されたい。
-
-|
-
-.. _case_Internationalization_can_not_be_done:
-
-国際化が適用されない場合の対処方法
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-\ ``LocaleChangeInterceptor``\ はSpring MVCの\ ``Controller``\ の処理実行時に呼ばれるインターセプタであるため、\ ``Controller``\ を経由しない遷移の場合は国際化が適用されないことに注意されたい。
-
-例えば、エラー画面への遷移設定に直接JSPファイルを指定するような場合、エラー画面への遷移には\ ``Controller``\ が使用されない。
-この場合、エラー画面を国際化するには、エラー画面へ遷移するための\ ``Controller``\ を作成し、エラー画面への遷移に使用することで\ ``LocaleChangeInterceptor``\ が使用されるように設定する必要がある。
-
-.. note::
-
-    同様に、JSPを直接指定した遷移の場合Tilesによる画面レイアウトで使用する\ ``ViewResolver``\ を経由しないためTilesが適用されない。
-
-
-|
-
-設定方法について、Spring Securityの\ :ref:`SpringSecurityAuthorization`\ の実装を例に以下に示す。
-
-|
-
-**LocaleChangeInterceptorが適用されないエラー画面への遷移例**
-
-* spring-security.xml
-
-.. code-block:: xml
-
-    <sec:http>
-        <!-- omitted -->
-        <sec:access-denied-handler
-            error-page="/WEB-INF/views/common/error/accessDeniedError.jsp" /> <!-- (1) -->
-        <!-- omitted -->
-    </sec:http>
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (1)
-      - | \ ``<sec:access-denied-handler>``\ タグの\ ``error-page``\ 属性に認可エラー用のエラー画面をJSPで指定する。
-
-|
-
-**LocaleChangeInterceptorが適用されるエラー画面への遷移例**
-
-* spring-security.xml
-
-.. code-block:: xml
-
-    <sec:http>
-        <!-- omitted -->
-        <sec:access-denied-handler
-            error-page="/common/error/accessDeniedError" /> <!-- (1) -->
-        <!-- omitted -->
-    </sec:http>
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (1)
-      - | \ ``<sec:access-denied-handler>``\ タグの\ ``error-page``\ 属性に認可エラー用のエラー画面へ遷移するためのパスを設定する。
-
-* Controllerクラス
-
-.. code-block:: java
-
-    @Controller
-    @RequestMapping("/common/error") // (1)
-    public class ErrorController {
-
-        @RequestMapping("accessDeniedError") // (1)
-        public String accessDeniedError() {
-            return "common/error/accessDeniedError"; // (2)
-        }
-
-    }
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (1)
-      - | エラー画面へ遷移するためにリクエストマッピングを定義する。
-    * - | (2)
-      - | 遷移するエラー画面のView名を返却する。
-
-
-.. warning::
-
-    一般的に、エラー画面にはGETリクエストだけでなくPOSTリクエストからも遷移する可能性があるため、\ ``<mvc:view-controller>``\ は使用しないことを推奨する。
-
-    \ ``<mvc:view-controller>``\ 使用時の留意点については :ref:`controller_method_return-html-label`\ を参照されたい。
 
 
 .. raw:: latex

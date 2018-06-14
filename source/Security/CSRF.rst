@@ -251,60 +251,17 @@ Thymeleafの ``th:action`` 属性を使うと、以下のようなHTMLフォー�
 Ajax使用時の連携
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Ajaxを使ってリクエストを送信する場合は、HTMLのmetaタグとしてCSRFトークンの情報を出力し、metaタグから取得したトークン値をAjax通信時のリクエストヘッダに設定して連携する。
+Ajaxを使ってリクエストを送信する場合は、CSRFトークンの情報をリクエストヘッダに設定して連携する。
 
-まず、HTMLのmetaタグにCSRFトークンの情報を出力する。
-
-* テンプレートHTMLの実装例
-
-.. code-block:: html
-
-    <head>
-        <!-- omitted -->
-        <meta name="_csrf_parameter" th:content="${_csrf.parameterName}" /> <!-- (1) -->
-        <meta name="_csrf_header" th:content="${_csrf.headerName}" /> <!-- (1) -->
-        <meta name="_csrf" th:content="${_csrf.token}" /> <!-- (1) -->
-        <!-- omitted -->
-    </head>
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (1)
-      - | HTMLの\ ``<head>``\ 要素内に、CSRFトークンの情報を埋め込んだ ``<meta>`` 要素を設定する。
-
-このように ``<meta>`` タグを設定すると、以下のように出力される。
-デフォルトでは、CSRFトークン値を連携するためのリクエストヘッダ名は\ ``X-CSRF-TOKEN``\ となる。
-
-* HTMLの出力例
-
-.. code-block:: html
-
-    <head>
-        <!-- omitted -->
-        <meta name="_csrf_parameter" content="_csrf" />
-        <meta name="_csrf_header" content="X-CSRF-TOKEN" /> <!-- ヘッダ名 -->
-        <meta name="_csrf"
-              content="63845086-6b57-4261-8440-97a3c6fa6b99" /> <!-- トークン値 -->
-        <!-- omitted -->
-    </head>
-
-つぎに、JavaScriptを使ってmetaタグからCSRFトークンの情報を取得し、Ajax通信時のリクエストヘッダ
-にCSRFトークン値を設定する。(ここではjQueryを使った実装例となっている)
+JavaScriptの実装例を以下に示す。(ここではjQueryを使った実装例となっている)
 
 * JavaScriptの実装例
 
 .. code-block:: javascript
 
     $(function () {
-        var headerName = $("meta[name='_csrf_header']").attr("content"); // (1)
-        var tokenValue = $("meta[name='_csrf']").attr("content"); // (2)
         $(document).ajaxSend(function(e, xhr, options) {
-            xhr.setRequestHeader(headerName, tokenValue); // (3)
+            xhr.setRequestHeader([[${_csrf.headerName}]], [[${_csrf.token}]]); // (1)
         });
     });
 
@@ -316,11 +273,8 @@ Ajaxを使ってリクエストを送信する場合は、HTMLのmetaタグと�
     * - 項番
       - 説明
     * - | (1)
-      - | CSRFトークン値を連携するためのリクエストヘッダ名を取得する。
-    * - | (2)
-      - | CSRFトークン値を取得する。
-    * - | (3)
-      - | リクエストヘッダにCSRFトークン値を設定する。
+      - | JavaScriptのインライン記法を用いることでリクエストヘッダ名とCSRFトークン値を取得する。デフォルトでは、リクエストヘッダ名は\ ``X-CSRF-TOKEN``\ となる。
+        | JavaScriptにおけるインライン記法の詳細は\ :doc:`../ArchitectureInDetail/WebApplicationDetail/Thymeleaf`\のJavaScriptのテンプレート化を参照されたい
 
 .. _csrf_token-error-response:
 

@@ -100,6 +100,10 @@ JUnitの実行はプロジェクト単位、メソッド単位でも可能であ
 
 |
 
+.. raw:: latex
+
+   \newpage
+
 メニューから[Run As] -> [JUnit Test]を選択し、対象プロジェクトのテストを実行する。
 
 .. figure:: ./images/RunUnitTestIdeRunProjectJunit.png
@@ -112,6 +116,10 @@ JUnitの実行はプロジェクト単位、メソッド単位でも可能であ
 
 |
 
+.. raw:: latex
+
+   \newpage
+
 メソッド単位で実行する場合は、テストしたいメソッドを右クリックしてメニューを表示させる。
 
 .. figure:: ./images/RunUnitTestIdeClickTestMethod.png
@@ -123,6 +131,10 @@ JUnitの実行はプロジェクト単位、メソッド単位でも可能であ
 .. figure:: ./images/RunUnitTestIdeRunMethodJunit.png
 
 |
+
+.. raw:: latex
+
+   \newpage
 
 メソッド単位で実行した場合は、選択したメソッドの実行結果のみが表示される。
 

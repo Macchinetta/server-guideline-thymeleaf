@@ -213,6 +213,7 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
             <property name="additionalDialects">
                 <set>
                     <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                    <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
                 </set>
             </property>
         </bean>
@@ -388,7 +389,7 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
        そのため、テンプレートHTMLで\ ``${serverTime}``\ と記述し、Thymeleafの ``th:text`` 属性を使用することで、Controllerで設定した値を画面に出力することができる。
 
        ``th:text`` 属性はHTMLエスケープをして出力を行うため、自動的にXSS対策をとることができる。
-       詳細については :doc:`Cross Site Scripting <../Security/XSS>` を参照されたい。
+       詳細については :ref:`xss_how_to_use_ouput_escaping` を参照されたい。
 
 |
 
@@ -554,8 +555,8 @@ Controllerの作成
         <!--/* (2) */-->
         <form th:object="${echoForm}" th:action="@{/echo/hello}" method="post">
             <label for="name">Input Your Name:</label>
-            <input th:field="*{name}" /> <!--/* (3) */-->
-            <input type="submit" />
+            <input th:field="*{name}"> <!--/* (3) */-->
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -595,10 +596,10 @@ Controllerの作成
     </head>
     <body>
         <form action="/helloworld/echo/hello" method="post">
-            <input type="hidden" name="_csrf" value="43595f38-3edd-4c08-843b-3c31a00d2b15" />      
+            <input type="hidden" name="_csrf" value="43595f38-3edd-4c08-843b-3c31a00d2b15">
             <label for="name">Input Your Name:</label>
-            <input id="name" name="name" value=""/>
-            <input type="submit" />
+            <input id="name" name="name" value="">
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -759,9 +760,9 @@ Spring MVCでは、 `Bean Validation <http://jcp.org/en/jsr/detail?id=349>`_\ �
     <body>
         <form th:object="${echoForm}" th:action="@{/echo/hello}" method="post">
             <label for="name">Input Your Name:</label>
-            <input th:field="*{name}" />
+            <input th:field="*{name}">
             <span th:errors="*{name}" style="color:red"></span> <!--/* (1) */-->
-            <input type="submit" />
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -803,11 +804,11 @@ Spring MVCでは、 `Bean Validation <http://jcp.org/en/jsr/detail?id=349>`_\ �
     </head>
     <body>
         <form action="/helloworld/echo/hello" method="post">
-          <input type="hidden" name="_csrf" value="6e94a78d-4a2c-4a41-a514-0a60f0dbedaf" />
+          <input type="hidden" name="_csrf" value="6e94a78d-4a2c-4a41-a514-0a60f0dbedaf">
           <label for="name">Input Your Name:</label>
-          <input id="name" name="name" value=""/>
+          <input id="name" name="name" value="">
           <span style="color:red">size must be between 1 and 5</span>
-          <input type="submit" />
+          <input type="submit">
         </form>
     </body>
     </html>

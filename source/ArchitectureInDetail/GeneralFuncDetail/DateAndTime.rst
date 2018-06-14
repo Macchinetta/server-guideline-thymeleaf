@@ -266,6 +266,7 @@ How to use
 
         ``of`` メソッドを利用して、期間を指定して生成する方法もある。詳細は `Period, DurationのJavadoc <https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html>`_ を参照されたい。
 
+
 型変換
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -518,9 +519,8 @@ org.terasoluna.gfw.common.date パッケージの利用方法
 
 |
 | また、これらの文字列を画面上に表示したい場合、
-| Date and Time APIでは、Joda Timeと異なり、専用のJSPタグは存在していない。
-| JSTLの ``fmt:formatDate`` タグは、``java.util.Date`` と、 ``java.util.TimeZone`` オブジェクトのみを扱うため、
-| JSP上でDate and Time APIのオブジェクトが持つ日時情報を表示する場合は、フォーマット済みの文字列を渡して表示する。
+| ThymeleafではDate and Time APIをサポートした拡張モジュールとして、ダイアレクト（Java8 Time Dialect）を提供している。
+| 詳細は、 :ref:`DateAndTimeThymeleafDialect` を参照されたい。
 
 **Controllerクラス**
 
@@ -546,19 +546,12 @@ org.terasoluna.gfw.common.date パッケージの利用方法
       }
   }
   
-**jspファイル**
-
-.. code-block:: jsp
-
-  <p>currentDate =  ${f:h(currentDate)}.</p>
-  <p>formattedCurrentDateString =  ${f:h(formattedCurrentDateString)}.</p>
-
-**出力結果例(html)**
+**ThymeleafのテンプレートHTML**
 
 .. code-block:: html
 
-  <p>currentDate =  2015-12-25.</p>
-  <p>formattedCurrentDateString =  2015/12/25.</p>
+  <p th:text="|currentDate = ${currentDate}|"></p>
+  <p th:text="|formattedCurrentDateString = ${formattedCurrentDateString}|"></p>
 
 
 文字列からのパース
@@ -816,3 +809,288 @@ org.terasoluna.gfw.common.date パッケージの利用方法
    JapaneseDate jpDate = JapaneseDate.from(localDate);
 
 
+.. _DateAndTimeThymeleafDialect:
+
+Thymeleafのダイアレクト
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+| Thymeleafでは、Date and Time APIをサポートした拡張モジュールとしてJava8 Time Dialectを提供している。
+|
+| Java8 Time Dialectでは ``#temporals`` を用意している。
+| ``#temporals`` を利用することで、テンプレートHTMLでDate and Time APIのオブジェクトの文字列フォーマットなどが可能となる。
+
+    .. note::
+        Java8 Time Dialectは、Thymeleafで公式にサポートされる。
+        Java8 Time Dialectに関する情報は、`thymeleaf-extras-java8time <https://github.com/thymeleaf/thymeleaf-extras-java8time/tree/3.0-master#thymeleaf---module-for-java-8-time-api-compatibility>`_ を参照されたい。
+
+
+設定方法
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+| Java8 Time Dialectを使用するためには、以下の2点の設定を行う。
+| なお、いずれもMacchinettaのブランクプロジェクトには設定済みであり、新たに設定を加える必要はない。
+
+1. ``thymeleaf-extras-java8time`` の依存関係の設定
+2. Java8 Time Dialectを使用するためのBean定義
+
+* pom.xmlの定義
+
+ * プロジェクトのルートのpom.xml
+
+ .. code-block:: xml
+
+   <dependencyManagement>
+     <dependencies>
+       <!-- omitted -->
+       <!--(1)-->
+       <dependency>
+         <groupId>org.thymeleaf.extras</groupId>
+         <artifactId>thymeleaf-extras-java8time</artifactId>
+         <version>${thymeleaf-extras-java8time.version}</version>
+       </dependency>
+     </dependencies>
+   </dependencyManagement>
+   
+   <properties>
+     <!-- (2) -->
+     <thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
+   </properties>
+
+
+ * [artifactID]-webプロジェクトのpom.xml
+  
+ .. code-block:: xml
+
+    <dependencies>
+      <!-- omitted -->
+      <!-- (3) -->
+      <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-java8time</artifactId>
+      </dependency>
+    </dependencies>
+
+
+* spring-mvc.xmlの定義
+
+ .. code-block:: xml
+
+      <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+          <!-- omitted -->
+          <property name="additionalDialects">
+              <set>
+                  <!-- omitted -->
+                  <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect"/> <!-- (4) -->
+              </set>
+          </property>
+      </bean>
+
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+    :header-rows: 1
+    :widths: 10 90
+    :class: longtable
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - |  ``thymeleaf-extras-java8time`` のdependencyを定義する。
+    * - | (2)
+      - |  ``thymeleaf-extras-java8time`` のバージョンを定義する。
+        |  指定するバージョンは、 :doc:`../../Overview/FrameworkStack` の :ref:`frameworkstack_using_oss_version` を参照されたい。
+    * - | (3)
+      - |  ``thymeleaf-extras-java8time`` のdependencyを追加することで、Java8 Time Dialectが利用可能となる。
+    * - | (4)
+      - | ``additionalDialects`` に、``Java8TimeDialect`` を定義することで、テンプレートHTML内で、``#temporals`` が利用可能となる。
+
+.. note::
+    ``thymeleaf-extras-java8time`` のバージョンについて、本来はSpring IO Platformで管理する前提であるが、Thymeleafに関するライブラリは独自にバージョン指定している。
+
+
+.. _DateAndTimeImplementationView:
+
+Viewの実装
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+| Java8 Time Dialectを使用してViewの実装を行うには、``#temporals`` を使用する。
+| ``#temporals`` では用途に応じて様々なメソッドを用意している。ここでは、Date and Time APIオブジェクトのフォーマットを行う ``format`` メソッドについて説明する。
+|
+| ``format`` メソッドは以下のようなシグネチャをもつ。同様にフォーマットを行うメソッドとして、``formatISO`` メソッドについても以下の一覧に示す。
+
+ .. tabularcolumns:: |p{0.05\linewidth}|p{0.10\linewidth}|p{0.85\linewidth}|
+ .. list-table::
+    :header-rows: 1
+    :widths: 5 35 55
+
+    * - 項番
+      - メソッドシグネチャ
+      - 説明
+    * - 1.
+      - | format(Temporal)
+      - | ``Temporal`` を指定してフォーマットする。
+    * - 2.
+      - | format(Temporal, フォーマット文字列)
+      - | ``Temporal`` 、フォーマット文字列を指定してフォーマットする。
+    * - 3.
+      - | format(Temporal, ロケール)
+      - | ``Temporal`` 、ロケールを指定してフォーマットする。
+    * - 4.
+      - | format(Temporal, フォーマット文字列, ロケール)
+      - | ``Temporal`` 、フォーマット文字列、ロケールを指定してフォーマットする。
+    * - 5.
+      - | formatISO(Temporal)
+      - | ``Temporal`` を指定して ISO8601形式にフォーマットする。
+
+| ``format`` メソッドは ``java.time.temporal.Temporal`` 型( ``LocalDateTime`` 、``LocalDate`` 、``LocalTime`` など）のオブジェクトを入力値として、フォーマット文字列とロケールを与えて文字列にフォーマットする。
+| フォーマットとロケールは省略することができ、それぞれデフォルト値は以下のようになる。
+
+* フォーマット文字列： ``uuuu/MM/dd`` 形式
+* ロケール： システムのデフォルトロケール
+
+.. note::
+    ``format`` メソッドのデフォルトのフォーマット文字列は上記のとおり、``uuuu/MM/dd`` 形式となる。
+    Date and Time APIのオブジェクトを、``toString`` メソッドで文字列に変換した場合( ``uuuu-MM-dd`` 形式)と異なる形式でフォーマットされることに留意されたい。
+
+|
+| ``Temporal`` 、フォーマット文字列、ロケールを指定する場合の実装例を以下に示す。
+
+* Controllerクラス
+
+ .. code-block:: java
+
+    model.addAttribute("currentDateTime", LocalDateTime.now()); // (1)
+    model.addAttribute("locale", Locale.ENGLISH); // (2)
+
+* テンプレートHTML
+
+ .. code-block:: html
+
+   <p th:text="|currentDateTime = ${#temporals.format(currentDateTime, 'G uuuu/MM/dd E', locale)}.|"></p> <!--/* (3) /*-->
+
+* 出力結果例(html)
+
+ .. code-block:: html
+
+   <p>currentDate =  AD 2015/12/25 Fri.</p> <!-- (4) -->
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+    :header-rows: 1
+    :widths: 10 90
+    :class: longtable
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - |  ``Model`` オブジェクトに ``LocalDateTime`` オブジェクトを追加する。
+        |  ここでは、現在日時を指定している。
+    * - | (2)
+      - |  ``Model`` オブジェクトに ``Locale`` オブジェクトを追加する。
+        |  ここでは、言語のロケールとして英語を指定している。
+    * - | (3)
+      - |  ``LocalDateTime`` オブジェクトを指定したフォーマット文字列およびロケールでフォーマットする。
+        |  ここでは、フォーマット文字列を ``G uuuu/MM/dd E`` 形式で指定している。
+        |
+        |  ``format`` メソッドではフォーマッタとして、``java.time.format.DateTimeFormatter`` を利用している。
+        |  そのため、フォーマットのパターンの指定は、``ofPattern`` メソッドを利用する場合と同一である。
+    * - | (4)
+      - |  現在の日付が2015年12月25日の場合、ロケールが英語のため、``AD 2015/12/25 Fri`` と表示される。
+
+
+#temporalsのメソッド
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+| 先述のとおり、``#temporals`` では用途に応じて様々なメソッドを用意している。
+| 以下に、``#temporals`` が持つメソッドの一覧を示す。
+
+.. tabularcolumns:: |p{0.05\linewidth}|p{0.15\linewidth}|p{0.40\linewidth}|p{0.40\linewidth}|
+.. list-table:: **#temporalsのメソッド一覧**
+   :header-rows: 1
+   :widths: 5 15 40 40
+   :class: longtable
+
+   * - 項番
+     - メソッド名
+     - 説明
+     - 例
+   * - 1.
+     - | format
+     - | ``Temporal`` を文字列にフォーマットする。
+     - | 2015年12月25日23時30分59秒の場合、
+       | ``2015/12/25 23:30:59`` にフォーマットする。
+   * - 2.
+     - | formatISO
+     - | ``Temporal`` をISO8601形式で文字列にフォーマットする。
+     - | 2015年12月25日23時30分59秒345の場合(タイムゾーンは日本)、
+       | ``2015-12-25T23:30:59.345+0900`` にフォーマットする。
+   * - 3.
+     - | day
+     - | 日時情報から日の値を取得する。
+     - | 12月25日の場合、``25`` を取得する。
+   * - 4.
+     - | month
+     - | 日時情報から月の値を取得する。
+     - | 12月25日の場合、``12`` を取得する。
+   * - 5.
+     - | monthName
+     - | 日時情報から月の名称を取得する。
+     - | 12月25日の場合、``12月`` を取得する。
+   * - 6.
+     - | monthNameShort
+     - | 日時情報から月の短縮した名称を取得する。
+     - | 12月25日の場合、``12`` を取得する。
+   * - 7.
+     - | year
+     - | 日時情報から年の値を取得する。
+     - | 2015年の場合、``2015`` を取得する。
+   * - 8.
+     - | dayOfWeek
+     - | 日時情報から月曜日を起点にした曜日の番号を取得する。
+     - | 金曜日の場合、``5`` を取得する。
+   * - 9.
+     - | dayOfWeekName
+     - | 日時情報から曜日の名称を取得する。
+     - | 金曜日の場合、``金曜日`` を取得する。
+   * - 10.
+     - | dayOfWeekNameShort
+     - | 日時情報から曜日の短縮した名称を取得する。
+     - | 金曜日の場合、``金`` を取得する。
+   * - 11.
+     - | hour
+     - | 日時情報から1日のうちの時の値を取得する。
+     - | 23時30分59秒の場合、``23`` を取得する。
+   * - 12.
+     - | minute
+     - | 日時情報から1時間のうちの分の値を取得する。
+     - | 23時30分59秒の場合、``30`` を取得する。
+   * - 13.
+     - | second
+     - | 日時情報から1分のうちの秒の値を取得する。
+     - | 23時30分59秒の場合、``59`` を取得する。
+   * - 14.
+     - | nanosecond
+     - | 日時情報から1秒のうちのナノ秒の値を取得する。
+     - | 23時30分59秒345の場合、``345`` を取得する。
+
+.. note::
+    上記全てのメソッドには、以下のように配列、リスト、セットに対応したメソッドが存在する。
+    
+      (例) ``arrayFormat(...)`` 、``listFormat(...)`` 、``setFormat(...)`` など
+    
+    各メソッドの詳細については、`thymeleaf-extras-java8time - Usage <https://github.com/thymeleaf/thymeleaf-extras-java8time/tree/3.0-master#usage>`_ を参照されたい。
+    ``format`` メソッドのシグネチャについては、:ref:`DateAndTimeImplementationView` でも説明している。
+
+.. note::
+    上記のメソッド以外に、現在日時の日付オブジェクトや、年・月・日やタイムゾーンを指定して日付オブジェクトを生成するメソッドがある。
+    これらメソッドのシグネチャの情報については、`thymeleaf-extras-java8time - Usage <https://github.com/thymeleaf/thymeleaf-extras-java8time/tree/3.0-master#usage>`_ を参照されたい。
+    
+    ただし、これらのメソッドを利用してViewで日付を生成することは推奨しない。なぜなら、これらのメソッドはシステム日付を取得するため、意図しない日時となり得るためである。
+
+.. warning:: **ロケールとタイムゾーンについて**
+
+    ロケールとタイムゾーンは同じような意味と勘違いされやすいが、それぞれ異なる意味であるため留意されたい。
+    
+    ロケールは、国や地域、言語などの表記規則を表す。日時表記で考えた場合、ある日時を日本語や英語で表記することができる。
+    一方、タイムゾーンは、同じ標準時（国や地域で共通して使う時刻）を使う地域全体を表す。ある日時を基準に、指定した国や地域の日時を表す。国や地域によって時差があるため、異なる日時を取る場合がある。
+    また、ロケールとタイムゾーンを併用することで、日本語表記で他の国の日時を表すことも可能である。

@@ -142,7 +142,7 @@ Bean ValidationのAPI仕様クラス(\ ``javax.validation``\ パッケージの�
 
 * フォームクラスのフィールドに、Bean Validation用のアノテーションを付与する
 * Controllerに、検証するための\ ``@Validated``\ アノテーションを付与する
-* テンプレートHTMLに、検証エラーメッセージを表示するためのタグを追加する
+* ThymeleafのテンプレートHTMLに、検証エラーメッセージを表示するためのタグを追加する
 
 が必要である。
 
@@ -361,16 +361,16 @@ Bean ValidationのAPI仕様クラス(\ ``javax.validation``\ パッケージの�
       <body>
           <form th:object="${userForm}" method="post" th:action="@{/user/create}">
               <label for="name">Name:</label>
-              <input type="text" th:field="*{name}" />
-              <span id="name.errors" th:errors="*{name}"></span><!--/* (1) */-->
+              <input type="text" th:field="*{name}">
+              <span id="name-errors" th:errors="*{name}"></span><!--/* (1) */-->
               <br>
               <label for="email">Email:</label>
-              <input type="text" th:field="*{email}" />
-              <span id="email.errors" th:errors="*{email}"></span>
+              <input type="text" th:field="*{email}">
+              <span id="email-errors" th:errors="*{email}"></span>
               <br>
               <label for="age">Age:</label>
-              <input type="text" th:field="*{age}" />
-              <span id="age.errors" th:errors="*{age}"></span>
+              <input type="text" th:field="*{age}">
+              <span id="age-errors" th:errors="*{age}"></span>
               <br>
               <button id="confirm" name="confirm" type="submit" value="Submit">Confirm</button>
           </form>
@@ -429,16 +429,16 @@ NameとEmailが空文字であることに対するエラーメッセージと�
     <form th:object="${userForm}" method="post"
         class="form-horizontal" th:action="@{/user/create}">
         <label for="name" name="name" th:errorclass="error-label">Name:</label><!--/* (1) */-->
-        <input type="text" th:field="*{name}" th:errorclass="error-input" /><!--/* (2) */-->
-        <span id="name.errors" th:errors="*{name}" class="error-messages"></span><!--/* (3) */-->
+        <input type="text" th:field="*{name}" th:errorclass="error-input"><!--/* (2) */-->
+        <span id="name-errors" th:errors="*{name}" class="error-messages"></span><!--/* (3) */-->
         <br>
         <label for="email" name="email" th:errorclass="error-label">Email:</label>
-        <input type="text" th:field="*{email}" th:errorclass="error-input" />
-        <span id="email.errors" th:errors="*{email}" class="error-messages"></span>
+        <input type="text" th:field="*{email}" th:errorclass="error-input">
+        <span id="email-errors" th:errors="*{email}" class="error-messages"></span>
         <br>
         <label for="age" name="age" th:errorclass="error-label">Age:</label>
-        <input type="text" th:field="*{age}" th:errorclass="error-input" />
-        <span id="age.errors" th:errors="*{age}" class="error-messages"></span>
+        <input type="text" th:field="*{age}" th:errorclass="error-input">
+        <span id="age-errors" th:errors="*{age}" class="error-messages"></span>
         <br>
         <button id="confirm" name="confirm" type="submit" value="Submit">Confirm</button>
     </form>
@@ -453,11 +453,23 @@ NameとEmailが空文字であることに対するエラーメッセージと�
      - 説明
    * - | (1)
      - | エラー時に\ ``<label>``\ タグへ加えるクラス名を、\ ``th:errorclass``\ 属性で指定する。
-       | また、対象のフィールド名を、\ ``name``\ 属性で指定する。
+       | また、\ ``th:field``\ 属性が指定されていないタグへ\ ``th:errorclass``\ 属性を指定する場合は、対象のフィールド名を\ ``name``\ 属性で指定する。
    * - | (2)
      - | エラー時に\ ``<input>``\ タグへ加えるクラス名を、\ ``th:errorclass``\ 属性で指定する。
    * - | (3)
      - | エラーメッセージに加えるクラス名を、\ ``class``\ 属性で指定する。
+
+.. note:: **エラー時にスタイルを変更する方法について**
+
+  実装例のように、 ``th:errorclass`` 属性を使用することで、入力チェックエラーがある要素のスタイルを変更することができる。
+  
+  しかし、 ``th:errorclass`` 属性を使用できるのは、同じタグに付与された ``th:field`` 属性または ``name`` 属性により、入力チェックエラーとなったフィールド名（フォームオブジェクトのプロパティ名）が特定できる場合のみとなる。
+  
+  入力項目以外のスタイルを変更したい場合は、 ``#fields.hasErrors('fieldName')`` を使用してフィールドに入力チェックエラーが存在するかを判定することでスタイルを変更することができる。
+  
+  例えば、 ``#fields.hasErrors('fieldName')`` を使用して上記実装例の(1)と同じ仕様を実現する場合には、以下のような構文となる。
+  
+  * ``th:classappend="${#fields.hasErrors('name')} ? 'error-label'"``
 
 .. note::
 
@@ -517,15 +529,15 @@ NameとEmailが空文字であることに対するエラーメッセージと�
 .. code-block:: html
 
     <form th:object="${userForm}" method="post" th:action="@{/user/create}">
-        <div id="userForm.errors" th:errors="*{*}" class="error-message-list"></div><!--/* (1) */-->
+        <div id="userForm-errors" th:errors="*{*}" class="error-message-list"></div><!--/* (1) */-->
         <label for="name" name="name" th:errorclass="error-label">Name:</label>
-        <input type="text" th:field="*{name}" th:errorclass="error-input" />
+        <input type="text" th:field="*{name}" th:errorclass="error-input">
         <br>
         <label for="email" name="email" th:errorclass="error-label">Email:</label>
-        <input type="text" th:field="*{email}" th:errorclass="error-input" />
+        <input type="text" th:field="*{email}" th:errorclass="error-input">
         <br>
         <label for="age" name="age" th:errorclass="error-label">Age:</label>
-        <input type="text" th:field="*{age}" th:errorclass="error-input" />
+        <input type="text" th:field="*{age}" th:errorclass="error-input">
         <br>
         <button id="confirm" name="confirm" type="submit" value="Submit">Confirm</button>
     </form>
@@ -546,8 +558,8 @@ NameとEmailが空文字であることに対するエラーメッセージと�
 
 .. tip:: **エラーメッセージを一覧で表示する際のHTML構造を独自に定義する方法**
 
-   ``th:errors="*{*}"``\ と指定した場合、各エラーは\ ``<br />``\ 区切りで出力される。
-   \ ``<br />``\ 区切りではなく独自のHTML構造で出力したい場合は、\ ``#fields.allErrors()``\ メソッドを利用することで対応できる。
+   ``th:errors="*{*}"``\ と指定した場合、各エラーは\ ``<br>``\ 区切りで出力される。
+   \ ``<br>``\ 区切りではなく独自のHTML構造で出力したい場合は、\ ``#fields.allErrors()``\ メソッドを利用することで対応できる。
 
    以下に、実装例を示す。
 
@@ -653,17 +665,17 @@ NameとEmailが空文字であることに対するエラーメッセージと�
      .. code-block:: html
        :emphasize-lines: 1
 
-       <div id="null.errors" th:errors="${userForm.*}" class="error-message-list"></div>
+       <div id="userForm-errors" th:errors="${userForm.*}" class="error-message-list"></div>
        <hr>
        <form th:object="${userForm}" method="post" th:action="@{/user/create}">
            <label for="name" name="name" th:errorclass="error-label">Name:</label>
-           <input type="text" th:field="*{name}" th:errorclass="error-input" />
+           <input type="text" th:field="*{name}" th:errorclass="error-input">
            <br>
            <label for="email" name="email" th:errorclass="error-label">Email:</label>
-           <input type="text" th:field="*{email}" th:errorclass="error-input" />
+           <input type="text" th:field="*{email}" th:errorclass="error-input">
            <br>
            <label for="age" name="age" th:errorclass="error-label">Age:</label>
-           <input type="text" th:field="*{age}" th:errorclass="error-input" />
+           <input type="text" th:field="*{age}" th:errorclass="error-input">
            <br>
            <button id="confirm" name="confirm" type="submit" value="Submit">Confirm</button>
        </form>
@@ -870,60 +882,60 @@ ECサイトにおける「注文」処理の例を考える。「注文」フォ
         <form th:object="${orderForm}" method="post"
             class="form-horizontal" th:action="@{/order/order}">
             <label for="coupon" name="coupon" th:errorclass="error-label">Coupon Code:</label>
-            <input type="text" th:field="*{coupon}" th:errorclass="error-input" />
-            <span id="coupon.errors" th:errors="*{coupon}" class="error-messages"></span>
+            <input type="text" th:field="*{coupon}" th:errorclass="error-input">
+            <span id="coupon-errors" th:errors="*{coupon}" class="error-messages"></span>
             <br>
         <fieldset>
             <legend>Receiver</legend>
             <!--/* (1) */-->
-            <span id="receiverAddress.errors" th:errors="*{receiverAddress}"
+            <span id="receiverAddress-errors" th:errors="*{receiverAddress}"
                 class="error-messages"></span>
             <!--/* (2) */-->
             <label for="receiverAddress.name" name="receiverAddress.name"
                 th:errorclass="error-label">Name:</label>
             <input type="text" th:field="*{receiverAddress.name}"
                 th:errorclass="error-input" />
-            <span id="receiverAddress.name.errors" th:errors="*{receiverAddress.name}"
+            <span id="receiverAddress-name-errors" th:errors="*{receiverAddress.name}"
                 class="error-messages"></span>
             <br>
             <label for="receiverAddress.postcode" name="receiverAddress.postcode"
                 th:errorclass="error-label">Postcode:</label>
             <input type="text" th:field="*{receiverAddress.postcode}"
                 th:errorclass="error-input" />
-            <span id="receiverAddress.postcode.errors" th:errors="*{receiverAddress.postcode}"
+            <span id="receiverAddress-postcode-errors" th:errors="*{receiverAddress.postcode}"
                 class="error-messages"></span>
             <br>
             <label for="receiverAddress.address" name="receiverAddress.address"
                 th:errorclass="error-label">Address:</label>
             <input type="text" th:field="*{receiverAddress.address}"
                 th:errorclass="error-input" />
-            <span id="receiverAddress.address.errors" th:errors="*{receiverAddress.address}"
+            <span id="receiverAddress-address-errors" th:errors="*{receiverAddress.address}"
                 class="error-messages"></span>
         </fieldset>
         <br>
         <fieldset>
             <legend>Sender</legend>
-            <span id="senderAddress.errors" th:errors="*{senderAddress}"
+            <span id="senderAddress-errors" th:errors="*{senderAddress}"
                 class="error-messages"></span>
             <label for="senderAddress.name" name="senderAddress.name"
                 th:errorclass="error-label">Name:</label>
             <input type="text" th:field="*{senderAddress.name}"
                 th:errorclass="error-input" />
-            <span id="senderAddress.name.errors" th:errors="*{senderAddress.name}"
+            <span id="senderAddress-name-errors" th:errors="*{senderAddress.name}"
                 class="error-messages"></span>
             <br>
             <label for="senderAddress.postcode" name="senderAddress.postcode"
                 th:errorclass="error-label">Postcode:</label>
             <input type="text" th:field="*{senderAddress.postcode}"
                 th:errorclass="error-input" />
-            <span id="senderAddress.postcode.errors" th:errors="*{senderAddress.postcode}"
+            <span id="senderAddress-postcode-errors" th:errors="*{senderAddress.postcode}"
                 class="error-messages"></span>
             <br>
             <label for="senderAddress.address" name="senderAddress.address"
                 th:errorclass="error-label">Address:</label>
             <input type="text" th:field="*{senderAddress.address}"
                 th:errorclass="error-input" />
-            <span id="senderAddress.address.errors" th:errors="*{senderAddress.address}"
+            <span id="senderAddress-address-errors" th:errors="*{senderAddress.address}"
                 class="error-messages"></span>
         </fieldset>
 
@@ -1034,18 +1046,18 @@ ECサイトにおける「注文」処理の例を考える。「注文」フォ
         <form th:object="${userForm}" method="post"
             class="form-horizontal" th:action="@{/user/create}">
             <label for="name" name="name" th:errorclass="error-label">Name:</label>
-            <input type="text" th:field="*{name}" th:errorclass="error-input" />
-            <span id="name.errors" th:errors="*{name}" class="error-messages"></span>
+            <input type="text" th:field="*{name}" th:errorclass="error-input">
+            <span id="name-errors" th:errors="*{name}" class="error-messages"></span>
             <br>
             <label for="email" name="email" th:errorclass="error-label">Email:</label>
-            <input type="text" th:field="*{email}" th:errorclass="error-input" />
-            <span id="email.errors" th:errors="*{email}" class="error-messages"></span>
+            <input type="text" th:field="*{email}" th:errorclass="error-input">
+            <span id="email-errors" th:errors="*{email}" class="error-messages"></span>
             <br>
             <label for="age" name="age" th:errorclass="error-label">Age:</label>
-            <input type="text" th:field="*{age}" th:errorclass="error-input" />
-            <span id="age.errors" th:errors="*{age}" class="error-messages"></span>
+            <input type="text" th:field="*{age}" th:errorclass="error-input">
+            <span id="age-errors" th:errors="*{age}" class="error-messages"></span>
             <br>
-            <span id="addresses.errors" th:errors="*{addresses}" class="error-messages"></span><!--/* (1) */-->
+            <span id="addresses-errors" th:errors="*{addresses}" class="error-messages"></span><!--/* (1) */-->
             <fieldset class="address" th:each="address,status : *{addresses}"><!--/* (2) */-->
                 <legend th:text="|Address${status.count}|">Address1</legend>
                 <label th:for="|addresses${status.index}.name|" th:name="|addresses[${status.index}].name|"
@@ -1191,11 +1203,11 @@ ECサイトにおける「注文」処理の例を考える。「注文」フォ
     <fieldset class="address">\
         <legend>Address' + (number + 1) + '</legend>\
         <label for="addresses' + number + '.name">Name:</label>\
-        <input id="addresses' + number + '.name" name="addresses[' + number + '].name" type="text" value=""/><br>\
+        <input id="addresses' + number + '-name" name="addresses[' + number + '].name" type="text" value=""><br>\
         <label for="addresses' + number + '.postcode">Postcode:</label>\
-        <input id="addresses' + number + '.postcode" name="addresses[' + number + '].postcode" type="text" value=""/><br>\
+        <input id="addresses' + number + '-postcode" name="addresses[' + number + '].postcode" type="text" value=""><br>\
         <label for="addresses' + number + '.address">Address:</label>\
-        <input id="addresses' + number + '.address" name="addresses[' + number + '].address" type="text" value=""/><br>\
+        <input id="addresses' + number + '-address" name="addresses[' + number + '].address" type="text" value=""><br>\
         <button class="remove-address-button">Remove</button>\
     </fieldset>\
     <br>\
@@ -1354,16 +1366,16 @@ Bean Validationでグループを指定する場合、アノテーションの\ 
       <form th:object="${userForm}" method="post"
           class="form-horizontal" th:action="@{/user/create}">
           <label for="name" name="name" th:errorclass="error-label">Name:</label>
-          <input type="text" th:field="*{name}" th:errorclass="error-input" />
-          <span id="name.errors" th:errors="*{name}" class="error-messages"></span>
+          <input type="text" th:field="*{name}" th:errorclass="error-input">
+          <span id="name-errors" th:errors="*{name}" class="error-messages"></span>
           <br>
           <label for="email" name="email" th:errorclass="error-label">Email:</label>
-          <input type="text" th:field="*{email}" th:errorclass="error-input" />
-          <span id="email.errors" th:errors="*{email}" class="error-messages"></span>
+          <input type="text" th:field="*{email}" th:errorclass="error-input">
+          <span id="email-errors" th:errors="*{email}" class="error-messages"></span>
           <br>
           <label for="age" name="age" th:errorclass="error-label">Age:</label>
-          <input type="text" th:field="*{age}" th:errorclass="error-input" />
-          <span id="age.errors" th:errors="*{age}" class="error-messages"></span>
+          <input type="text" th:field="*{age}" th:errorclass="error-input">
+          <span id="age-errors" th:errors="*{age}" class="error-messages"></span>
           <br>
           <label for="country" name="country" th:errorclass="error-label">Country:</label>
           <select th:field="*{country}" th:errorclass="error-input">
@@ -1371,7 +1383,7 @@ Bean Validationでグループを指定する場合、アノテーションの\ 
               <option value="jp">Japan</option>
               <option value="sg">Singapore</option>
           </select>
-          <span id="country.errors" th:errors="*{country}" class="error-messages"></span>
+          <span id="country-errors" th:errors="*{country}" class="error-messages"></span>
           <br>
           <button id="confirm" name="confirm" type="submit" value="Submit">Confirm</button>
       </form>
@@ -2013,14 +2025,14 @@ Spring Validatorによる相関項目チェック実装
         <form th:object="${passwordResetForm}" method="post"
             class="form-horizontal" th:action="@{/password/reset}">
             <label for="password" name="password" th:errorclass="error-label">Password:</label>
-            <input type="password" th:field="*{password}" th:errorclass="error-input" />
-            <span id="password.errors" th:errors="*{password}"
+            <input type="password" th:field="*{password}" th:errorclass="error-input">
+            <span id="password-errors" th:errors="*{password}"
                 class="error-messages"></span>
             <br>
             <label for="confirmPassword" name="confirmPassword" th:errorclass="error-label">Password (Confirm):</label>
             <input type="password" th:field="*{confirmPassword}"
-                th:errorclass="error-input" />
-            <span id="confirmPassword.errors" th:errors="*{confirmPassword}"
+                th:errorclass="error-input">
+            <span id="confirmPassword-errors" th:errors="*{confirmPassword}"
                 class="error-messages"></span>
             <br>
             <button type="submit" value="Submit">Reset</button>
@@ -2967,10 +2979,10 @@ Java SE 8とHibernate Validator 5.2+を組み合わせることで、\ ``List<@N
     <form th:object="${sampleForm}">
         <!-- (1) -->
         <span th:each="role : ${CL_ROLE}">
-            <input type="checkbox" th:field="*{roles}" th:value="${role.key}" />
+            <input type="checkbox" th:field="*{roles}" th:value="${role.key}">
             <label th:for="${#ids.prev('roles')}" th:text="${role.value}"></label>
         </span>
-        <span id="roles*.errors" th:errors="*{roles*}" class="error-messages"></span>
+        <span id="roles*-errors" th:errors="*{roles*}" class="error-messages"></span>
         <button type="submit" value="Submit">Submit</button>
     </form>
 
@@ -2985,13 +2997,15 @@ Java SE 8とHibernate Validator 5.2+を組み合わせることで、\ ``List<@N
      * - | (1)
        - |  チェックボックスとエラーメッセージを表示するタグを実装する。
 
+  .. _Validation_ids_prev_method:
+
   .. note:: **#ids.prevメソッドについて**
 
-     ``#ids``\ オブジェクトを利用すると、繰り返し処理の中でIDを生成するのが容易になる。
+     ``#ids``\ を利用すると、繰り返し処理の中でIDを生成するのが容易になる。
      上記の実装例では、\ ``label``\ タグの\ ``for``\ 属性に\ ``#ids.prev``\ メソッドを利用して対応するチェックボックス（\ ``<input type="checkbox">``\ ）のIDを取得している。
      通常、\ ``#ids.prev``\ メソッドは直前に\ ``#ids.seq``\ メソッドを使用して生成されたIDを取得するために利用するが、チェックボックスに\ ``th:field``\ 属性を付与した場合は内部的に\ ``#ids.seq``\ メソッドと同等の処理を実行してIDを生成するため、\ ``#ids.prev``\ メソッドを利用してIDを取得することが可能である。
 
-     ``#ids``\ オブジェクトの詳細については、\ `公式ドキュメントの#idsオブジェクトの説明 <http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf_ja.html#id>`_\ を参照されたい。
+     ``#ids``\ の詳細については、\ `公式ドキュメントの#idsの説明 <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#ids>`_\ を参照されたい。
 
 |
 
@@ -3010,7 +3024,7 @@ Java Beanで\ ``String``\ をラップし、ネストしたBeanのプロパテ�
 を利用して実装を行うことができる。
 
 Formatterで\ ``String``\ から\ ``Role``\ 、\ ``Role``\ から\ ``String``\ への型変換を追加することで、\ ``List<String>``\ にした時と同様に、
-複雑な実装をすることなく \ ``th:field``\ を使用した実装ができる。
+複雑な実装をすることなく \ ``th:field``\ 属性を使用した実装ができる。
 
 主な手順は以下の通り。
 
@@ -3021,7 +3035,7 @@ Formatterで\ ``String``\ から\ ``Role``\ 、\ ``Role``\ から\ ``String``\ �
 * \ ``ConversionServiceFactoryBean``\ を使用し、作成した\ ``Formatter``\ をSpringに登録する。
 
 
-また、\ ``th:field``\ で正常に選択済みの項目を表示するためには、Formatterの実装に加えてラッパークラスの\ ``toString``\ メソッドをオーバーライドする必要がある。
+また、\ ``th:field``\ 属性で正常に選択済みの項目を表示するためには、Formatterの実装に加えてラッパークラスの\ ``toString``\ メソッドをオーバーライドする必要がある。
 
 \ ``th:field``\ 属性を設定したチェックボックスは、\ ``value``\ 属性の値とバインドされたフォームのプロパティの値とが一致する場合に、選択済みの項目として表示する。
 この一致性の判断には、プロパティが単項目の場合はFormatterが使用され、配列やコレクションの場合は指定されたプロパティの\ ``toString``\ メソッドの結果が使用される。
@@ -3219,10 +3233,10 @@ Controller側では\ ``Role``\の\ ``List``\ 、テンプレートHTML側では\
     <form th:object="${sampleForm}">
         <!-- (1) -->
         <span th:each="role : ${CL_ROLE}">
-            <input type="checkbox" th:field="*{roles}" th:value="${role.key}" />
+            <input type="checkbox" th:field="*{roles}" th:value="${role.key}">
             <label th:for="${#ids.prev('roles')}" th:text="${role.value}"></label>
         </span>
-        <span id="roles*.errors" th:errors="*{roles*}" class="error-messages"></span>
+        <span id="roles*-errors" th:errors="*{roles*}" class="error-messages"></span>
         <button type="submit" value="Submit">Submit</button>
     </form>
 
@@ -3235,7 +3249,7 @@ Controller側では\ ``Role``\の\ ``List``\ 、テンプレートHTML側では\
      * - 項番
        - 説明
      * - | (1)
-       - |  \ ``List<String>``\ にした時と同様に \ ``th:field``\ を使用することができる。
+       - |  \ ``List<String>``\ にした時と同様に \ ``th:field``\ 属性を使用することができる。
 
 
 |

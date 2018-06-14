@@ -1788,7 +1788,7 @@ Appendix
         <h1>Wizard Form(1/3)</h1>
         <form th:action="@{/wizard/save}" th:object="${wizardForm}" method="post">
             <label for="field1">Field1</label>
-            <input th:field="*{field1}" />
+            <input th:field="*{field1}">
             <span th:errors="*{field1}"></span>
             <div>
                 <button name="form2">Next</button>
@@ -1810,7 +1810,7 @@ Appendix
         <!-- (31) -->
         <form th:action="@{/wizard/save}" th:object="${wizardForm}" method="post">
             <label for="field2">Field2</label>
-            <input th:field="*{field2}" />
+            <input th:field="*{field2}">
             <span th:errors="*{field2}"></span>
             <div>
                 <button name="redoForm1">Back</button>
@@ -1843,7 +1843,7 @@ Appendix
         <!-- (32) -->
         <form th:action="@{/wizard/save}" th:object="${wizardForm}" method="post">
             <label for="field3">Field3</label> : 
-            <input th:field="*{field3}" />
+            <input th:field="*{field3}">
             <span th:errors="*{field3}"></span>
             <div>
                 <button name="redoForm2">Back</button>
@@ -2253,11 +2253,11 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
         <h1>Item</h1>
         <form th:action="@{/item/add}" th:object="${itemForm}" method="post">
             <label for="itemCode">Item Code</label> : 
-            <input th:field="*{itemCode}" />
+            <input th:field="*{itemCode}">
             <span th:errors="*{itemCode}"></span>
             <br>
             <label for="quantity">Quantity</label> : 
-            <input th:field="*{quantity}" />
+            <input th:field="*{quantity}">
             <span th:errors="*{quantity}"></span>
             <div>
                 <!-- (15) -->
@@ -2288,45 +2288,45 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
     <head>
     <title>Cart</title>
     </head>
-    <body>
-        <div th:with="cart=${@sessionCart.cart}">
-            <!-- (16) -->
-            <h1>Cart</h1>
-            <div th:if="${#lists.isEmpty(cart.cartItems)}" th:text="Cart is empty."></div>
-            <div th:if="${!#lists.isEmpty(cart.cartItems)}">
-                CART ID :
-                <span th:text="${cart.id}"></span>
-                <form th:object="${cartForm}" method="post">
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>ITEM CODE</th>
-                                <th>QUANTITY</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="item : ${cart.cartItems}">
-                                <td th:text="${item.id}"></td>
-                                <td th:text="${item.itemCode}"></td>
-                                <td>
-                                    <input th:field="${item.quantity}" />
-                                    <span th:errors="${item.quantity}"></span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <!-- (17) -->
-                    <button name="edit">Save</button>
-                </form>
+    <body th:with="cart=${@sessionCart.cart}">
+        <!-- (16) -->
+        <h1>Cart</h1>
+        <div th:switch="${!#lists.isEmpty(cart.cartItems)}">
+        　　<div th:case="true">
+            　　CART ID :
+            　　<span th:text="${cart.id}"></span>
+            　　<form th:object="${cartForm}" method="post">
+                　　<table border="1">
+                    　　<thead>
+                        　　<tr>
+                            　　<th>ID</th>
+                            　　<th>ITEM CODE</th>
+                            　　<th>QUANTITY</th>
+                        　　</tr>
+                    　　</thead>
+                    　　<tbody>
+                        　　<tr th:each="item, rowStatus : ${cart.cartItems}">
+                            　　<td th:text="${item.id}"></td>
+                            　　<td th:text="${item.itemCode}"></td>
+                            　　<td>
+                                　　<input th:field="*{cartItems[__${rowStatus.index}__].quantity}">
+                                　　<span th:errors="*{cartItems[__${rowStatus.index}__].quantity}"></span>
+                            　　</td>
+                        　　</tr>
+                    　　</tbody>
+                　　</table>
+                　　<!-- (17) -->
+                　　<button name="edit">Save</button>
+            　　</form>
+            　　<div>
+                　　<!-- (18) -->
+                　　<a th:href="@{/order}">Go to Order</a>
+            　　</div>
             </div>
-            <div th:if="${!#lists.isEmpty(cart.cartItems)}">
-                <!-- (18) -->
-                <a th:href="@{/order}">Go to Order</a>
-            </div>
-            <div>
-                <a th:href="@{/item}">Back to Item</a>
-            </div>
+            <div th:case="*" th:text="Cart is empty."></div>
+        </div>
+        <div>
+            <a th:href="@{/item}">Back to Item</a>
         </div>
     </body>
     </html>

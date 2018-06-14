@@ -444,24 +444,6 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
       - \*
       - \*2
     * - Thymeleaf
-      - ognl
-      - ognl
-      - 3.1.12
-      -
-      - \*3
-    * - Thymeleaf
-      - org.attoparser
-      - attoparser
-      - 2.0.4.RELEASE
-      -
-      - \*3
-    * - Thymeleaf
-      - org.javassist
-      - javassist
-      - 3.21.0-GA
-      -
-      - \*3
-    * - Thymeleaf
       - org.thymeleaf
       - thymeleaf
       - 3.0.9.RELEASE
@@ -480,9 +462,33 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
       - \*
       - \*6
     * - Thymeleaf
+      - org.thymeleaf.extras
+      - thymeleaf-extras-java8time
+      - 3.0.1 RELEASE
+      - \*
+      - \*6
+    * - Thymeleaf
       - org.unbescape
       - unbescape
       - 1.1.5.RELEASE
+      -
+      - \*3
+    * - Thymeleaf
+      - ognl
+      - ognl
+      - 3.1.12
+      -
+      - \*3
+    * - Thymeleaf
+      - org.attoparser
+      - attoparser
+      - 2.0.4.RELEASE
+      -
+      - \*3
+    * - Thymeleaf
+      - org.javassist
+      - javassist
+      - 3.21.0-GA
       -
       - \*3
 

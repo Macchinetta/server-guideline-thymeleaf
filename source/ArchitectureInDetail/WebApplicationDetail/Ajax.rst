@@ -357,15 +357,9 @@ Ajaxを使ってデータを取得する方法について説明する。
 
 |
 
-- HTML(JSP)
+- ThymeleafのテンプレートHTML
 
- .. code-block:: jsp
-
-    <!-- omitted -->
-
-    <meta name="contextPath" content="${pageContext.request.contextPath}" />
-
-    <!-- omitted -->
+ .. code-block:: html
 
     <!-- (10)  -->
     <form id="searchForm">
@@ -384,11 +378,11 @@ Ajaxを使ってデータを取得する方法について説明する。
      - | 検索条件を入力するためのフォーム。
        | 上記例では、検索条件を入力するためのテキストボックスと検索ボタンをもっている。
 
- .. code-block:: jsp
+ .. code-block:: html
 
     <!-- (11) -->
     <script type="text/javascript"
-        src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-1.10.2.js">
+        th:src="@{/resources/vendor/jquery/jquery-1.10.2.js}">
     </script>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -441,13 +435,11 @@ Ajaxを使ってデータを取得する方法について説明する。
     
 - JavaScript
 
- .. code-block:: javascript
-
-    var contextPath = $("meta[name='contextPath']").attr("content");
+ .. code-block:: text
 
     // (13)
     function searchByFreeWord() {
-        $.ajax(contextPath + "/ajax/search", {
+        $.ajax([[@{/ajax/search}]], {
             type : "GET",
             data : $("#searchForm").serialize(),
             dataType : "json", // (14)
@@ -489,8 +481,8 @@ Ajaxを使ってデータを取得する方法について説明する。
 
  .. tip::
 
-    上記例ではWebアプリケーションのコンテキストパス( ``${pageContext.request.contextPath}`` ) をHTMLの ``<meta>`` 要素に設定しておくことで、
-    JavaScriptのコードからJSPのコードを排除している。
+    上記例ではインライン記法を用いることで、指定されたパスにWebアプリケーションのコンテキストパスを付与した値を取得している。
+    JavaScriptにおけるインライン記法の詳細は\ :doc:`Thymeleaf`\のJavaScriptのテンプレート化を参照されたい。
 
 |
 
@@ -639,17 +631,9 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
 
 |
 
-- HTML(JSP)
+- テンプレートHTML
 
- .. code-block:: jsp
-
-    <!-- omitted -->
-
-    <meta name="contextPath" content="${pageContext.request.contextPath}" />
-
-    <sec:csrfMetaTags />
-
-    <!-- omitted -->
+ .. code-block:: html
 
     <!-- (7)  -->
     <form id="calculationForm">
@@ -676,20 +660,17 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
 
 - JavaScript
 
- .. code-block:: javascript
+ .. code-block:: text
 
-    var contextPath = $("meta[name='contextPath']").attr("content");
 
-    // (9)
-    var csrfToken = $("meta[name='_csrf']").attr("content");
-    var csrfHeaderName = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend(function(event, xhr, options) {
-        xhr.setRequestHeader(csrfHeaderName, csrfToken);
+        // (9)
+        xhr.setRequestHeader([[${_csrf.headerName}]], [[${_csrf.token}]]);
     });
 
     // (10)
     function plus() {
-        $.ajax(contextPath + "/ajax/plusForForm", {
+        $.ajax([[@{/ajax/plusForForm}]], {
             type : "POST",
             data : $("#calculationForm").serialize(),
             dataType : "json"
@@ -734,7 +715,7 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
      - | 説明
    * - | (9)
      - | POSTメソッドでリクエストを行う場合、CSRFトークンをHTTPヘッダに設定して送信する必要がある。
-       | 上記例では、\ ``<sec:csrfMetaTags />``\ を利用して ``<meta>`` 要素にCSRFトークンヘッダー名とCSRFトークン値を設定し、JavaScriptで値を取得するようにしている。
+       | 上記例では、インライン記法を用いることでCSRFトークンヘッダー名とCSRFトークン値をJavaScriptで取得している。
        | CSRF対策の詳細については、 「 :doc:`../../Security/CSRF` 」を参照されたい。
    * - | (10)
      - | フォームに指定された数値をリクエストパラメータに変換し、POSTメソッドで ``/ajax/plusForForm`` に対してリクエストを送信するAjax関数。
@@ -776,13 +757,6 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
  .. todo:: **TBD**
     
     クライアント側の実装方法については、次版以降で詳細化する予定である。
-
- .. tip::
-
-    上記例では\ ``<sec:csrfMetaTags />``\ を利用して、CSRFトークン値とCSRFトークンヘッダー名をHTMLの ``<meta>`` 要素に設定しておくことで、
-    JavaScriptのコードからJSPのコードを排除している。\ :ref:`csrf_ajax-token-setting`\ を参照されたい。
-
-    尚、CSRFトークン値とCSRFトークンヘッダー名はそれぞれ\ ``${_csrf.token}``\ と\ ``${_csrf.headerName}``\ を用いても取得可能である。
 
 |
 
@@ -890,7 +864,7 @@ Ajaxを使ってフォームのデータをJSON形式に変換してからPOST�
 
 |
 
-- JavaScript/HTML(JSP)
+- JavaScript/HTML
 
  .. code-block:: javascript
 

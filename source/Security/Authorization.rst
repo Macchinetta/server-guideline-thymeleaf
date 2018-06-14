@@ -816,37 +816,42 @@ Webリソースに指定したアクセスポリシーと連動させる場合�
 
 |
 
-認可処理の判定結果を変数に格納
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-\ 認可処理の判定結果は、変数に格納して使いまわすことができる。
+.. tip:: **#authorizationの紹介**
 
-* Thymeleafのテンプレートの実装例
+    ここでは、\ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性を用いて、画面項目に対してアクセスポリシーを定義する実装例を説明したが、
+    \ ``#authorization``\ を用いても、ThymeleafのテンプレートHTMLから認可情報にアクセスする事が可能である。
+    \ ``#authorization``\ は、変数式 ``${}`` にて使用できるため、条件判定やリテラル置換等\ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性より複雑な使い方が可能である。
 
-.. code-block:: html
+    上記の例は、以下のように記述できる
 
-    <div th:with="hasAccountsAuthority=${#authorization.url('/admin/accounts')}"> <!--/* (1) (2) */-->
-        <div th:if="${hasAccountsAuthority}"> <!--/* (3) */-->
+        .. code-block:: HTML
+
+            <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"><!--/* (1) */-->
             <!--/* omitted */-->
-        </div>
-    </div>
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
+            <div th:if="${#authorization.expr('isAuthenticated()')}"> <!--/* (2) */-->
+                <!--/* omitted */-->
+            </div>
 
-    * - 項番
-      - 説明
-    * - |  (1)
-      - | \ ``th:with``\ 属性に判定結果を格納するための変数名を指定する。
-        | アクセスが許可された場合は、変数に\ ``true``\ が設定される。
-    * - |  (2)
-      - | \ ``#authorization``\ はSpringSecurityDialectが提供するユーティリティオブジェクトで、
-        | urlメソッドによるURLによるアクセス制御やexpressionメソッドによるSpEL式を用いた認可制御を実装出来る。
-        | ここでは、\ ``#authorization.url('/admin/accounts')``\ で、'/admin/accounts'に対するアクセス可否情報を取得している。
-    * - | (3)
-      - | 変数の値を参照して表示処理を実装する。
+            <div th:if="${#authorization.url('/admin/accounts')}"> <!--/* (3) */-->
+                <!--/* omitted */-->
+            </div>
+
+     .. tabularcolumns:: |p{0.25\linewidth}|p{0.75\linewidth}|
+     .. list-table::
+         :header-rows: 1
+         :widths: 25 75
+
+         * - 項番
+           - 説明
+         * - | (1)
+           - | \ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性を使用する際には\ ``<html>``\ タグに\ ``xmlns:sec``\ 属性を定義していたが、
+             | \ ``#authorization``\ を使用する際には、\ ``xmlns:sec``\ 属性の定義は不要である。
+         * - | (2)
+           - | \ ``#authorization.expr``\ の引数には、\ ``sec:authorize``\ 属性と同様にアクセスポリシーを指定する。
+         * - | (3)
+           - | \ ``#authorization.url``\ の引数には、\ ``sec:authorize-url``\ 属性と同様にWebリソースへアクセスするためのURLを指定する。
 
 |
 

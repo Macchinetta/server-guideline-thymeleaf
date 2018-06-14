@@ -23,7 +23,7 @@ Overview
 How to use
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Joda Time, Joda Time JSP tags の利用方法を、以下で説明する。
+Joda Time の利用方法を、以下で説明する。
 
 日付取得
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -240,6 +240,8 @@ java.util.Dateとの相互運用性
      - | DateTime#toDate メソッドで、DateTime -> ``java.util.Date`` への変換を行う。
 
 |
+
+.. _JodaTimeFormatString:
 
 文字列へのフォーマット
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -520,84 +522,51 @@ Periodは、期間を、年、月、週などの単位で表すクラスであ�
 
 |
 
-JSP Tag Library
+Thymeleafでのフォーマット
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-| JSTLの fmt:formatDate タグは、java.util.Dateと、java.util.TimeZoneオブジェクトを扱う。
-| Joda-timeのDateTime, LocalDateTime, LocalDate, LocalTimeと、DateTimeZoneオブジェクトを扱うためには、Jodaのタグライブラリを使う。
-| 機能面でJSTLとほぼ同じであるため、JSTLの知識がある場合は、JodaのJSPタグライブラリを容易に使える。
-
+| ThymeleafのテンプレートHTMLでも、「:ref:`JodaTimeFormatString`」と同様に ``toString`` メソッドを使用した文字列へのフォーマットが可能である。
+| ここでは、Joda TimeのオブジェクトをテンプレートHTML上で文字列へフォーマットする方法を説明する。
 |
+| Joda Timeの ``DateTime`` オブジェクトをフォーマット文字列を指定してフォーマットする例を以下に示す。
 
-設定方法
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+*  Controllerクラス
 
-タブライブラリを利用するには、以下のtaglib定義が必要である。
+.. code-block:: java
 
-.. code-block:: jsp
+    DateTime dateTime = new DateTime();
+    model.addAttribute("currentDateTime", dateTime); // (1)
 
-    <%@ taglib uri="http://www.joda.org/joda/time/tags" prefix="joda"%>
+* テンプレートHTML
 
-joda:format タグ
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+.. code-block:: html
 
-joda:format タグとは、DateTime, LocalDateTime, LocalDate, LocalTimeオブジェクトをフォーマットするタグである。
+    <p th:text="|currentDateTime = ${currentDateTime.toString('yyyy/MM/dd HH:mm:ss')}.|"></p> <!--/* (2) */-->
 
-.. code-block:: jsp
+* 出力結果例(html)
 
-    <% pageContext.setAttribute("now", new org.joda.time.DateTime()); %>
+.. code-block:: html
 
-    <span>Using pattern="yyyyMMdd" to format the current system date</span><br/>
-    <joda:format value="${now}" pattern="yyyyMMdd" />
-    <br/>
-    <span>Using style="SM" to format the current system date</span><br/>
-    <joda:format value="${now}" style="SM" />
+    <p>currentDate = 2013/10/25 13:02:32.</p> <!-- (3) -->
 
-**出力結果**
-
-.. figure:: images/joda_format_tag.png
-   :alt: /jodatime
-   :width: 55%
-
-joda:formatタグの属性一覧は、以下の通りである。
-
-.. tabularcolumns:: |p{0.05\linewidth}|p{0.10\linewidth}|p{0.85\linewidth}|
-.. list-table:: **属性情報**
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
    :header-rows: 1
-   :widths: 5 10 85
+   :widths: 10 90
 
-   * - No.
-     - Attributes
-     - Description
-   * - 1.
-     - | value
-     - | ReadableInstantかReadablePartialのインスタンスを設定する。
-   * - 2.
-     - | var
-     - | 時刻情報を持つ変数名
-   * - 3.
-     - | scope
-     - | 時刻情報を持つ変数名のスコープ
-   * - 4.
-     - | locale
-     - | ロケール情報
-   * - 5.
-     - | style
-     - | フォーマットするためのスタイル情報（2桁。日付部分と時刻部分それぞれのスタイルを設定する。入力可能な値は S=Short, M=Medium, L=Long, F=Full, -=None）
-   * - 6.
-     - | pattern
-     - | フォーマットするためのパターン（yyyyMMddなど）。入力可能なパターンは、 `Input and Output <http://www.joda.org/joda-time/userguide.html#Input_and_Output>`_ を参照されたい。
-   * - 7.
-     - | dateTimeZone
-     - | タイムゾーン
+   * - 項番
+     - 説明
+   * - | (1)
+     - | ``Model`` オブジェクトにJoda Timeの ``DateTime`` オブジェクトを追加する。
+       | ここでは、現在日時を指定している。
+   * - | (2)
+     - | ``DateTime`` オブジェクトを指定したフォーマット文字列でフォーマットする。
+       | ここでは、フォーマット文字列を ``yyyy/MM/dd HH:mm:ss`` 形式で指定している。
+       |
+       | ここでは簡易な例を示しているため実装していないが、必要に応じて ``toString`` メソッド実行前に ``null`` チェックを実装すること。
+   * - | (3)
+     - | 現在の日付が2013年10月25日13時2分32秒の場合、``2013/10/25 13:02:32`` と表示される。
 
-Joda-Timeのほかのタグは、 `Joda Time JSP tags User guide <http://joda-time.sourceforge.net/contrib/jsptags/userguide.html>`_ を参照されたい。
-
-    .. note::
-        style属性を指定して日付と時刻部分を表示する場合、ブラウザのlocaleによって表示内容が異なる。
-        上記style属性で表示した形式のlocaleは"en"である。
-
-|
 
 応用例(カレンダーの表示)
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -718,21 +687,27 @@ Spring MVCを使って、月単位のカレンダーを表示するサンプル�
 
 |
 
-JSP(calendar.jsp)で、次のように出力する。
+テンプレートHTML(calendar.html)で、次のように出力する。
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <p>
-        <a
-            href="${pageContext.request.contextPath}/calendar/month?year=${f:h(output.yearOfPrevMonth)}&month=${f:h(output.monthOfPrevMonth)}">&larr;
-            Prev</a> <a
-            href="${pageContext.request.contextPath}/calendar/month?year=${f:h(output.yearOfNextMonth)}&month=${f:h(output.monthOfNextMonth)}">Next
-            &rarr;</a> <br>
-        <joda:format value="${output.firstDayOfMonth}"
-            pattern="yyyy-M" />
-    </p>
-    <table>
-        <tr>
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" th:href="@{/resources/app/css/styles.css}">
+    </head>
+    <body>
+      <div th:object="${output}">
+        <p>
+          <a href="calendar.html"
+            th:href="@{/calendar/month(year=*{yearOfPrevMonth}, month=*{monthOfPrevMonth})}">&larr;Prev</a>
+          <a href="calendar.html"
+            th:href="@{/calendar/month(year=*{yearOfNextMonth}, month=*{monthOfNextMonth})}">Next&rarr;</a> <br>
+          <span th:text="*{firstDayOfMonth.toString('yyyy-M')}"></span>
+        </p>
+        <table>
+          <tr>
             <th>Mon.</th>
             <th>Tue.</th>
             <th>Wed.</th>
@@ -740,32 +715,28 @@ JSP(calendar.jsp)で、次のように出力する。
             <th>Fri.</th>
             <th>Sat.</th>
             <th>Sun.</th>
-        </tr>
-        <c:forEach var="week" items="${output.calendar}">
-            <tr>
-                <c:forEach var="day" items="${week}">
-                    <td><c:choose>
-                            <c:when test="${day != null}">
-                                <joda:format value="${day}"
-                                    pattern="d" />
-                            </c:when>
-                            <c:otherwise>&nbsp;</c:otherwise>
-                        </c:choose></td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-    </table>
+          </tr>
+          <tr th:each="week : *{calendar}">
+            <td th:each="day : ${week}">
+              <span th:text="${day != null}? ${day.toString('d')} : '&nbsp;'"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </body>
+    </head>
+    </html>
 
-{contextPath}/calendarにアクセスすると、以下のカレンダーが表示される（2012年11月時点での結果である）。
+{contextPath}/calendarにアクセスすると、以下のカレンダーが表示される（2018年2月時点での結果である）。
 
 .. figure:: images/calendar-today.jpg
    :alt: /calendar
    :width: 30%
 
-{contextPath}/calendar/month?year=2012&month=12にアクセスすると、以下のカレンダーが表示される。
+{contextPath}/calendar/month?year=2018&month=1にアクセスすると、以下のカレンダーが表示される。
 
 .. figure:: images/calendar-month.jpg
-   :alt: /calendar/month?year=2012&month=12
+   :alt: /calendar/month?year=2018&month=1
    :width: 30%
 
 .. raw:: latex

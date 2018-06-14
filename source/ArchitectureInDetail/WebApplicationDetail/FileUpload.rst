@@ -371,7 +371,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
         <!-- (1) -->
         <exception-type>org.springframework.web.multipart.MultipartException</exception-type>
         <!-- (2) -->
-        <location>/WEB-INF/views/common/error/fileUploadError.jsp</location>
+        <location>/common/error/fileUploadError</location>
     </error-page>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -384,22 +384,26 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - | (1)
      - | ハンドリング対象の例外クラスとして、\ ``MultipartException``\を指定する。
    * - | (2)
-     - | \ ``MultipartException``\ が発生した際に表示するファイルを指定する。
+     - | \ ``MultipartException``\ が発生した際に遷移するパスを指定する。
        |
-       | 上記例では、\ ``/WEB-INF/views/common/error/fileUploadError.jsp``\ を指定している。
+       | 上記例では、\ ``/common/error/fileUploadError``\ を指定している。
 
-- :file:`fileUploadError.jsp`
+- :file:`CommonErrorController.java`
 
- .. code-block:: jsp
+ .. code-block:: java
 
-    <%-- (3) --%>
-    <% response.setStatus(HttpServletResponse.SC_BAD_REQUEST); %>
-    <!DOCTYPE html>
-    <html>
+    @Controller
+    @RequestMapping("common/error")
+    public class CommonErrorController {
     
-        <!-- omitted -->
+        // omitted
 
-    </html>
+        @RequestMapping("fileUploadError")
+        @ResponseStatus(HttpStatus.BAD_REQUEST) // (3)
+        public String fileUploadError() {
+          return "common/error/fileUploadError";
+        }
+    }
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -409,7 +413,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - 項番
      - 説明
    * - | (3)
-     - | HTTPステータスコードは、\ ``HttpServletResponse``\ のAPIを呼び出して設定する。
+     - | HTTPステータスコードは、\ ``@ResponseStatus``\ のアノテーションを付与して設定する。
        |
        | 上記例では、\ ``400``\ (Bad Request) を設定している。
        | 明示的に設定しない場合、HTTPステータスコードは\ ``500``\ (Internal Server Error)となる。
@@ -452,7 +456,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - 項番
      - 説明
    * - | (4)
-     - | \ ``SystemExceptionResolver``\ の\ ``exceptionMappings``\ に、\ ``MultipartException``\ が発生した際に表示するView(JSP)の定義を追加する。
+     - | \ ``SystemExceptionResolver``\ の\ ``exceptionMappings``\ に、\ ``MultipartException``\ が発生した際に表示するView(ThymeleafのテンプレートHTML)の定義を追加する。
        |
        | 上記例では、\ ``common/error/fileUploadError``\ を指定している。
    * - | (5)
@@ -466,8 +470,8 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
 
 | \ ``MultipartException``\ に対する例外コードを設ける場合は、例外コードの設定を追加する。
 | 例外コードは、共通ライブラリのログ出力機能により出力されるログに、出力される。
-| 例外コードは、View(JSP)から参照することもできる。
-| View(JSP)から例外コードを参照する方法については、\ :ref:`exception-handling-how-to-use-codingpoint-jsp-exceptioncode-label`\ を参照されたい。
+| 例外コードは、View(テンプレートHTML)から参照することもできる。
+| View(テンプレートHTML)から例外コードを参照する方法については、\ :ref:`exception-handling-how-to-use-codingpoint-view-exceptioncode-label`\ を参照されたい。
 
 - :file:`applicationContext.xml`
 
@@ -544,35 +548,34 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
      - | フォームオブジェクトに、\ ``org.springframework.web.multipart.MultipartFile``\ のプロパティを定義する。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/upload" method="post"
-      modelAttribute="fileUploadForm" enctype="multipart/form-data"> <!-- (1) (2) -->
+    <form th:action="@{/article/upload}" method="post"
+      enctype="multipart/form-data" th:object="${fileUploadForm}"> <!--/* (1) (2) */-->
       <table>
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="file" /> <!-- (3) -->
-            <form:errors path="file" />
+            <input type="file" th:field="*{file}"> <!--/* (3) */-->
+            <span th:errors="*{file}"></span>
           </td>
         </tr>
         <tr>
           <th width="35%">Description</th>
           <td width="65%">
-            <form:input path="description" />
-            <form:errors  path="description" />
+            <input th:field="*{description}">
+            <span th:errors="*{description}"></span>
           </td>
         </tr>
         <tr>
           <td>&nbsp;</td>
-          <td><form:button>Upload</form:button></td>
+          <td><button>Upload</button></td>
         </tr>
       </table>
-    </form:form>
+    </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -582,12 +585,12 @@ JSPの実装
    * - 項番
      - 説明
    * - | (1)
-     - | \ ``<form:form>``\ 要素のenctype属性に、\ ``multipart/form-data``\ を指定する。
+     - | \ ``<form>``\ 要素のenctype属性に、\ ``multipart/form-data``\ を指定する。
    * - | (2)
-     - | \ ``<form:form>``\ 要素のmodelAttribute属性に、フォームオブジェクトの属性名を指定する。
+     - | \ ``<form>``\ 要素のth:object属性に、フォームオブジェクトの属性名を指定する。
        | 上記例では、\ ``fileUploadForm``\ を指定している。
    * - | (3)
-     - | \ ``<form:input>``\ 要素type属性に、\ ``file``\ を指定し、path属性に、\ ``MultipartFile``\ プロパティ名を指定する。
+     - | \ ``<input>``\ 要素のtype属性に、\ ``file``\ を指定し、th:field属性に、\ ``MultipartFile``\ プロパティ名を指定する。
        | 上記例では、アップロードされたファイルは、\ ``FileUploadForm``\ オブジェクトの\ ``file``\ プロパティに格納される。
 
 
@@ -1048,50 +1051,33 @@ Controllerの実装
    Bean Validationを使用してアップロードファイルの入力チェックを行う場合は、ファイル単位の情報を保持するオブジェクトを、List型のプロパティとして定義する方が相性がよい。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/uploadFiles" method="post"
-      modelAttribute="filesUploadForm" enctype="multipart/form-data">
-      <table>
+    <form th:action="@{/article/uploadFiles}" method="post"
+      enctype="multipart/form-data" th:object="${fileUploadForm}">
+      <table th:each="i : ${#numbers.sequence(0, 1)}">
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="fileUploadForms[0].file" /> <!-- (1) -->
-            <form:errors path="fileUploadForms[0].file" />
+            <input type="file" th:field="*{fileUploadForms[__${i}__].file}"> <!--/* (1) */-->
+            <span th:errors="*{fileUploadForms[__${i}__].file}"></span>
           </td>
         </tr>
         <tr>
           <th width="35%">Description</th>
           <td width="65%">
-            <form:input path="fileUploadForms[0].description" />
-            <form:errors  path="fileUploadForms[0].description" />
-          </td>
-        </tr>
-      </table>
-      <table>
-        <tr>
-          <th width="35%">File to upload</th>
-          <td width="65%">
-            <form:input type="file" path="fileUploadForms[1].file" /> <!-- (1) -->
-            <form:errors path="fileUploadForms[1].file" />
-          </td>
-        </tr>
-        <tr>
-          <th width="35%">Description</th>
-          <td width="65%">
-            <form:input path="fileUploadForms[1].description" />
-            <form:errors path="fileUploadForms[1].description" />
+            <input th:field="*{fileUploadForms[__${i}__].description}">
+            <span th:errors="*{fileUploadForms[__${i}__].description}"></span>
           </td>
         </tr>
       </table>
       <div>
-        <form:button>Upload</form:button>
+        <button>Upload</button>
       </div>
-    </form:form>
+    </form>
 
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1105,6 +1091,14 @@ JSPの実装
      - | アップロードファイルをバインドするList内の位置を指定する。
        | バインドするリスト内の位置は、\ ``[]``\ の中に指定する。開始位置は、"\ ``0``\" 開始となる。
 
+.. note:: **#numbers.sequenceメソッドについて**
+
+    ``#numbers``\ を利用すると、数値に対してフォーマットの指定やシーケンスの作成が容易になる。
+    上記の実装例では、\ ``#numbers.sequence``\ メソッドを利用して0から1までのシーケンス（配列）を作成し、\ ``th:each`` \ 属性でJavaの \ ``for`` \ 文のようなインデックスループを実現している。
+
+    ``#numbers``\ の詳細については、\ `公式ドキュメントの#numbersの説明 <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#numbers>`_\ を参照されたい。
+
+|
 
 Controllerの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1270,27 +1264,26 @@ Validatorの実装
        | こうすることで、  ``@UploadFileNotEmpty`` アノテーションを付与したプロパティに対する妥当性チェックを行う際に、(1)で作成したクラスが実行される。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/uploadFiles" method="post"
-      modelAttribute="filesUploadForm2" enctype="multipart/form-data">
+    <form th:action="@{/article/uploadFiles}" method="post"
+      enctype="multipart/form-data" th:object="${filesUploadForm}">
       <table>
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="files" multiple="multiple" /> <!-- (1) -->
-            <form:errors path="files" />
+            <input type="file" th:field="*{files}" multiple="multiple"> <!--/* (1) */-->
+            <span th:errors="*{files}"></span>
           </td>
         </tr>
       </table>
       <div>
-        <form:button>Upload</form:button>
+        <button>Upload</button>
       </div>
-    </form:form>
+    </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::

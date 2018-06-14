@@ -157,24 +157,14 @@ ViewResolverの定義
 \ ``org.springframework.web.servlet.view.BeanNameViewResolver``\ とは、
 Springのコンテキストで管理されたbean名を用いて実行するViewを選択するクラスである。
 
-\ ``BeanNameViewResolver``\ を使用する際は、通常使用する、
-
-* JSP用の\ ``ViewResolver``\(\ ``InternalResourceViewResolver``\)
-* Tiles用の\ ``ViewResolver``\(\ ``TilesViewResolver``\)
-
-より先に\ ``BeanNameViewResolver``\が実行されるように定義する事を推奨する。
+\ ``BeanNameViewResolver``\ を使用する際は、通常使用するThymeleaf用の\ ``ViewResolver``\(\ ``ThymeleafViewResolver``\)より先に\ ``BeanNameViewResolver``\が実行されるように定義する事を推奨する。
 
 .. note::
 
     Spring Frameworkはさまざまな\ ``ViewResolver``\ を提供しており、複数の\ ``ViewResolver``\をチェーンすることができる。
     そのため、特定の状況では、意図しないViewが選択されてしまうことがある。
 
-    この動作は、\ ``ViewResolver``\に適切な優先順位を設定する事で防ぐことができる。
-    優先順位の設定方法は、\ ``ViewResolver``\ の定義方法によって異なる。
-
-    * Spring Framework 4.1から追加された\ ``<mvc:view-resolvers>``\ 要素を使用して\ ``ViewResolver``\ を定義する場合は、子要素に指定する\ ``ViewResolver``\の定義順が優先順位となる。(上から順に実行される)
-
-    * 従来通り\ ``<bean>``\ 要素を使用して\ ``ViewResolver``\ を指定する場合は、\ ``order``\ プロパティに優先順位を設定する。(設定値が小さいものから実行される)
+    この動作は、\ ``<mvc:view-resolvers>``\ 要素の子要素に、優先したい\ ``ViewResolver``\を上から順に定義する事で防ぐことができる。
 
 |
 
@@ -185,7 +175,9 @@ Springのコンテキストで管理されたbean名を用いて実行するView
 
     <mvc:view-resolvers>
         <mvc:bean-name /> <!-- (1) (2) -->
-        <mvc:jsp prefix="/WEB-INF/views/" />
+        <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+            <!-- omitted -->
+        </bean>
     </mvc:view-resolvers>
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -196,33 +188,10 @@ Springのコンテキストで管理されたbean名を用いて実行するView
    * - 項番
      - 説明
    * - | (1)
-     - | Spring Framework 4.1から追加された\ ``<mvc:bean-name>``\ 要素を使用して、\ ``BeanNameViewResolver``\ を定義する。
+     - | \ ``<mvc:bean-name>``\ 要素を使用して、\ ``BeanNameViewResolver``\ を定義する。
    * - | (2)
-     - | \ ``<mvc:bean-name>``\ 要素を先頭に定義し、通常使用する\ ``ViewResolver``\ (JSP用の\ ``ViewResolver``\ )より優先度を高くする。
+     - | \ ``<mvc:bean-name>``\ 要素を先頭に定義し、通常使用する\ ``ViewResolver``\ (Thymeleaf用の\ ``ViewResolver``\ )より優先度を高くする。
 
-
-.. tip::
-
-    \ ``<mvc:view-resolvers>``\ 要素はSpring Framework 4.1から追加されたXML要素である。
-    \ ``<mvc:view-resolvers>``\ 要素を使用すると、\ ``ViewResolver``\ をシンプルに定義することが出来る。
-
-    従来通り\ ``<bean>``\ 要素を使用した場合の定義例を以下に示す。
-
-
-     .. code-block:: xml
-        :emphasize-lines: 1-3
-
-        <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
-            <property name="order" value="0"/>
-        </bean>
-
-        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-            <property name="prefix" value="/WEB-INF/views/" />
-            <property name="suffix" value=".jsp" />
-            <property name="order" value="1" />
-        </bean>
-
-    \ ``order``\ プロパティに、\ ``InternalResourceViewResolver``\ より小さい値を指定し、優先度を高くする。
 
 |
 
