@@ -497,8 +497,8 @@ ER図
 ================================================================================
 
 | セキュリティ要件の分類ごとに、本アプリケーションにおける実装の方法とコードの説明を行う。
-| ここでは分類ごとで要件の実現のために必要最小限なコード片のみを掲載している。コード全体を確認したい場合は `GitHub <https://github.com/terasolunaorg/tutorial-apps/tree/release/5.4.1.RELEASE/secure-login-demo>`_ を参照すること。
-| 本アプリケーションを動作させるための初期データ登録用SQLは `ここ <https://github.com/terasolunaorg/tutorial-apps/tree/release/5.4.1.RELEASE/secure-login-demo/secure-login-demo/secure-login-env/src/main/resources/database>`_ に配置されている。
+| ここでは分類ごとで要件の実現のために必要最小限なコード片のみを掲載している。コード全体を確認したい場合は `GitHub <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.6.0.RELEASE/secure-login-demo>`_ を参照すること。
+| 本アプリケーションを動作させるための初期データ登録用SQLは `ここ <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.6.0.RELEASE/secure-login-demo/secure-login-demo/secure-login-env/src/main/resources/database>`_ に配置されている。
 
 .. note::
 
@@ -896,7 +896,7 @@ ER図
      isInitialPassword および isCurrentPasswordExpired に付与されている \ ``@Cacheable``\ は Spring の Cache Abstraction 機能を使用するためのアノテーションである。
      \ ``@Cacheable`` \ アノテーションを付与することで、メソッドの引数に対する結果をキャッシュすることができる。
      ここでは、キャッシュの使用により初期パスワード判定、パスワード期限切れ判定のたびにデータベースへのアクセスが発生することを防止し、パフォーマンスの低下を防いでいる。
-     Cache Abstraction については `公式ドキュメント - Cache <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/cache.html>`_ を参照すること。
+     Cache Abstraction については `公式ドキュメント - Cache <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/integration.html#cache>`_ を参照すること。
 
      尚、キャッシュを使用する際には、必要なタイミングでキャッシュをクリアする必要があることに注意すること。
      本アプリケーションではパスワード変更時や、ログアウト時には再度初期パスワード判定、パスワード期限切れ判定を行うためにキャッシュをクリアする。
@@ -2245,10 +2245,7 @@ ER図
     <!-- omitted -->
 
     <sec:authentication-manager>
-        <sec:authentication-provider
-            user-service-ref="loggedInUserDetailsService"> <!-- (1) -->
-            <sec:password-encoder ref="passwordEncoder" />
-        </sec:authentication-provider>
+        <sec:authentication-provider user-service-ref="loggedInUserDetailsService" /> <!-- (1) -->
     </sec:authentication-manager>
 
     <!-- omitted -->
@@ -3118,7 +3115,7 @@ ER図
          - | パスワード再発行用URLに含めるために生成される文字列（トークン）
        * - | (3)
          - | パスワード再発行時にユーザを確認するための文字列（秘密情報）
-       * - | (2)
+       * - | (4)
          - | パスワード再発行のための認証情報の有効期限
 
   * Repositoryの実装
@@ -3227,6 +3224,17 @@ ER図
     Passayのパスワード生成機能を使用するための、パスワード生成器と生成規則の定義を以下に示す。
     パスワード生成器や生成規則に関しては :ref:`password_generation` を参照。
 
+    **applicationContext.xml**
+
+    .. code-block:: xml
+
+       <bean id="passwordGenerator" class="org.passay.PasswordGenerator" /> <!-- (1) -->
+       <util:list id="passwordGenerationRules"> <!-- (2) -->
+           <ref bean="upperCaseRule" />
+           <ref bean="lowerCaseRule" />
+           <ref bean="digitRule" />
+       </util:list>
+
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
     .. list-table::
        :header-rows: 1
@@ -3238,17 +3246,6 @@ ER図
          - | Passayのパスワード生成機能で用いるパスワード生成器のBean定義
        * - | (2)
          - | Passayのパスワード生成機能で用いるパスワード生成規則のBean定義。 :ref:`password-strength` で使用した検証規則を使用し、半角英大文字、半角英小文字、半角数字をそれぞれ一文字以上含むパスワードの生成規則を定義する。
-
-    **applicationContext.xml**
-
-    .. code-block:: xml
-
-       <bean id="passwordGenerator" class="org.passay.PasswordGenerator" /> <!-- (1) -->
-       <util:list id="passwordGenerationRules">
-           <ref bean="upperCaseRule" />
-           <ref bean="lowerCaseRule" />
-           <ref bean="digitRule" />
-       </util:list>
 
   * Serviceの実装
 
@@ -3390,7 +3387,11 @@ ER図
                    th:class="|alert alert-${resultMessages.type}|">
                    <ul>
                        <li th:each="message : ${resultMessages}"
+<<<<<<< HEAD
                            th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li> <!--/* (3) */-->
+=======
+                           th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
+>>>>>>> Release version 1.6.0.RELEASE
                    </ul>
                </div>
                <form th:action="@{/reissue/create}"
@@ -3930,7 +3931,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            public String showPasswordResetForm(PasswordResetForm form, Model model,
                    @RequestParam("token") String token) { // (1)
 
-               PasswordReissueInfo info = passwordReissueService.findOne(token); // (3)
+               PasswordReissueInfo info = passwordReissueService.findOne(token); // (2)
 
                form.setUsername(info.getUsername());
                form.setToken(token);
@@ -4117,14 +4118,22 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
                        <table>
                            <tr>
                                <th><label for="username">Username</label></th>
+<<<<<<< HEAD
                                <td th:field="*{username}"><input type="hidden" th:field="*{username}">
+=======
+                               <td th:field="*{username}"><input type="hidden" th:field="*{username}">  <!--/* (2) */-->
+>>>>>>> Release version 1.6.0.RELEASE
                                </td>
                                <td></td>
                            </tr>
                            <tr>
                                <th><label for="secret" th:errorclass="error-label">Secret</label>
                                </th>
+<<<<<<< HEAD
                                <td><input type="password" th:field="*{secret}" th:cssErrorClass="error-input"></td>
+=======
+                               <td><input type="password" th:field="*{secret}" th:cssErrorClass="error-input"></td>  <!--/* (3) */-->
+>>>>>>> Release version 1.6.0.RELEASE
                                <td th:errors="*{secret}" class="error-messages"></td>
                            </tr>
                            <tr>
@@ -4794,6 +4803,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      ファイル名の入力チェックのために\ ``MultipartFilter`` \を利用しているため、ここに記述した内容に加えて :ref:`file-upload_how_to_usr_application_settings` に記したServlet 3.0のアップロード機能を有効化するための設定が必要となる。
 
   **CommonErrorController.java**
+<<<<<<< HEAD
 
   .. code-block:: java
 
@@ -4805,6 +4815,19 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
          // omitted
 
+=======
+
+  .. code-block:: java
+
+     // omitted
+
+     @Controller
+     @RequestMapping("common/error")
+     public class CommonErrorController {
+
+         // omitted
+
+>>>>>>> Release version 1.6.0.RELEASE
          @RequestMapping("/invalidCharacterError")
          @ResponseStatus(HttpStatus.BAD_REQUEST)   // (1)
          public String invalidCharacterError(HttpServletResponse response) {
@@ -5522,7 +5545,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     アドバイスとは、AOPにおいて指定されたタイミングで実行する処理のことを指す。
     また、アドバイスを織り込むことのできる箇所のことをジョインポイントと呼び、どのジョインポイントにアドバイスを織り込むかを定義したものポイントカットと呼ぶ。
-    Springが提供するAOP機能に関しては、`公式ドキュメント - AOP <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/aop.html>`_ を参照すること。
+    Springが提供するAOP機能に関しては、`公式ドキュメント - AOP <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#aop>`_ を参照すること。
 
 コード解説
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -5709,7 +5732,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      SpringのAOPは、自動的に作成されたプロキシクラスがメソッド呼び出しをハンドリングする、プロキシ方式を採用している。
      プロキシ方式のAOPの制限として、可視性が\ ``public`` \以外のメソッドの呼び出しや、同一クラス内のメソッド呼び出しの際にはアドバイスが実行されない点に注意する必要がある。
-     詳細は `公式ドキュメント <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/aop.html#aop-understanding-aop-proxies>`_ を参照すること。
+     詳細は `公式ドキュメント <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#aop-understanding-aop-proxies>`_ を参照すること。
 
   ログの出力結果を以下に示す。
 

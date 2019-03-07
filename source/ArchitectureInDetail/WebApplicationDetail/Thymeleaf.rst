@@ -256,7 +256,7 @@ Thymeleaf + Springの機能
 
  Thymeleaf + Springを適用する場合、Thymeleaf単体で利用する場合とは以下の点で異なる。
 
-* 式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(`Spring Expression Language <https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/expressions.html#expressions-intro>`_)を利用する。
+* 式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(`Spring Expression Language <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#expressions-intro>`_)を利用する。
 * メッセージリソースとして、SpringのMessageSourceを利用する。
 * Thymeleafが提供するフォーマット機能の代わりに、SpringのConversionサービスを利用する。 `The Conversion Service <http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-conversion-service>`_ を参照されたい。
 
@@ -483,6 +483,37 @@ Thymeleafテンプレートの実装
         | \ ``th:href``\属性値には、リンクURL式\ ``@{}``\を用いている。
 
 
+<<<<<<< HEAD
+=======
+ .. warning:: **SpEL評価時におけるnull-safetyの影響について**
+
+   前述のとおり、Thymeleaf + Springでは式言語としてSpELを利用する。
+   Spring 5から、SpringのコアAPIに\ `null-safety <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#null-safety>`_\ の機能が取り入れられており、SpELが解釈される際の\ ``null``\に対する動作も変更(\ `SPR-15540 <https://jira.spring.io/browse/SPR-15540>`_\ )されている。
+   例えば\ ``Map``\ 型プロパティのキーとして記述したSpELが\ ``null``\ として評価された場合、Spring 4以前ではそのまま\ ``Map``\ に\ ``null``\ が渡され該当する値がないため\ ``null``\ が返却されていたが、Spring 5以降ではキーとなるSpELを評価した結果に対するnullチェックが追加されており、\ ``null``\ の場合は\ ``IllegalStateException``\ が発生する。
+   このため、キーとする値に対して事前にnullチェックを行うなど、\ ``null``\ を考慮した実装が必要となる。
+
+   以下にコードリストの値を画面に表示する実装例を示す。
+
+    .. code-block:: html
+
+     <tr>
+       <th>性別</th>
+       <td><span id="gender" th:text="${memberForm.gender} != null ? ${CL_GENDER['__${memberForm.gender}__']}"></span></td> <!--/* (1) */-->
+     </tr>
+
+    .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+    .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+     :class: longtable
+
+     * - | 項番
+       - | 説明
+     * - | (1)
+       - | ``memberForm.gender``\の値が\ ``null``\でない場合のみ、対応するコードリスト（CL_GENDER）のコード名を表示する。
+
+
+>>>>>>> Release version 1.6.0.RELEASE
  .. note:: **テンプレートHTMLのデバッグについて**
 
    テンプレートHTMLをThymeleafで処理する際には、テンプレートの実装の不備による例外が発生する事がある。
@@ -505,7 +536,11 @@ Thymeleafテンプレートの実装
          
          中略
          
+<<<<<<< HEAD
      Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property or field 'birthDay' cannot be found on object of type 'com.example.xxxxx.domain.model.CustomerBean' - maybe not public?
+=======
+     Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E: Property or field 'birthDay' cannot be found on object of type 'com.example.xxxxx.domain.model.CustomerBean' - maybe not public or not valid?
+>>>>>>> Release version 1.6.0.RELEASE
          ：
 
     このログより、テンプレート名が\ ``"customer/list"``\の 6行, 7列目に書かれた\ ``"customer.birthDay"``\の\ ``birthDay``\プロパティが、対象のクラス(当例では\ ``CustomerBean``\)から参照出来ない為、例外が発生している事が分かる。
@@ -809,11 +844,11 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 
 * pom.xmlの定義
 
- * プロジェクトのルートのpom.xml
+ * [artifactID]-webプロジェクトのpom.xml
 
  .. code-block:: xml
 
-   <dependencyManagement>
+     
      <dependencies>
 
        <!-- == Begin Thymeleaf == -->
@@ -821,18 +856,17 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
        <dependency>
          <groupId>org.thymeleaf</groupId>
          <artifactId>thymeleaf</artifactId>
-         <version>${thymeleaf.version}</version>
        </dependency>
        <!-- (2) -->
        <dependency>
          <groupId>org.thymeleaf</groupId>
-         <artifactId>thymeleaf-spring4</artifactId>
-         <version>${thymeleaf.version}</version>
+         <artifactId>thymeleaf-spring5</artifactId>
        </dependency>
        <!-- (3) -->
        <dependency>
          <groupId>org.thymeleaf.extras</groupId>
          <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+<<<<<<< HEAD
          <version>${thymeleaf-extras-springsecurity4.version}</version>
        </dependency>
        <!-- omitted -->
@@ -889,17 +923,18 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
        <dependency>
          <groupId>org.thymeleaf</groupId>
          <artifactId>thymeleaf</artifactId>
+=======
+>>>>>>> Release version 1.6.0.RELEASE
        </dependency>
-       <!-- (2) -->
-       <dependency>
-         <groupId>org.thymeleaf</groupId>
-         <artifactId>thymeleaf-spring4</artifactId>
-       </dependency>
-       <!-- (3) -->
+       <!-- (4) -->
        <dependency>
          <groupId>org.thymeleaf.extras</groupId>
-         <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+         <artifactId>thymeleaf-extras-java8time</artifactId>
        </dependency>
+<<<<<<< HEAD
+=======
+       
+>>>>>>> Release version 1.6.0.RELEASE
        <!-- omitted -->
        <!-- == End Thymeleaf == -->
 
@@ -917,9 +952,15 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
     * - | (1)
       - |  thymeleafのdependencyを追加することで、Thymeleafが利用可能となる。
     * - | (2)
-      - |  thymeleaf-spring4のdependencyを追加することで、Spring MVCとの連携機能が有効になる。
+      - |  thymeleaf-spring5のdependencyを追加することで、Spring MVCとの連携機能が有効になる。
     * - | (3)
       - |  thymeleaf-extras-springsecurity4のdependencyを追加することで、Spring Securityとの連携機能が有効になる。
+    * - | (4)
+      - |  thymeleaf-extras-java8timeのdependencyを追加することで、Java8 Time Dialectが利用可能となる。
+
+ .. note::
+   上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
+   上記の依存ライブラリはterasoluna-gfw-parentが利用している\ `Spring IO Platform <http://platform.spring.io/platform/>`_\ で定義済みである。
 
 
 * spring-mvc.xmlの定義
@@ -929,7 +970,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
       <!-- (1) -->
       <mvc:view-resolvers>
           <mvc:bean-name />
-          <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+          <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
               <property name="templateEngine" ref="templateEngine" />
               <property name="characterEncoding" value="UTF-8" /> <!-- (2) -->
               <property name="forceContentType" value="true" /> <!-- (3) -->
@@ -939,7 +980,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 
       <!-- (4) -->
       <bean id="templateResolver"
-          class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+          class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
           <property name="prefix" value="/WEB-INF/views/" /> <!-- (5) -->
           <property name="suffix" value=".html" /> <!-- (6) -->
           <property name="templateMode" value="HTML" /> <!-- (7) -->
@@ -947,7 +988,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
       </bean>
 
       <!-- (9) -->
-      <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+      <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
           <property name="templateResolver" ref="templateResolver" />
           <property name="enableSpringELCompiler" value="true" /> <!-- (10) -->
           <property name="additionalDialects">
@@ -998,7 +1039,10 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
      * - | (12)
        - | \ ``additionalDialects``\に、\ ``Java8TimeDialect``\を定義することで、テンプレートHTML内でJSR-310 Date and Time APIのオブジェクトをフォーマットして出力することが可能となる。
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Release version 1.6.0.RELEASE
   .. note:: **レスポンスのContent-Typeの解決方法について**
     
     \ ``ThymeleafViewResolver``\のデフォルトの動作では、リクエストのAcceptヘッダの値やURLを元にレスポンスのContent-Typeヘッダの値を決めている。
@@ -1556,7 +1600,7 @@ ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す
 
 .. code-block:: xml
 
-    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
 
         <!-- omitted -->
 
@@ -1690,11 +1734,11 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
 
  .. note::
 
-    \ ``org.thymeleaf.spring4.view.ThymeleafViewResolver``\にはViewオブジェクトをキャッシュする機能が備わっているが、本機能と直接関係はないので、ここでの説明は省略する。
+    \ ``org.thymeleaf.spring5.view.ThymeleafViewResolver``\にはViewオブジェクトをキャッシュする機能が備わっているが、本機能と直接関係はないので、ここでの説明は省略する。
 
 アプリケーションの設定
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-キャッシュの有効化、対象および期間の設定は、\ ``org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver``\で実施する。
+キャッシュの有効化、対象および期間の設定は、\ ``org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver``\で実施する。
 主要な設定項目の一覧を以下に示す。
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.30\linewidth}|p{0.40\linewidth}|p{0.20\linewidth}|
@@ -1733,7 +1777,11 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
 
  .. code-block:: xml
 
+<<<<<<< HEAD
     <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+=======
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+>>>>>>> Release version 1.6.0.RELEASE
         <!-- omitted -->
         <property name="nonCacheablePatterns">
             <set>
@@ -1780,7 +1828,11 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
 
  .. code-block:: xml
 
+<<<<<<< HEAD
     <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+=======
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+>>>>>>> Release version 1.6.0.RELEASE
         <!-- omitted -->
         <property name="cacheManager" ref="cacheManager" />
     </bean>
@@ -1873,7 +1925,11 @@ Decoupled Template Logicを有効化するために、以下の設定を行う�
 
  .. code-block:: xml
 
+<<<<<<< HEAD
     <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+=======
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+>>>>>>> Release version 1.6.0.RELEASE
         <!-- omitted -->
         <property name="useDecoupledLogic" value="true" /> <!-- (1) -->
     </bean>
@@ -1915,11 +1971,19 @@ Decoupled Template Logicを有効化するために、以下の設定を行う�
      .. code-block:: xml
 
         <bean id="templateResolver"
+<<<<<<< HEAD
             class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
             <!-- omitted -->
             <property name="useDecoupledLogic" value="true" />
         </bean>
         <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+=======
+            class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+            <!-- omitted -->
+            <property name="useDecoupledLogic" value="true" />
+        </bean>
+        <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+>>>>>>> Release version 1.6.0.RELEASE
             <!-- omitted -->
             <property name="decoupledTemplateLogicResolver" ref="decoupledResolver" /> <!-- (1) -->
         </bean>
@@ -2511,7 +2575,11 @@ JavaScriptファイルをThymeleafのテンプレートとする方法につい�
 
       <mvc:view-resolvers>
           <mvc:bean-name />
+<<<<<<< HEAD
           <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+=======
+          <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+>>>>>>> Release version 1.6.0.RELEASE
               <property name="templateEngine" ref="templateEngine" />
               <property name="characterEncoding" value="UTF-8" />
               <property name="forceContentType" value="true" /> <!-- (1) -->
@@ -2520,7 +2588,11 @@ JavaScriptファイルをThymeleafのテンプレートとする方法につい�
       </mvc:view-resolvers>
 
       <bean id="templateResolver"
+<<<<<<< HEAD
           class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+=======
+          class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+>>>>>>> Release version 1.6.0.RELEASE
           <property name="prefix" value="/WEB-INF/js/" /> <!-- (2) -->
           <property name="suffix" value=".js" /> <!-- (3) -->
           <property name="templateMode" value="JAVASCRIPT" /> <!-- (4) -->

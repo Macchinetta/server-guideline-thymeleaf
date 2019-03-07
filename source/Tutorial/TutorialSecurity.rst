@@ -99,7 +99,7 @@ Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.5.1.RELEASE^
+     -DarchetypeVersion=1.6.0.RELEASE^
      -DgroupId=com.example.security^
      -DartifactId=first-springsecurity^
      -Dversion=1.0.0-SNAPSHOT
@@ -480,7 +480,7 @@ AccountSharedServiceの作成
 
     CREATE TABLE account(
         username varchar(128),
-        password varchar(60),
+        password varchar(88),
         first_name varchar(128),
         last_name varchar(128),
         constraint pk_tbl_account primary key (username)
@@ -492,7 +492,7 @@ AccountSharedServiceの作成
 
 .. code-block:: sql
 
-    INSERT INTO account(username, password, first_name, last_name) VALUES('demo', '$2a$10$oxSJl.keBwxmsMLkcT9lPeAIxfNTPNQxpeywMrF7A3kVszwUTqfTK', 'Taro', 'Yamada'); -- (1)
+    INSERT INTO account(username, password, first_name, last_name) VALUES('demo', '{pbkdf2}1dd84f42a7a9a173f8f806d736d34939bed6a36e2948e8bfe88801ee5e6e61b815efc389d03165a4', 'Taro', 'Yamada'); -- (1)
     COMMIT;
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -503,9 +503,9 @@ AccountSharedServiceの作成
     * - 項番
       - 説明
     * - | (1)
-      - ブランクプロジェクトの設定では、\ ``applicationContext.xml``\ にパスワードをハッシュ化するためのクラスとして\ ``org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder``\ が設定されている。
+      - ブランクプロジェクトの設定では、\ ``applicationContext.xml``\ にパスワードをハッシュ化するためのクラスとしてPbkdf2アルゴリズムでハッシュ化を行う\ ``org.springframework.security.crypto.password.DelegatingPasswordEncoder``\ が設定されている。
 
-        本チュートリアルでは、\ ``BCryptPasswordEncoder``\を使用してパスワードのハッシュ化を行うため、パスワードには\ ``demo``\という文字列をBCryptアルゴリズムでハッシュ化した文字列を投入する。
+        本チュートリアルでは、\ ``DelegatingPasswordEncoder``\を使用してパスワードのハッシュ化を行うため、パスワードには\ ``demo``\という文字列をPbkdf2アルゴリズムでハッシュ化した文字列を投入する。
 
 |
 
@@ -592,11 +592,7 @@ Spring Securityの設定
             <!-- com.example.security.domain.service.userdetails.SampleUserDetailsService
               is scanned by component scan with @Service -->
             <!-- (4) -->
-            <sec:authentication-provider
-                user-service-ref="sampleUserDetailsService">
-                <!-- (5) -->
-                <sec:password-encoder ref="passwordEncoder" />
-            </sec:authentication-provider>
+            <sec:authentication-provider user-service-ref="sampleUserDetailsService" />
         </sec:authentication-manager>
 
         <!-- CSRF Protection -->
@@ -679,10 +675,40 @@ Spring Securityの設定
         デフォルトでは、\ ``UserDetailsService``\ を使用して\ ``UserDetails``\ を取得し、その\ ``UserDetails``\ が持つハッシュ化済みパスワードと、ログインフォームで指定されたパスワードを比較してユーザー認証を行うクラス(\ ``org.springframework.security.authentication.dao.DaoAuthenticationProvider``\ )が使用される。
 
         \ ``user-service-ref``\ 属性に\ ``UserDetailsService``\ インタフェースを実装しているコンポーネントのbean名を指定する。本チュートリアルでは、ドメイン層に作成した\ ``SampleUserDetailsService``\ クラスを設定する。
-    * - | (5)
-      - \ ``<sec:password-encoder>``\ タグを使用して、ログインフォームで指定されたパスワードをハッシュ化するためのクラス(\ ``PasswordEncoder``\ )の設定を行う。
 
-        本チュートリアルでは、\ ``applicationContext.xml``\ に定義されている\ ``org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder``\ を利用する。
+|
+
+ログインページを返すControllerの作成
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+| ログインページを返すControllerを作成する。
+| ``src/main/java/com/example/security/app/login/LoginController.java``
+
+.. code-block:: java
+  
+    package com.example.security.app.login;
+
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.RequestMapping;
+
+    @Controller
+    @RequestMapping("/login")
+    public class LoginController {
+
+        @RequestMapping("/loginForm") // (1)
+        public String view() {
+            return "login/loginForm";
+        }
+    }
+  
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+  
+    * - 項番
+      - 説明
+    * - | (1)
+      - ログインページである、\ ``login/loginForm``\ を返す。 
 
 |
 
@@ -724,10 +750,16 @@ Spring Securityの設定
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 | ログインページにログインフォームを作成する。
+<<<<<<< HEAD
 | ``src/main/webapp/WEB-INF/login/loginForm.html``
 
 .. code-block:: html
    :emphasize-lines: 13-15
+=======
+| ``src/main/webapp/WEB-INF/views/login/loginForm.html``
+
+.. code-block:: html
+>>>>>>> Release version 1.6.0.RELEASE
   
     <!DOCTYPE html>
     <html xmlns:th="http://www.thymeleaf.org">
@@ -1230,7 +1262,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         <!-- Settings View Resolver. -->
         <mvc:view-resolvers>
+<<<<<<< HEAD
             <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+=======
+            <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+>>>>>>> Release version 1.6.0.RELEASE
                 <property name="templateEngine" ref="templateEngine" />
                 <property name="characterEncoding" value="UTF-8" />
                 <property name="forceContentType" value="true" />
@@ -1240,7 +1276,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         <!-- TemplateResolver. -->
         <bean id="templateResolver"
+<<<<<<< HEAD
             class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+=======
+            class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+>>>>>>> Release version 1.6.0.RELEASE
             <property name="prefix" value="/WEB-INF/views/" />
             <property name="suffix" value=".html" />
             <property name="templateMode" value="HTML" />
@@ -1248,7 +1288,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
         </bean>
 
         <!-- TemplateEngine. -->
+<<<<<<< HEAD
         <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+=======
+        <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+>>>>>>> Release version 1.6.0.RELEASE
             <property name="templateResolver" ref="templateResolver" />
             <property name="enableSpringELCompiler" value="true" />
             <property name="additionalDialects">

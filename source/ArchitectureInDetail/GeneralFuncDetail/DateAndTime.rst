@@ -571,7 +571,7 @@ org.terasoluna.gfw.common.date パッケージの利用方法
                                               .withResolverStyle(ResolverStyle.STRICT);
 
    LocalDate localDate = LocalDate.parse("2015/12/25", formatter1);
-   LocalTime localTime = LocalDate.parse("14:09:20", formatter2);
+   LocalTime localTime = LocalTime.parse("14:09:20", formatter2);
  
 |
 
@@ -835,6 +835,7 @@ Thymeleafのダイアレクト
 
 * pom.xmlの定義
 
+<<<<<<< HEAD
  * プロジェクトのルートのpom.xml
 
  .. code-block:: xml
@@ -857,6 +858,8 @@ Thymeleafのダイアレクト
    </properties>
 
 
+=======
+>>>>>>> Release version 1.6.0.RELEASE
  * [artifactID]-webプロジェクトのpom.xml
   
  .. code-block:: xml
@@ -871,11 +874,22 @@ Thymeleafのダイアレクト
     </dependencies>
 
 
+<<<<<<< HEAD
+=======
+ .. note::
+     上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
+     上記のOpenPDFはterasoluna-gfw-parentが利用している\ `Spring IO Platform <http://platform.spring.io/platform/>`_\ で定義済みである。
+
+>>>>>>> Release version 1.6.0.RELEASE
 * spring-mvc.xmlの定義
 
  .. code-block:: xml
 
+<<<<<<< HEAD
       <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+=======
+      <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+>>>>>>> Release version 1.6.0.RELEASE
           <!-- omitted -->
           <property name="additionalDialects">
               <set>
@@ -904,10 +918,13 @@ Thymeleafのダイアレクト
     * - | (4)
       - | ``additionalDialects`` に、``Java8TimeDialect`` を定義することで、テンプレートHTML内で、``#temporals`` が利用可能となる。
 
+<<<<<<< HEAD
 .. note::
     ``thymeleaf-extras-java8time`` のバージョンについて、本来はSpring IO Platformで管理する前提であるが、Thymeleafに関するライブラリは独自にバージョン指定している。
 
 
+=======
+>>>>>>> Release version 1.6.0.RELEASE
 .. _DateAndTimeImplementationView:
 
 Viewの実装

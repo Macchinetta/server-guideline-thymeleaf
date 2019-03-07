@@ -198,12 +198,7 @@ Controllerクラスの作成方法
     @RequestMapping(value = {"hello", "bonjour"})
     public String hello() {
 
-指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、Spring FrameworkのReference Documentを参照。
-
-- `URI Template Patterns <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-uri-templates>`_\
-- `URI Template Patterns with Regular Expressions <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-uri-templates-regex>`_\
-- `Path Patterns <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-patterns>`_\
-- `Patterns with Placeholders <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-placeholders>`_\
+指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`URI patterns <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
 
 |
 
@@ -212,7 +207,7 @@ Controllerクラスの作成方法
 HTTPメソッドでマッピング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 下記の定義の場合、 ``sample/hello`` というURLにPOSTメソッドでアクセスすると、helloメソッドが実行される。
-サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
+サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
 指定しない場合、サポートしている全てのHTTPメソッドがマッピング対象となる。
 
  .. code-block:: java
@@ -413,7 +408,7 @@ Acceptヘッダでマッピング
 
  .. note::
 
-     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI Template Patterns <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
+     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
      サンプルアプリケーションでは、操作するEntityのIDを指定する。
 
  画面フロー図に各処理に割り振られたURLをマッピングすると以下のようになる。
@@ -1067,7 +1062,7 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
 ハンドラメソッドの引数について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`ハンドラメソッドの引数は様々な値をとることができる <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-arguments>`_ が、
+`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-arguments>`_ が、
 基本的には次に挙げるものは原則として使用しないこと。
 
 * ServletRequest
@@ -1143,8 +1138,8 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
  .. code-block:: html
     :emphasize-lines: 1-2
 
-    Hello World!<br> <!-- (6) -->
-    Bean Hello World!<br> <!-- (6) -->
+    <span>Hello World!</span><br> <!-- (6) -->
+    <span>Bean Hello World!</span><br> <!-- (6) -->
 
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1490,8 +1485,8 @@ URLのパスから値を取得する
  .. code-block:: html
     :emphasize-lines: 1-2
 
-    Hello World!<br> <!-- (8) -->
-    Bean Hello World!<br> <!-- (8) -->
+    <span>Hello World!</span><br> <!-- (8) -->
+    <span>Bean Hello World!</span><br> <!-- (8) -->
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -1735,7 +1730,7 @@ Cookieに値を書き込む
 
 ハンドラメソッドの返り値について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`ハンドラメソッドの返り値についても様々な値をとることができる <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-ann-return-types>`_ が、
+`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-return-types>`_ が、
 基本的には次に挙げるもののみを使用すること。
 
 - String(View名)
@@ -1801,7 +1796,11 @@ HTMLを応答する
 
     <mvc:view-resolvers>
         <mvc:bean-name /> <!-- (1) -->
+<<<<<<< HEAD
         <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+=======
+        <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+>>>>>>> Release version 1.6.0.RELEASE
             <property name="templateEngine" ref="templateEngine" />
             <property name="characterEncoding" value="UTF-8" />
             <property name="forceContentType" value="true" />
@@ -2202,9 +2201,9 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
 
     Spring Frameworkは、以下の3つの仕組みを使って型変換を行っており、基本的な型への変換は標準でサポートされている。各変換機能の詳細については、リンク先のページを参照されたい。
 
-    * `Spring Type Conversion <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/validation.html#core-convert>`_\
-    * `Spring Field Formatting <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/validation.html#format>`_\
-    * `java.beans.PropertyEditor implementations <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/validation.html#beans-beans-conversion>`_\
+    * `Spring Type Conversion <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#core-convert>`_\
+    * `Spring Field Formatting <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#format>`_\
+    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#beans-beans-conversion>`_\
 
  .. warning::
 
@@ -2250,7 +2249,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - style
-     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
+     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
    * - 2.
      - pattern
      - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
@@ -2295,7 +2294,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - iso
-     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
+     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
    * - 2.
      - pattern
      - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
@@ -3066,7 +3065,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
         | 上記例では、リクエストURLが静的なURLであるため、\ ``build``\ メソッドのみを呼び出してリクエストURLを生成している。
         | リクエストURLが動的なURL(パス変数やクエリ文字列が存在するURL)の場合は、\ ``arg``\ メソッドや\ ``buildAndExpand``\ メソッドを呼び出す必要がある。
         | \ ``arg``\ メソッドと\ ``buildAndExpand``\ メソッドの具体的な使用例については、
-        | 「\ `Spring Framework Reference Documentation(Building URIs to Controllers and methods from views) <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
+        | 「\ `Spring Framework Documentation(Links in views) <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
 
  .. note:: **リクエストマッピング名について**
 
@@ -3667,7 +3666,11 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
  .. code-block:: html
 
+<<<<<<< HEAD
     <span th:text="|Order Status : ${CL_ORDERSTATUS[__${orderForm.orderStatus}__]}|"></span> <!-- (1) -->
+=======
+    <span th:text="'Order Status : ' + (${orderForm.orderStatus} != null ? ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']})"></span> <!-- (1) -->
+>>>>>>> Release version 1.6.0.RELEASE
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -3686,13 +3689,8 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
 ページネーション用のリンクを表示する
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-一覧表示を行う画面にてページネーション用のリンクを表示する場合、モデルから ``Page`` インタフェースを取得し、ページネーション用のリンクを生成する。
-
-.. todo::
-
-    **TBD**
-
-    次版以降で詳細を記載する予定である。
+| 一覧表示を行う画面にてページネーション用のリンクを表示する場合、モデルから ``Page`` インタフェースを取得し、ページネーション用のリンクを生成する。
+| 詳細は、 :doc:`../ArchitectureInDetail/WebApplicationDetail/Pagination` を参照されたい。
 
 |
 
@@ -3708,12 +3706,6 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 JavaScriptの実装
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 画面描画後に画面項目の制御(表示/非表示、活性/非活性などの制御)を行う必要がある場合は、JavaScriptを使用して、項目の制御を行う。
-
-.. todo::
-
-    **TBD**
-
-    次版以降で詳細を記載する予定である。
 
 |
 

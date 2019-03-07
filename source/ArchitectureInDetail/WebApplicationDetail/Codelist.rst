@@ -146,7 +146,7 @@ bean定義ファイルは、コードリスト用に作成することを推奨�
 コードリスト用bean定義ファイルを作成後、既存bean定義ファイルにimportを行う必要がある。
 
 .. code-block:: xml
-   :emphasize-lines: 1,4
+   :emphasize-lines: 1
 
     <import resource="classpath:META-INF/spring/projectName-codelist.xml" /> <!-- (3) -->
     <context:component-scan base-package="com.example.domain" />
@@ -529,6 +529,7 @@ JdbcCodeListの使用方法
 テンプレートHTMLでのコードリスト使用
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 | テンプレートHTMLでコードリストを使用する方法については、前述した :ref:`テンプレートHTMLでのコードリスト使用<clientSide>` を参照されたい。
+<<<<<<< HEAD
 
 **テンプレートHTML実装例**
 
@@ -545,6 +546,24 @@ JdbcCodeListの使用方法
    :widths: 10 90
    :class: longtable
 
+=======
+
+**テンプレートHTML実装例**
+
+.. code-block:: html
+
+  <span th:each="authority : ${CL_AUTHORITIES}">
+      <input type="checkbox" th:field="*{authorities}" th:value="${authority.key}">
+      <label th:for="${#ids.prev('authorities')}" th:text="${authority.value}"></label> <!--/* (9) */-->
+  </span>
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+   :header-rows: 1
+   :widths: 10 90
+   :class: longtable
+
+>>>>>>> Release version 1.6.0.RELEASE
    * - 項番
      - 説明
    * - | (9)
@@ -1158,7 +1177,11 @@ Javaクラスでのコードリスト使用
 
 .. code-block:: html
 
+<<<<<<< HEAD
     <span th:text="|Order Status : ${CL_ORDERSTATUS[__${orderForm.orderStatus}__]}|"></span> <!--/* (1) */-->
+=======
+    <span th:text="'Order Status : ' + (${orderForm.orderStatus} != null ? ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']})"></span> <!--/* (1) */-->
+>>>>>>> Release version 1.6.0.RELEASE
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1306,7 +1329,7 @@ JdbcCodeListは、ReloadableCodeListインターフェースを実装してい�
 #. Task Schedulerで実現する方法
 #. Controller(Service)クラスでrefreshメソッドを呼び出す方法
 
-本ガイドラインでは、\ `Springから提供されているTask Scheduler <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/scheduling.html>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
+本ガイドラインでは、\ `Springから提供されているTask Scheduler <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/integration.html#scheduling>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
 
 ただし、任意のタイミングでコードリストをリフレッシュする必要がある場合はControllerクラスでrefreshメソッドを呼び出す方法で実現すればよい。
 
@@ -1362,7 +1385,7 @@ Task Schedulerの設定例について、以下に示す。
        | 平日の9-17時の毎時実行 「0 0 9-17 \* \* MON-FRI」
        |
        | 詳細はJavaDocを参照されたい。
-       | http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
+       | https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
 
 |
 
@@ -1572,7 +1595,11 @@ JdbcCodeListのrefreshメソッドをServiceクラスで呼び出す場合の実
 .. code-block:: html
 
   <select th:field="*{mostRecentYear}">
+<<<<<<< HEAD
       <option th:each="recentYear : ${CL_YEAR}" th:value="${recentYear.key}" th:text="${recentYear.value}"></option> <!--/* (5) */-->
+=======
+      <option th:each="recentYear : ${CL_YEAR}" th:value="${recentYear.key}" th:text="${recentYear.value}"></option> <!--/* (1) */-->
+>>>>>>> Release version 1.6.0.RELEASE
   </select>
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1582,7 +1609,11 @@ JdbcCodeListのrefreshメソッドをServiceクラスで呼び出す場合の実
 
    * - 項番
      - 説明
+<<<<<<< HEAD
    * - | (5)
+=======
+   * - | (1)
+>>>>>>> Release version 1.6.0.RELEASE
      - | コンポーネント登録した ``CL_YEAR`` を 変数式 ``${}`` で指定することで、該当のコードリストを取得することができる。
 
 **出力HTML**

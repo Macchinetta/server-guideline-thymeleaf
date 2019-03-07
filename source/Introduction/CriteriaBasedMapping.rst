@@ -7,8 +7,8 @@
 
 OWASP(Open Web Application Security Project)による観点
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\ `OWASP Top 10 for 2013 <https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project>`_\ を軸として、
-セキュリティに関連する機能の説明へのリンクを記載する。
+\ `OWASP Top 10 for 2017 <https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project>`_\ を軸として、
+セキュリティに関連するガイドライン内の説明へのリンクを記載する。
 
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.40\linewidth}|p{0.50\linewidth}|
@@ -19,6 +19,7 @@ OWASP(Open Web Application Security Project)による観点
 
    * - 項番
      - 項目名
+<<<<<<< HEAD
      - 関連するガイドライン
    * - A1
      - `Injection <https://www.owasp.org/index.php/Top_10_2013-A1-Injection>`_ SQL Injection
@@ -71,6 +72,59 @@ OWASP(Open Web Application Security Project)による観点
    * - A10
      - `Unvalidated Redirects and Forwards <https://www.owasp.org/index.php/Top_10_2013-A10-Unvalidated_Redirects_and_Forwards>`_
      - 特に言及なし
+=======
+     - ガイドライン内の関連箇所
+   * - A1:2017
+     - `Injection <https://www.owasp.org/index.php/Top_10-2017_A1-Injection>`_ SQL Injection
+     - * \ :ref:`DataAccessMyBatis3HowToUseSqlInjectionCountermeasure`\ 
+   * - A1:2017
+     - `Injection <https://www.owasp.org/index.php/Top_10-2017_A1-Injection>`_ OS Command Injection
+     - * \ :ref:`Validation_os_command_injection`\ 
+   * - A1:2017
+     - `Injection <https://www.owasp.org/index.php/Top_10-2017_A1-Injection>`_ Email Header Injection
+     - * \ :ref:`email-header-injection`\ 
+   * - A1:2017
+     - `Injection <https://www.owasp.org/index.php/Top_10-2017_A1-Injection>`_
+     - * \ :ref:`secure-input-validation`\ 
+   * - A2:2017
+     - `Broken Authentication <https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication>`_
+     - * \ :ref:`SessionManagementSessionHijackingAttacksProtection`\ 
+       * \ :ref:`SessionManagementSessionFixationAttacksProtection`\ 
+       * \ :ref:`SpringSecurityAuthenticationPasswordHashing`\ 
+   * - A3:2017
+     - `Sensitive Data Exposure <https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure>`_
+     - * \ :ref:`PropertyManagementDecryptAndUseTheEncryptedPropertyValue`\ 
+       * \ :doc:`../Security/Encryption`\ 
+       * \ :ref:`SpringSecurityAuthenticationPasswordHashing`\ 
+   * - A4:2017
+     - `XML External Entities (XXE) <https://www.owasp.org/index.php/Top_10-2017_A4-XML_External_Entities_(XXE)>`_
+     - * \ :ref:`XXE(XML External Entity) 対策について<AjaxWarningXXEProtection>`\ 
+       * \ :ref:`RESTAppendixEnabledXXEProtection`\ 
+   * - A5:2017
+     - `Broken Access Control <https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control>`_
+     - * \ :ref:`file-upload_security_related_warning_points_directory_traversal`\ 
+   * - A6:2017
+     - `Security Misconfiguration <https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration>`_
+     - * \ :ref:`LoggingLogOutputContents`\ 
+       * \ :ref:`exception-handling-how-to-use-codingpoint-view-exceptioncode-label`\ 
+       * \ :ref:`SpringSecurityAuthorizationOnError`\ 
+   * - A7:2017
+     - `Cross-Site Scripting (XSS) <https://www.owasp.org/index.php/Top_10-2017_A7-Cross-Site_Scripting_(XSS)>`_
+     - * \ :doc:`../Security/XSS`\ 
+       * \ :ref:`LinkageWithBrowserXXSSProtection`\ 
+   * - A8:2017
+     - `Insecure Deserialization <https://www.owasp.org/index.php/Top_10-2017_A8-Insecure_Deserialization>`_
+     - * \ :ref:`デシリアライズ時の注意点<JMSWarningDeserialization>`\ 
+       * \ :ref:`ajax_post_formdata`\ 
+       * \ :ref:`RESTHowToUseResourceClass`\ 
+   * - A9:2017
+     - `Using Components with Known Vulnerabilities <https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities>`_
+     - * 特に言及なし
+   * - A10:2017
+     - `Insufficient Logging & Monitoring <https://www.owasp.org/index.php/Top_10-2017_A10-Insufficient_Logging%26Monitoring>`_
+     - * \ :ref:`SpringSecurityAuthenticationEventListener`\ 
+       * \ :ref:`audit-logging`\ 
+>>>>>>> Release version 1.6.0.RELEASE
 
 CVE(Common Vulnerabilities and Exposures)による観点
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

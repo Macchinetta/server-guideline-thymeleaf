@@ -1,4 +1,4 @@
-﻿チュートリアル(Todoアプリケーション)
+チュートリアル(Todoアプリケーション)
 ********************************************************************************
 
 .. only:: html
@@ -223,8 +223,8 @@ Delete TODO
         mvn archetype:generate -B\
          -DarchetypeGroupId=com.github.macchinetta.blank\
          -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype\
-         -DarchetypeVersion=1.5.1.RELEASE\
-         -DgroupId=todo\
+         -DarchetypeVersion=1.6.0.RELEASE\
+         -DgroupId=com.example.todo\
          -DartifactId=todo\
          -Dversion=1.0.0-SNAPSHOT
 
@@ -243,8 +243,8 @@ O/R Mapperに依存しないブランクプロジェクトの作成
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-     -DarchetypeVersion=1.5.1.RELEASE^
-     -DgroupId=todo^
+     -DarchetypeVersion=1.6.0.RELEASE^
+     -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
 
@@ -261,8 +261,8 @@ MyBatis3を使用してデータベースにアクセスするRepositoryImpl用�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.5.1.RELEASE^
-     -DgroupId=todo^
+     -DarchetypeVersion=1.6.0.RELEASE^
+     -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
 
@@ -729,7 +729,11 @@ Package Explorer上で右クリック -> New -> File を選択し、「New File�
  :ref:`tutorial-todo-application-overview-label` で示した画面をHTMLとして表示するために必要なプロトタイプの実装を行う。
 
 .. code-block:: html
+<<<<<<< HEAD
     :emphasize-lines: 19, 28, 48
+=======
+    :emphasize-lines: 19, 29, 48
+>>>>>>> Release version 1.6.0.RELEASE
 
     <!DOCTYPE html>
     <html>
@@ -1500,15 +1504,6 @@ Package Explorer上で右クリック -> New -> Class を選択し、「New Java
 
 |
 
-ServiceのJUnit作成
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. todo:: **TBD**
- 
-    ServiceのUnitテストの方法については、次版以降で記載する予定である。
-
-|
-
 アプリケーション層の作成
 --------------------------------------------------------------------------------
 
@@ -1803,9 +1798,15 @@ TODOの一覧表示エリアを表示するために必要なテンプレートH
        | XSS対策についての詳細は、:ref:`xss_how_to_use_ouput_escaping` を参照されたい。
    * - | (7)
      - | \ ``th:if``\ 属性は条件に応じて、要素を出力するかどうか制御するための属性であり、\ ``todo``\の\ ``finished``\プロパティを参照して「Finish」ボタンの生成を判断する。
+<<<<<<< HEAD
 
 .. note::
 
+=======
+
+.. note::
+
+>>>>>>> Release version 1.6.0.RELEASE
     Thymeleafの\ ``th:object``\属性を用いると、オブジェクト名を省略してプロパティを指定することが出来る。
     
     list.htmlの\ ``<li>``\タグの部分は、\ ``th:object``\属性を用いることで以下のように記述量を減らすことが出来る。
@@ -1849,6 +1850,7 @@ STSで「todo」プロジェクトを右クリックし、「Run As」→「Run 
    :width: 25%
 
 なお、表示されている「Create Todo」ボタンについては、「Create TODO」の実装が終了していないため、表示はされるが機能しない。
+<<<<<<< HEAD
 
 |
 
@@ -1904,10 +1906,70 @@ STSで「todo」プロジェクトを右クリックし、「Run As」→「Run 
     .. figure:: ./images/show-all-todo-note.png
        :width: 30%
 
+=======
+>>>>>>> Release version 1.6.0.RELEASE
 
 |
 
 
+<<<<<<< HEAD
+=======
+.. note::
+
+    上記で表示されている画面には、TODOが１件も登録されていないため、TODOの一覧は出力されない。
+    
+    以下のように、ドメイン層の作成で作成したTodoRepositoryImplを一時的に修正し初期データを登録することで、TODOの一覧が出力されることを確認できる。
+    
+    なお、次節「\ :ref:`CreateTodoImplementation`\ 」で実際にTODOを登録できるようになるため、一覧の出力が確認できたら削除して構わない。
+
+    * ``TodoRepositoryImpl.java``
+
+     .. code-block:: java
+        :emphasize-lines: 15-29
+
+        package com.example.todo.domain.repository.todo;
+
+        import java.util.Collection;
+        import java.util.Map;
+        import java.util.concurrent.ConcurrentHashMap;
+
+        import org.springframework.stereotype.Repository;
+
+        import com.example.todo.domain.model.Todo;
+
+        @Repository
+        public class TodoRepositoryImpl implements TodoRepository {
+            private static final Map<String, Todo> TODO_MAP = new ConcurrentHashMap<String, Todo>();
+
+            static {
+                Todo todo1 = new Todo();
+                todo1.setTodoId("1");
+                todo1.setTodoTitle("Send a e-mail");
+                Todo todo2 = new Todo();
+                todo2.setTodoId("2");
+                todo2.setTodoTitle("Have a lunch");
+                Todo todo3 = new Todo();
+                todo3.setTodoId("3");
+                todo3.setTodoTitle("Read a book");
+                todo3.setFinished(true);
+                TODO_MAP.put(todo1.getTodoId(), todo1);
+                TODO_MAP.put(todo2.getTodoId(), todo2);
+                TODO_MAP.put(todo3.getTodoId(), todo3);
+            }
+
+              // omitted
+
+
+    以下のように画面に出力される。
+
+    .. figure:: ./images/show-all-todo-note.png
+       :width: 30%
+
+
+|
+
+
+>>>>>>> Release version 1.6.0.RELEASE
 .. _CreateTodoImplementation:
 
 Create TODOの実装
@@ -1930,7 +1992,7 @@ Controllerの修正
     import javax.inject.Inject;
     import javax.validation.Valid;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
@@ -2299,7 +2361,7 @@ Controllerの修正
     import javax.inject.Inject;
     import javax.validation.groups.Default;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
@@ -2609,7 +2671,7 @@ Controllerの修正
     import javax.inject.Inject;
     import javax.validation.groups.Default;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
@@ -3404,14 +3466,31 @@ applicationContext.xml
         <!-- (1) -->
         <import resource="classpath:/META-INF/spring/todo-domain.xml" />
 
-        <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+        <bean id="passwordEncoder" class="org.springframework.security.crypto.password.DelegatingPasswordEncoder">
+            <constructor-arg name="idForEncode" value="pbkdf2" />
+            <constructor-arg name="idToPasswordEncoder">
+                <map>
+                    <entry key="pbkdf2">
+                        <bean class="org.springframework.security.crypto.password.Pbkdf2PasswordEncoder" />
+                    </entry>
+                    <entry key="bcrypt">
+                        <bean class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+                    </entry>
+                    <!-- When using SCryptPasswordEncoder, you need to add bcprov-jdk15on.jar to the dependency.
+                    <entry key="scrypt">
+                        <bean class="org.springframework.security.crypto.scrypt.SCryptPasswordEncoder" />
+                    </entry>
+                    -->
+                </map>
+            </constructor-arg>
+        </bean>
 
         <!-- (2) -->
         <context:property-placeholder
             location="classpath*:/META-INF/spring/*.properties" />
 
         <!-- (3) -->
-        <bean id="beanMapper" class="org.dozer.spring.DozerBeanMapperFactoryBean">
+        <bean id="beanMapper" class="com.github.dozermapper.spring.DozerBeanMapperFactoryBean">
             <property name="mappingFiles"
                 value="classpath*:/META-INF/dozer/**/*-mapping.xml" />
         </bean>
@@ -3470,7 +3549,7 @@ applicationContext.xml
        | この設定により、プロパティファイルの値をBean定義ファイル内で\ ``${propertyName}``\ 形式で埋め込んだり、Javaクラスに\ ``@Value("${propertyName}")``\ でインジェクションすることができる。
    * - | (3)
      - | Bean変換用ライブラリDozerのMapperを定義する。
-       | (マッピングファイルに関しては `Dozerマニュアル <http://dozer.sourceforge.net/documentation/mappings.html>`_ を参照されたい。)
+       | (マッピングファイルに関しては `Dozerマニュアル <https://dozermapper.github.io/gitbook/documentation/mappings.html>`_ を参照されたい。)
 
 .. tip::
 
@@ -3907,7 +3986,11 @@ spring-mvc.xml
         <!-- (6) -->
         <!-- Settings View Resolver. -->
         <mvc:view-resolvers>
+<<<<<<< HEAD
             <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+=======
+            <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+>>>>>>> Release version 1.6.0.RELEASE
                 <property name="templateEngine" ref="templateEngine" />
                 <property name="characterEncoding" value="UTF-8" />
                 <property name="forceContentType" value="true" />
@@ -3918,7 +4001,11 @@ spring-mvc.xml
         <!-- (7) -->
         <!-- TemplateResolver. -->
         <bean id="templateResolver"
+<<<<<<< HEAD
             class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+=======
+            class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+>>>>>>> Release version 1.6.0.RELEASE
             <property name="prefix" value="/WEB-INF/views/" />
             <property name="suffix" value=".html" />
             <property name="templateMode" value="HTML" />
@@ -3926,7 +4013,11 @@ spring-mvc.xml
         </bean>
 
         <!-- TemplateEngine. -->
+<<<<<<< HEAD
         <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+=======
+        <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+>>>>>>> Release version 1.6.0.RELEASE
             <property name="templateResolver" ref="templateResolver" />
             <property name="enableSpringELCompiler" value="true" />
             <property name="additionalDialects">
@@ -4013,7 +4104,7 @@ spring-mvc.xml
        | どこにも\ ``styles.css``\ が格納されていない場合は、404エラーを返す。
 
        | ここでは\ ``cache-period``\ 属性で静的リソースのキャッシュ時間(3600秒=60分)も設定している。
-       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/expressions.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
+       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
    * - | (5)
      - | コントローラ処理のTraceログを出力するインターセプタを設定する。
        | \ ``/resources``\ 配下を除く任意のパスに適用されるように設定する。

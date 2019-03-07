@@ -10,7 +10,7 @@ Spring MVCアーキテクチャ概要
 
 Spring MVCは、公式で以下のように説明されている。
 
-`Spring Reference Document <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html>`_\ .
+`Spring Framework Documentation <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc>`_\ .
 
      Spring's web MVC framework is, like many other web MVC frameworks, request-driven,
      designed around a central Servlet that dispatches requests to controllers and offers other functionality
@@ -60,7 +60,7 @@ Springから提供されている\ ``HandlerMapping``\ のクラス階層を、�
 
 | Spring Framework 3.1からは、\ ``RequestMappingHandlerMapping``\ は、\ ``DispatcherServlet``\ が読み込むBean定義ファイルに、
 | \ ``<mvc:annotation-driven>``\ の設定がある場合、デフォルトで設定される。
-| (\ ``<mvc:annotation-driven>``\ アノテーションで有効になる設定は、\ `Web MVC framework <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-config-enable>`_\ を参照されたい。)
+| (\ ``<mvc:annotation-driven>``\ アノテーションで有効になる設定は、\ `Enable MVC Config <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-config-enable>`_\ を参照されたい。)
 
 
 Implementation of HandlerAdapter
@@ -88,7 +88,7 @@ Springおよび依存ライブラリから提供されている\ ``ViewResolver`
 
 Thymeleafを使う場合は、
 
-*  \ ``org.thymeleaf.spring4.view.ThymeleafViewResolver``\ 
+*  \ ``org.thymeleaf.spring5.view.ThymeleafViewResolver``\ 
 
 を使用するが、ファイルダウンロード用にストリームを返す場合は
 
@@ -117,7 +117,7 @@ Springおよび依存ライブラリから提供されている\ ``View``\ の�
  \newpage
 
 | \ ``View``\ は、返したいレスポンスの種類によって変わる。
-| Thymeleafにより生成されたHTMLを返す場合、\ ``org.thymeleaf.spring4.view.ThymeleafView``\ が使用される。
+| Thymeleafにより生成されたHTMLを返す場合、\ ``org.thymeleaf.spring5.view.ThymeleafView``\ が使用される。
 
 | Springおよび依存ライブラリから提供されていない\ ``View``\ を扱いたい場合、\ ``View``\ インタフェースを実装したクラスを拡張する必要がある。
 | 詳細は\ :doc:`../ArchitectureInDetail/WebApplicationDetail/FileDownload`\ を参照されたい。

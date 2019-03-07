@@ -882,7 +882,7 @@ GET Todosの実装
     
     import javax.inject.Inject;
     
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.http.HttpStatus;
     import org.springframework.web.bind.annotation.RequestMapping;
     import org.springframework.web.bind.annotation.RequestMethod;
@@ -928,7 +928,7 @@ GET Todosの実装
        | HTTPステータスとして、"200 OK"を設定するため、\ ``value``\ 属性には\ ``HttpStatus.OK``\ を設定する。
    * - | (3)
      - | \ ``TodoService``\ の\ ``findAll``\ メソッドから返却された\ ``Todo``\ オブジェクトを、応答するJSONを表現する\ ``TodoResource``\ 型のオブジェクトに変換する。
-       | \ ``Todo``\ と\ ``TodoResource``\ の変換処理は、Dozerの\ ``org.dozer.Mapper``\ インタフェースを使うと便利である。
+       | \ ``Todo``\ と\ ``TodoResource``\ の変換処理は、Dozerの\ ``com.github.dozermapper.core.Mapper``\ インタフェースを使うと便利である。
    * - | (4)
      - | \ ``List<TodoResource>``\ オブジェクトを返却することで、\ ``spring-mvc-rest.xml``\ に定義した\ ``MappingJackson2HttpMessageConverter``\ によってJSONにシリアライズされる。
 
@@ -970,7 +970,7 @@ Todoリソースを新規作成するAPI(POST Todos)の処理を、\ ``TodoRestC
 
     import javax.inject.Inject;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.http.HttpStatus;
     import org.springframework.validation.annotation.Validated;
     import org.springframework.web.bind.annotation.RequestBody;
@@ -1213,7 +1213,7 @@ GET Todoの実装
 
     import javax.inject.Inject;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.http.HttpStatus;
     import org.springframework.validation.annotation.Validated;
     import org.springframework.web.bind.annotation.PathVariable;
@@ -1310,7 +1310,7 @@ Todoリソースを一件更新(完了状態へ更新)するAPI(PUT Todo)の処�
     
     import javax.inject.Inject;
     
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.http.HttpStatus;
     import org.springframework.validation.annotation.Validated;
     import org.springframework.web.bind.annotation.PathVariable;
@@ -1421,7 +1421,7 @@ DELETE Todoの実装
 
     import javax.inject.Inject;
 
-    import org.dozer.Mapper;
+    import com.github.dozermapper.core.Mapper;
     import org.springframework.http.HttpStatus;
     import org.springframework.validation.annotation.Validated;
     import org.springframework.web.bind.annotation.PathVariable;
@@ -1546,7 +1546,7 @@ DELETE Todoの実装
 | ``src/main/java/com/example/todo/domain/service/todo/TodoServiceImpl.java``
 
 .. code-block:: java
-    :emphasize-lines: 33, 50, 74
+    :emphasize-lines: 33, 50, 71
 
     package com.example.todo.domain.service.todo;
 

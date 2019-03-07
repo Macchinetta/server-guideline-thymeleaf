@@ -950,19 +950,19 @@ ResultMessagesを保持する例外(BisinessException,ResourceNotFoundException)
 
     <!-- Settings View Resolver. -->
     <mvc:view-resolvers>
-        <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver"> <!-- (9) -->
+        <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver"> <!-- (9) -->
             <property name="templateEngine" ref="templateEngine" />
             <!-- omitted -->
         </bean>
     </mvc:view-resolvers>
 
-    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
         <property name="prefix" value="/WEB-INF/views/" />
         <property name="suffix" value=".html" />
         <!-- omitted -->
     </bean>
 
-    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
         <property name="templateResolver" ref="templateResolver" />
         <!-- omitted -->
     </bean>
