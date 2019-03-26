@@ -247,7 +247,7 @@ XSS問題が発生する例を、以下に示す。
    * - 項番
      - 説明
    * - | (1)
-     - | [(xxx)]の形式を用いたインライン記法により、\ ``warnCode``\をエスケープせず出力している。
+     - | \ ``[(xxx)]``\の形式を用いたインライン記法により、\ ``warnCode``\をエスケープせず出力している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.80\linewidth}|
 .. list-table::
@@ -305,7 +305,7 @@ XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を�
    * - 項番
      - 説明
    * - | (1)
-     - | \ ``th:inline="javascript"``\ と[[xxx]]の形式を用いたインライン記法を併用することにより、エスケープして変数に設定している。
+     - | \ ``th:inline="javascript"``\ と\ ``[[xxx]]``\の形式を用いたインライン記法を併用することにより、エスケープして変数に設定している。
 
 .. figure:: ./images_XSS/javascript_xss_screen_escape_result_th_inline.png
    :alt: javascript_xss_screen_escape_result
@@ -325,7 +325,7 @@ XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を�
 
 .. note:: 
 
-   \ ``th:inline="javascript"``\と[[xxx]]の形式を用いたインライン記法を併用すると、文字列が"\ ``"``\"に挟まれた状態で出力されるので、"\ ``'``\"はエスケープ不要となる。
+   \ ``th:inline="javascript"``\と\ ``[[xxx]]``\の形式を用いたインライン記法を併用すると、文字列が"\ ``"``\"に挟まれた状態で出力されるので、"\ ``'``\"はエスケープ不要となる。
    
    また、<script>タグがブラウザに認識されると、</script>のようにタグを閉じるまで他のタグは認識されない。
    そのため、"\ ``/``\"がエスケープされていれば、"\ ``<``\"、"\ ``>``\"のエスケープは不要となる。
@@ -335,6 +335,8 @@ XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を�
    * "\ ``'``\"
    * "\ ``<``\"
    * "\ ``>``\"
+
+   インライン記法については、 :ref:`thymeleaf-javascript-template-overview` のインライン記法の項を参照されたい。
 
 .. Warning::
 
@@ -399,13 +401,23 @@ XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を�
 Event handler Escaping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-javascript のイベントハンドラの値をエスケープする場合、Thymeleafの\ ``#strings.escapeJavaScript()``\ メソッドを使用する。
+javascript のイベントハンドラの値は、 :ref:`xss_how_to_use_javascript_escaping` と同様にインライン記法で記述する。
+出力結果をエスケープする場合、Thymeleafの\ ``[[xxx]]``\の形式を用いたインライン記法を使用する。
 
 理由としては、 \ ``<input type="submit" onclick="callback('xxxx');">``\ のようなイベントハンドラの値に\ ``');alert("XSS Attack");//``\ を指定された場合、別のスクリプトを挿入できてしまうため、文字参照形式にエスケープ後、HTMLエスケープを行う必要がある。
 
 .. note:: 
 
-   \ ``#strings.escapeJavaScript()``\ メソッドを使用すると、"\ ``/``\"のエスケープは\ ``</script>``\のようなタグを閉じる際にのみ必要となるため、"\ ``<``\"の後の"\ ``/``\"のみエスケープが行われる。
+   Thymeleaf 3.0.10より、イベントハンドラの値をインライン記法で記述できるように変更された。インライン記法は自動的にJavaScriptテンプレートモードで解釈される。
+   
+   インライン記法については、 :ref:`thymeleaf-javascript-template-overview` のインライン記法の項を参照されたい。
+
+.. warning:: 
+
+   Thymeleaf 3.0.10より、イベントハンドラの値を従来のインライン記法以外で記述する場合、Booleanと数値以外を出力する式がエラーとなるように変更された。
+   これは、従来の記法では式により出力される文字列が区切り文字（シングルクォートやダブルクォート）で囲まれないため、JavaScript構文の出力により脆弱性を埋め込むことが容易だったためである。
+   
+   従来の記法では大幅に機能が制限されるため、イベントハンドラの値はインライン記法で記述することを推奨する。
 
 出力値をエスケープしない脆弱性のある例
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -413,7 +425,7 @@ XSS問題が発生する例を、以下に示す。
 
 .. code-block:: html
 
-    <input type="text" th:onmouseover="|alert('output is ${warnCode}.')|">
+    <input type="text" th:onmouseover="alert(&quot;[(|output is ${warnCode}.|)]&quot;)">
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.80\linewidth}|
 .. list-table::
@@ -423,7 +435,7 @@ XSS問題が発生する例を、以下に示す。
    * - 属性名
      - 値
    * - | warnCode
-     - | ``'); alert('XSS Attack!'); //``
+     - | ``\"); alert('XSS Attack!'); //``
        | 上記の値が設定されてしまうことで、意図せず文字列リテラルが閉じられ、XSSの脆弱性が生じる。
 
 マウスオーバ時、XSSのダイアログボックスが表示されてしまう。
@@ -441,8 +453,13 @@ XSS問題が発生する例を、以下に示す。
 .. code-block:: html
 
     <!-- omitted -->
-    <input type="text" onmouseover="alert(&#39;output is &#39;); alert(&#39;XSS Attack!&#39;); //.&#39;)">
+    <input type="text" onmouseover="alert(&quot;output is &quot;); alert(&#39;XSS Attack!&#39;); //.&quot;)">
     <!-- omitted -->
+
+.. note:: 
+
+   \ ``[[xxx]]``\の形式を用いたインライン記法を使用すると、エスケープされた文字列がダブルクォート（"\ ``"``\"）で囲まれて出力される。
+   これに合わせて、本ガイドラインではエスケープしない場合でも文字列をダブルクォート（\ ``&quot;``\）で囲んでいる。もちろんシングルクォートで囲んでも問題ない。
 
 .. _xss_how_to_use_hjs_function_example:
 
@@ -453,7 +470,7 @@ XSS問題が発生する例を、以下に示す。
 
 .. code-block:: html
 
-    <input type="text" th:onmouseover="|alert('output is ${#strings.escapeJavaScript(warnCode)}.')|">  // (1)
+    <input type="text" th:onmouseover="alert([[|output is ${warnCode}.|]])">  // (1)
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -463,7 +480,7 @@ XSS問題が発生する例を、以下に示す。
    * - 項番
      - 説明
    * - | (1)
-     - | \ ``#strings.escapeJavaScript()``\ メソッドを使用することにより、エスケープしている。
+     - | Thymeleafの\ ``[[xxx]]``\の形式を用いたインライン記法を使用することにより、エスケープしている。
 
 マウスオーバ時、XSSのダイアログは出力されない。
 
@@ -479,7 +496,7 @@ XSS問題が発生する例を、以下に示す。
 .. code-block:: html
 
     <!-- omitted -->
-    <input type="text" onmouseover="alert(&#39;output is \&#39;); alert(\&#39;XSS Attack!\&#39;); //.&#39;)">
+    <input type="text" onmouseover="alert(&quot;output is \&quot;); alert(&#39;XSS Attack!&#39;); \/\/.&quot;)">
     <!-- omitted -->
 
 .. raw:: latex

@@ -143,6 +143,25 @@ Controllerクラスの作成方法
     複数の属性を組み合わせることで複雑なマッピングを行うことも可能だが、保守性を考慮し、可能な限りシンプルな定義になるようにマッピングの設計を行うこと。
     2つの属性の組み合わせ（value属性と別の属性1つ）を目安にすることを推奨する。
 
+ .. note:: **HTTPメソッドごとの@RequestMappingアノテーション**
+
+    Spring Framework 4.3から、HTTPメソッドごとの \ ``@RequestMapping``\ 合成アノテーションが追加された。
+    よりシンプルにマッピングを定義することができ、意図しないHTTPメソッドのマッピング防止とソースコードの可読性向上が期待できる。
+
+    -  \ ``@GetMapping``\
+    -  \ ``@PostMapping``\
+
+    以下の定義は、 \ ``@RequestMapping(value = "hello", method = RequestMethod.GET)``\ と定義しているのと同様である。
+
+      .. code-block:: java
+
+          @GetMapping(value = "hello")
+          public String hello() {
+              // ...
+          }
+
+    詳細は、`Spring Framework Documentation - Request Mapping <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping>`_ を参照されたい。
+
 |
 
 | 以下、マッピングの具体例を6つ示す。
@@ -198,7 +217,7 @@ Controllerクラスの作成方法
     @RequestMapping(value = {"hello", "bonjour"})
     public String hello() {
 
-指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`URI patterns <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
+指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`URI patterns <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
 
 |
 
@@ -207,7 +226,7 @@ Controllerクラスの作成方法
 HTTPメソッドでマッピング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 下記の定義の場合、 ``sample/hello`` というURLにPOSTメソッドでアクセスすると、helloメソッドが実行される。
-サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
+サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
 指定しない場合、サポートしている全てのHTTPメソッドがマッピング対象となる。
 
  .. code-block:: java
@@ -408,7 +427,7 @@ Acceptヘッダでマッピング
 
  .. note::
 
-     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
+     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
      サンプルアプリケーションでは、操作するEntityのIDを指定する。
 
  画面フロー図に各処理に割り振られたURLをマッピングすると以下のようになる。
@@ -1062,7 +1081,7 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
 ハンドラメソッドの引数について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-arguments>`_ が、
+`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-arguments>`_ が、
 基本的には次に挙げるものは原則として使用しないこと。
 
 * ServletRequest
@@ -1730,7 +1749,7 @@ Cookieに値を書き込む
 
 ハンドラメソッドの返り値について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-ann-return-types>`_ が、
+`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-return-types>`_ が、
 基本的には次に挙げるもののみを使用すること。
 
 - String(View名)
@@ -1773,8 +1792,28 @@ HTMLを応答する
      - ハンドラメソッドの返り値として ``sample/hello`` というView名を返却した場合、 ``ThymeleafViewResolver`` の設定によりテンプレートHTMLとして ``/WEB-INF/views/sample/hello.html`` を利用して生成したHTMLが返される。
 
 .. note::
-    JSPやVelocity、FreeMarkerなど他のテンプレートエンジンを使用してHTMLを生成する場合でも、ハンドラメソッドの返り値は ``sample/hello`` のままでよい。
+    JSPやFreeMarkerなど他のテンプレートエンジンを使用してHTMLを生成する場合でも、ハンドラメソッドの返り値は ``sample/hello`` のままでよい。
     使用するテンプレートエンジンでの差分は ``ViewResolver`` によって解決される。
+
+
+.. note::
+
+    単純にview 名を返すだけのメソッドを実装する場合は、\ ``<mvc:view-controller>`` \を使用してControllerクラスの実装を代用することも可能である。
+    
+    * \ ``<mvc:view-controller>``\ を使用したControllerの定義例。
+    
+      .. code-block:: xml
+      
+        <mvc:view-controller path="/hello" view-name="sample/hello" />
+      
+
+
+.. warning:: **<mvc:view-controller>使用に関する留意点**
+
+    Spring Framework 4.3へのバージョンアップによって、\ ``<mvc:view-controller>``\ が許可するHTTPメソッドはGETとHEADのみに限定される様になったため(`SPR-13130 <https://jira.spring.io/browse/SPR-13130>`_)、
+    HTTPメソッドがGETとHEAD以外(POSTなど)でアクセスするページの場合、\ ``<mvc:view-controller>``\ は使用できない。
+    GETとHEAD以外(POSTなど)からフォワードされた場合も同様となるため、エラーページへの遷移などフォワード元のHTTPメソッドが限定できない場合には\ ``<mvc:view-controller>``\ を使用しないよう注意されたい。
+
 
 |
 
@@ -1796,11 +1835,7 @@ HTMLを応答する
 
     <mvc:view-resolvers>
         <mvc:bean-name /> <!-- (1) -->
-<<<<<<< HEAD
-        <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-=======
         <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
->>>>>>> Release version 1.6.0.RELEASE
             <property name="templateEngine" ref="templateEngine" />
             <property name="characterEncoding" value="UTF-8" />
             <property name="forceContentType" value="true" />
@@ -1826,13 +1861,13 @@ HTMLを応答する
     :emphasize-lines: 1-2
 
     @Component("sample/report") // (3)
-    public class XxxExcelView extends AbstractExcelView { // (4)
+    public class XxxExcelView extends AbstractXlsxView { // (4)
         @Override
         protected void buildExcelDocument(Map<String, Object> model,
-                HSSFWorkbook workbook, HttpServletRequest request,
+                Workbook workbook, HttpServletRequest request,
                 HttpServletResponse response) throws Exception {
-            HSSFSheet sheet;
-            HSSFCell cell;
+            Sheet sheet;
+            Cell cell;
 
             sheet = workbook.createSheet("Spring");
             sheet.setDefaultColumnWidth(12);
@@ -1842,7 +1877,7 @@ HTMLを応答する
             setText(cell, "Spring-Excel test");
 
             cell = getCell(sheet, 2, 0);
-            setText(cell, (Date) model.get("serverTime")).toString());
+            setText(cell, ((Date) model.get("serverTime")).toString());
         }
     }
 
@@ -1866,7 +1901,7 @@ HTMLを応答する
    * - | (4)
      - Viewの実装例。
 
-       上記例では、 ``org.springframework.web.servlet.view.document.AbstractExcelView`` を継承し、Excelデータを生成するViewクラスの実装となる。
+       上記例では、 ``org.springframework.web.servlet.view.document.AbstractXlsxView`` を継承し、Excelデータを生成するViewクラスの実装となる。
 
 |
 |
@@ -2201,9 +2236,9 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
 
     Spring Frameworkは、以下の3つの仕組みを使って型変換を行っており、基本的な型への変換は標準でサポートされている。各変換機能の詳細については、リンク先のページを参照されたい。
 
-    * `Spring Type Conversion <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#core-convert>`_\
-    * `Spring Field Formatting <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#format>`_\
-    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#beans-beans-conversion>`_\
+    * `Spring Type Conversion <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#core-convert>`_\
+    * `Spring Field Formatting <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#format>`_\
+    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-beans-conversion>`_\
 
  .. warning::
 
@@ -2249,7 +2284,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - style
-     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
+     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
    * - 2.
      - pattern
      - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
@@ -2294,7 +2329,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - iso
-     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
+     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
    * - 2.
      - pattern
      - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
@@ -3065,7 +3100,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
         | 上記例では、リクエストURLが静的なURLであるため、\ ``build``\ メソッドのみを呼び出してリクエストURLを生成している。
         | リクエストURLが動的なURL(パス変数やクエリ文字列が存在するURL)の場合は、\ ``arg``\ メソッドや\ ``buildAndExpand``\ メソッドを呼び出す必要がある。
         | \ ``arg``\ メソッドと\ ``buildAndExpand``\ メソッドの具体的な使用例については、
-        | 「\ `Spring Framework Documentation(Links in views) <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
+        | 「\ `Spring Framework Documentation(Links in views) <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
 
  .. note:: **リクエストマッピング名について**
 
@@ -3530,8 +3565,14 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
      - 説明
    * - | (1)
      - | 添え字などを先に解決する場合、プリプロセッシングが利用される。
-       | 例では、現在 ``th:each`` 要素で処理を行っている要素の位置を ``status.index`` で取得してから、 ``addresses`` オブジェクトの添え字としている。
+       | 例では、現在 ``th:each`` 要素で処理を行っている要素の位置を ``status.index`` で取得してから、 ``addresses`` リストの添え字としている。
        | プリプロセッシングを利用しない場合、 ``addresses[${status.index}]`` において ``${status.index}`` を文字列として扱ってしまい、、 ``java.lang.NumberFormatException`` エラーが発生する。
+
+.. warning::
+
+    プリプロセッシングで解決された値は、自動的に型が判定される。（\ ``1``\のような数字なら\ ``Number``\型として扱われ、\ ``"a"``\のような文字列なら\ ``String``\型として扱われる。）
+
+    このため、\ ``String``\型をキーに持つ\ ``java.util.Map``\のキー値にプリプロセッシングで解決した値を利用する場合は、明示的にシングルクォート等で囲むことを推奨する。
 
 |
 
@@ -3666,11 +3707,7 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
  .. code-block:: html
 
-<<<<<<< HEAD
-    <span th:text="|Order Status : ${CL_ORDERSTATUS[__${orderForm.orderStatus}__]}|"></span> <!-- (1) -->
-=======
-    <span th:text="'Order Status : ' + (${orderForm.orderStatus} != null ? ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']})"></span> <!-- (1) -->
->>>>>>> Release version 1.6.0.RELEASE
+    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']}|"></span> <!-- (1) -->
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -3682,6 +3719,7 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
    * - | (1)
      - | セレクトボックス作成時と同様に、コードリスト名( ``CL_ORDERSTATUS`` ) を属性名として格納されたコードリスト( ``java.util.Map`` インタフェース)を取得する。
        | 取得したコードリストのキー値として、セレクトボックスで選択した値を指定することで、コード名を表示することができる。
+       | プリプロセッシングについての詳細は、:ref:`view_thymeleaf_preprocessing-label` を参照されたい。
 
 |
 
@@ -4065,7 +4103,7 @@ HandlerMethodArgumentResolverを実装してControllerの引数として受け�
 
            @ControllerAdvice(annotations = LoginFormModelAttributeSetter.LoginFormModelAttribute.class)
            public class LoginFormModelAttributeSetter {
-               @Target(ElementType.TYPE)
+               @Target(TYPE)
                @Retention(RetentionPolicy.RUNTIME)
                public static @interface LoginFormModelAttribute {}
                // ...

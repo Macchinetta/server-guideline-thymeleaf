@@ -99,7 +99,7 @@ Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.6.0.RELEASE^
+     -DarchetypeVersion=1.6.1.RELEASE^
      -DgroupId=com.example.security^
      -DartifactId=first-springsecurity^
      -Dversion=1.0.0-SNAPSHOT
@@ -688,47 +688,14 @@ Spring Securityの設定
     package com.example.security.app.login;
 
     import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
 
     @Controller
     @RequestMapping("/login")
     public class LoginController {
 
-        @RequestMapping("/loginForm") // (1)
-        public String view() {
-            return "login/loginForm";
-        }
-    }
-  
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-  
-    * - 項番
-      - 説明
-    * - | (1)
-      - ログインページである、\ ``login/loginForm``\ を返す。 
-
-|
-
-ログインページを返すControllerの作成
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-| ログインページを返すControllerを作成する。
-| ``src/main/java/com/example/security/app/login/LoginController.java``
-
-.. code-block:: java
-  
-    package com.example.security.app.login;
-
-    import org.springframework.stereotype.Controller;
-    import org.springframework.web.bind.annotation.RequestMapping;
-
-    @Controller
-    @RequestMapping("/login")
-    public class LoginController {
-
-        @RequestMapping("/loginForm") // (1)
+        @GetMapping("/loginForm") // (1)
         public String view() {
             return "login/loginForm";
         }
@@ -750,16 +717,9 @@ Spring Securityの設定
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 | ログインページにログインフォームを作成する。
-<<<<<<< HEAD
-| ``src/main/webapp/WEB-INF/login/loginForm.html``
-
-.. code-block:: html
-   :emphasize-lines: 13-15
-=======
 | ``src/main/webapp/WEB-INF/views/login/loginForm.html``
 
 .. code-block:: html
->>>>>>> Release version 1.6.0.RELEASE
   
     <!DOCTYPE html>
     <html xmlns:th="http://www.thymeleaf.org">
@@ -962,6 +922,7 @@ Controllerからログインユーザーのアカウント情報へアクセス
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
 
     import com.example.security.domain.model.Account;
@@ -971,7 +932,7 @@ Controllerからログインユーザーのアカウント情報へアクセス
     @RequestMapping("account")
     public class AccountController {
 
-        @RequestMapping
+        @GetMapping
         public String view(
                 @AuthenticationPrincipal SampleUserDetails userDetails, // (1)
                 Model model) {
@@ -1262,11 +1223,7 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         <!-- Settings View Resolver. -->
         <mvc:view-resolvers>
-<<<<<<< HEAD
-            <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-=======
             <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
->>>>>>> Release version 1.6.0.RELEASE
                 <property name="templateEngine" ref="templateEngine" />
                 <property name="characterEncoding" value="UTF-8" />
                 <property name="forceContentType" value="true" />
@@ -1276,11 +1233,7 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         <!-- TemplateResolver. -->
         <bean id="templateResolver"
-<<<<<<< HEAD
-            class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
-=======
             class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
->>>>>>> Release version 1.6.0.RELEASE
             <property name="prefix" value="/WEB-INF/views/" />
             <property name="suffix" value=".html" />
             <property name="templateMode" value="HTML" />
@@ -1288,17 +1241,13 @@ Spring Securityと関係のない設定については、説明を割愛する�
         </bean>
 
         <!-- TemplateEngine. -->
-<<<<<<< HEAD
-        <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-=======
         <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
->>>>>>> Release version 1.6.0.RELEASE
             <property name="templateResolver" ref="templateResolver" />
             <property name="enableSpringELCompiler" value="true" />
             <property name="additionalDialects">
                 <set>
                     <!-- (2) -->
-                    <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                    <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect" />
                     <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" /> 
                 </set>
             </property>

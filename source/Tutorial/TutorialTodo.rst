@@ -1,4 +1,4 @@
-チュートリアル(Todoアプリケーション)
+﻿チュートリアル(Todoアプリケーション)
 ********************************************************************************
 
 .. only:: html
@@ -223,7 +223,7 @@ Delete TODO
         mvn archetype:generate -B\
          -DarchetypeGroupId=com.github.macchinetta.blank\
          -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype\
-         -DarchetypeVersion=1.6.0.RELEASE\
+         -DarchetypeVersion=1.6.1.RELEASE\
          -DgroupId=com.example.todo\
          -DartifactId=todo\
          -Dversion=1.0.0-SNAPSHOT
@@ -243,7 +243,7 @@ O/R Mapperに依存しないブランクプロジェクトの作成
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-     -DarchetypeVersion=1.6.0.RELEASE^
+     -DarchetypeVersion=1.6.1.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
@@ -261,7 +261,7 @@ MyBatis3を使用してデータベースにアクセスするRepositoryImpl用�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.6.0.RELEASE^
+     -DarchetypeVersion=1.6.1.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
@@ -333,7 +333,7 @@ Root Directoryに \ ``C:\work\todo``\ を設定し、Projectsにtodoのpom.xml�
 .. note::
  
    上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
-   上記の依存ライブラリはterasoluna-gfw-parentが利用している\ `Spring IO Platform <http://platform.spring.io/platform/>`_\ で定義済みである。
+   上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.1.2.RELEASE/reference/htmlsingle/#appendix-dependency-versions>`_\ で管理されている。
 
 |
 
@@ -729,11 +729,7 @@ Package Explorer上で右クリック -> New -> File を選択し、「New File�
  :ref:`tutorial-todo-application-overview-label` で示した画面をHTMLとして表示するために必要なプロトタイプの実装を行う。
 
 .. code-block:: html
-<<<<<<< HEAD
-    :emphasize-lines: 19, 28, 48
-=======
     :emphasize-lines: 19, 29, 48
->>>>>>> Release version 1.6.0.RELEASE
 
     <!DOCTYPE html>
     <html>
@@ -1654,6 +1650,7 @@ Controllerの実装
 
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.ModelAttribute;
     import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -1672,7 +1669,7 @@ Controllerの実装
             return form;
         }
 
-        @RequestMapping(value = "list") // (3)
+        @GetMapping("list") // (3)
         public String list(Model model) {
             Collection<Todo> todos = todoService.findAll();
             model.addAttribute("todos", todos); // (4)
@@ -1697,13 +1694,19 @@ Controllerの実装
        | \ ``@ModelAttribute``\ アノテーションをつけることで、このメソッドの返り値のformオブジェクトが、\ ``todoForm``\ という名前で\ ``Model``\ に追加される。
        | これは、\ ``TodoController``\ の各処理で、\ ``model.addAttribute("todoForm", form)``\ を実装するのと同義である。
    * - | (3)
-     - | \ ``/todo/list``\ というパスにリクエストされた際に、一覧画面表示処理用のメソッド(\ ``list``\ メソッド)が実行されるように\ ``@RequestMapping``\ アノテーションを設定する。
+     - | \ ``/todo/list``\ というパスに\ ``GET``\ メソッドを使用してリクエストされた際に、一覧画面表示処理用のメソッド(\ ``list``\ メソッド)が実行されるように\ ``@GetMapping``\ アノテーションを設定する。
        |
-       | クラスレベルに\ ``@RequestMapping(“todo”)``\ が設定されているため、ここでは\ ``@RequestMapping("list")``\ のみで良い。
+       | クラスレベルに\ ``@RequestMapping(“todo”)``\ が設定されているため、ここでは\ ``@GetMapping("list")``\ のみで良い。
    * - | (4)
      - | \ ``Model``\ にTodoのリストを追加して、Viewに渡す。
    * - | (5)
      - | View名として\ ``todo/list``\ を返すと、spring-mvc.xmlに定義した\ ``ViewResolver``\ の設定によりテンプレートHTMLとして\ :file:`WEB-INF/views/todo/list.html`\を利用して生成したHTMLが返される。
+
+.. note::
+
+   \ ``@GetMapping``\や以降に登場する\ ``@PostMapping``\は、対応するHTTPメソッドにマッピングする。
+
+   詳細は、 :ref:`controller_mapping-label` を参照されたい。
 
 テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1798,15 +1801,9 @@ TODOの一覧表示エリアを表示するために必要なテンプレートH
        | XSS対策についての詳細は、:ref:`xss_how_to_use_ouput_escaping` を参照されたい。
    * - | (7)
      - | \ ``th:if``\ 属性は条件に応じて、要素を出力するかどうか制御するための属性であり、\ ``todo``\の\ ``finished``\プロパティを参照して「Finish」ボタンの生成を判断する。
-<<<<<<< HEAD
 
 .. note::
 
-=======
-
-.. note::
-
->>>>>>> Release version 1.6.0.RELEASE
     Thymeleafの\ ``th:object``\属性を用いると、オブジェクト名を省略してプロパティを指定することが出来る。
     
     list.htmlの\ ``<li>``\タグの部分は、\ ``th:object``\属性を用いることで以下のように記述量を減らすことが出来る。
@@ -1850,7 +1847,6 @@ STSで「todo」プロジェクトを右クリックし、「Run As」→「Run 
    :width: 25%
 
 なお、表示されている「Create Todo」ボタンについては、「Create TODO」の実装が終了していないため、表示はされるが機能しない。
-<<<<<<< HEAD
 
 |
 
@@ -1906,70 +1902,10 @@ STSで「todo」プロジェクトを右クリックし、「Run As」→「Run 
     .. figure:: ./images/show-all-todo-note.png
        :width: 30%
 
-=======
->>>>>>> Release version 1.6.0.RELEASE
 
 |
 
 
-<<<<<<< HEAD
-=======
-.. note::
-
-    上記で表示されている画面には、TODOが１件も登録されていないため、TODOの一覧は出力されない。
-    
-    以下のように、ドメイン層の作成で作成したTodoRepositoryImplを一時的に修正し初期データを登録することで、TODOの一覧が出力されることを確認できる。
-    
-    なお、次節「\ :ref:`CreateTodoImplementation`\ 」で実際にTODOを登録できるようになるため、一覧の出力が確認できたら削除して構わない。
-
-    * ``TodoRepositoryImpl.java``
-
-     .. code-block:: java
-        :emphasize-lines: 15-29
-
-        package com.example.todo.domain.repository.todo;
-
-        import java.util.Collection;
-        import java.util.Map;
-        import java.util.concurrent.ConcurrentHashMap;
-
-        import org.springframework.stereotype.Repository;
-
-        import com.example.todo.domain.model.Todo;
-
-        @Repository
-        public class TodoRepositoryImpl implements TodoRepository {
-            private static final Map<String, Todo> TODO_MAP = new ConcurrentHashMap<String, Todo>();
-
-            static {
-                Todo todo1 = new Todo();
-                todo1.setTodoId("1");
-                todo1.setTodoTitle("Send a e-mail");
-                Todo todo2 = new Todo();
-                todo2.setTodoId("2");
-                todo2.setTodoTitle("Have a lunch");
-                Todo todo3 = new Todo();
-                todo3.setTodoId("3");
-                todo3.setTodoTitle("Read a book");
-                todo3.setFinished(true);
-                TODO_MAP.put(todo1.getTodoId(), todo1);
-                TODO_MAP.put(todo2.getTodoId(), todo2);
-                TODO_MAP.put(todo3.getTodoId(), todo3);
-            }
-
-              // omitted
-
-
-    以下のように画面に出力される。
-
-    .. figure:: ./images/show-all-todo-note.png
-       :width: 30%
-
-
-|
-
-
->>>>>>> Release version 1.6.0.RELEASE
 .. _CreateTodoImplementation:
 
 Create TODOの実装
@@ -1996,9 +1932,10 @@ Controllerの修正
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.ModelAttribute;
+    import org.springframework.web.bind.annotation.PostMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RequestMethod;
     import org.springframework.web.servlet.mvc.support.RedirectAttributes;
     import org.terasoluna.gfw.common.exception.BusinessException;
     import org.terasoluna.gfw.common.message.ResultMessage;
@@ -2023,14 +1960,14 @@ Controllerの修正
             return form;
         }
 
-        @RequestMapping(value = "list")
+        @GetMapping("list")
         public String list(Model model) {
             Collection<Todo> todos = todoService.findAll();
             model.addAttribute("todos", todos);
             return "todo/list";
         }
 
-        @RequestMapping(value = "create", method = RequestMethod.POST) // (2)
+        @PostMapping("create") // (2)
         public String create(@Valid TodoForm todoForm, BindingResult bindingResult, // (3)
                 Model model, RedirectAttributes attributes) { // (4)
 
@@ -2069,7 +2006,7 @@ Controllerの修正
    * - | (1)
      - | FormオブジェクトをDomainObjectに変換するために、Dozerの\ ``Mapper``\ インタフェースをインジェクションする。
    * - | (2)
-     - | \ ``/todo/create``\ というパスに\ ``POST``\ メソッドを使用してリクエストされた際に、新規作成処理用のメソッド(\ ``create``\ メソッド)が実行されるように\ ``@RequestMapping``\ アノテーションを設定する。
+     - | \ ``/todo/create``\ というパスに\ ``POST``\ メソッドを使用してリクエストされた際に、新規作成処理用のメソッド(\ ``create``\ メソッド)が実行されるように\ ``@PostMapping``\ アノテーションを設定する。
    * - | (3)
      - | フォームの入力チェックを行うため、Formの引数に\ ``@Valid``\ アノテーションをつける。入力チェック結果は、その直後の引数\ ``BindingResult``\ に格納される。
    * - | (4)
@@ -2366,9 +2303,10 @@ Controllerの修正
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
     import org.springframework.validation.annotation.Validated;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.ModelAttribute;
+    import org.springframework.web.bind.annotation.PostMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RequestMethod;
     import org.springframework.web.servlet.mvc.support.RedirectAttributes;
     import org.terasoluna.gfw.common.exception.BusinessException;
     import org.terasoluna.gfw.common.message.ResultMessage;
@@ -2394,14 +2332,14 @@ Controllerの修正
             return form;
         }
 
-        @RequestMapping(value = "list")
+        @GetMapping("list")
         public String list(Model model) {
             Collection<Todo> todos = todoService.findAll();
             model.addAttribute("todos", todos);
             return "todo/list";
         }
 
-        @RequestMapping(value = "create", method = RequestMethod.POST)
+        @PostMapping("create")
         public String create(
                 @Validated({ Default.class, TodoCreate.class }) TodoForm todoForm, // (1)
                 BindingResult bindingResult, Model model,
@@ -2425,7 +2363,7 @@ Controllerの修正
             return "redirect:/todo/list";
         }
 
-        @RequestMapping(value = "finish", method = RequestMethod.POST) // (2)
+        @PostMapping("finish") // (2)
         public String finish(
                 @Validated({ Default.class, TodoFinish.class }) TodoForm form, // (3)
                 BindingResult bindingResult, Model model,
@@ -2465,7 +2403,7 @@ Controllerの修正
        | \ ``value``\ 属性には、適用する入力チェックルールのグループ(グループインタフェース)を指定する。
        | \ ``Default.class``\ は、グループ化されていない入力チェックルールを適用するために用意されているグループインタフェースである。
    * - | (2)
-     - | \ ``/todo/finish``\というパスに\ ``POST``\ メソッドを使用してリクエストされた際に、完了処理用のメソッド(\ ``finish``\ メソッド)が実行されるように\ ``@RequestMapping``\ アノテーションを設定する。
+     - | \ ``/todo/finish``\というパスに\ ``POST``\ メソッドを使用してリクエストされた際に、完了処理用のメソッド(\ ``finish``\ メソッド)が実行されるように\ ``@PostMapping``\ アノテーションを設定する。
    * - | (3)
      - | 適用する入力チェックのグループとして、完了処理用のグループインタフェース(\ ``TodoFinish``\ インタフェース)を指定する。
    * - | (4)
@@ -2676,9 +2614,10 @@ Controllerの修正
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
     import org.springframework.validation.annotation.Validated;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.ModelAttribute;
+    import org.springframework.web.bind.annotation.PostMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RequestMethod;
     import org.springframework.web.servlet.mvc.support.RedirectAttributes;
     import org.terasoluna.gfw.common.exception.BusinessException;
     import org.terasoluna.gfw.common.message.ResultMessage;
@@ -2705,14 +2644,14 @@ Controllerの修正
             return form;
         }
 
-        @RequestMapping(value = "list")
+        @GetMapping("list")
         public String list(Model model) {
             Collection<Todo> todos = todoService.findAll();
             model.addAttribute("todos", todos);
             return "todo/list";
         }
 
-        @RequestMapping(value = "create", method = RequestMethod.POST)
+        @PostMapping("create")
         public String create(
                 @Validated({ Default.class, TodoCreate.class }) TodoForm todoForm,
                 BindingResult bindingResult, Model model,
@@ -2736,7 +2675,7 @@ Controllerの修正
             return "redirect:/todo/list";
         }
 
-        @RequestMapping(value = "finish", method = RequestMethod.POST)
+        @PostMapping("finish")
         public String finish(
                 @Validated({ Default.class, TodoFinish.class }) TodoForm form,
                 BindingResult bindingResult, Model model,
@@ -2757,7 +2696,7 @@ Controllerの修正
             return "redirect:/todo/list";
         }
 
-        @RequestMapping(value = "delete", method = RequestMethod.POST) // (1)
+        @PostMapping("delete") // (1)
         public String delete(
                 @Validated({ Default.class, TodoDelete.class }) TodoForm form,
                 BindingResult bindingResult, Model model,
@@ -2791,7 +2730,7 @@ Controllerの修正
      - 説明
    * - | (1)
      - \ ``/todo/delete``\ というパスに\ ``POST``\ メソッドを使用してリクエストされた際に、
-       削除処理用のメソッド(\ ``delete``\ メソッド)が実行されるように\ ``@RequestMapping``\ アノテーションを設定する。
+       削除処理用のメソッド(\ ``delete``\ メソッド)が実行されるように\ ``@PostMapping``\ アノテーションを設定する。
 
 テンプレートHTMLの修正
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -3986,11 +3925,7 @@ spring-mvc.xml
         <!-- (6) -->
         <!-- Settings View Resolver. -->
         <mvc:view-resolvers>
-<<<<<<< HEAD
-            <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-=======
             <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
->>>>>>> Release version 1.6.0.RELEASE
                 <property name="templateEngine" ref="templateEngine" />
                 <property name="characterEncoding" value="UTF-8" />
                 <property name="forceContentType" value="true" />
@@ -4001,11 +3936,7 @@ spring-mvc.xml
         <!-- (7) -->
         <!-- TemplateResolver. -->
         <bean id="templateResolver"
-<<<<<<< HEAD
-            class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
-=======
             class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
->>>>>>> Release version 1.6.0.RELEASE
             <property name="prefix" value="/WEB-INF/views/" />
             <property name="suffix" value=".html" />
             <property name="templateMode" value="HTML" />
@@ -4013,16 +3944,12 @@ spring-mvc.xml
         </bean>
 
         <!-- TemplateEngine. -->
-<<<<<<< HEAD
-        <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-=======
         <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
->>>>>>> Release version 1.6.0.RELEASE
             <property name="templateResolver" ref="templateResolver" />
             <property name="enableSpringELCompiler" value="true" />
             <property name="additionalDialects">
                 <set>
-                    <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                    <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect" />
                     <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
                 </set>
             </property>
@@ -4104,7 +4031,7 @@ spring-mvc.xml
        | どこにも\ ``styles.css``\ が格納されていない場合は、404エラーを返す。
 
        | ここでは\ ``cache-period``\ 属性で静的リソースのキャッシュ時間(3600秒=60分)も設定している。
-       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/core.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
+       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
    * - | (5)
      - | コントローラ処理のTraceログを出力するインターセプタを設定する。
        | \ ``/resources``\ 配下を除く任意のパスに適用されるように設定する。

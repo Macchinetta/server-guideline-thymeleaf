@@ -16,7 +16,7 @@ Spring Securityはスタンドアロンなアプリケーションでも利用�
 .. tip:: **ガイドラインで紹介していない機能**
 
     Spring Securityは、本ガイドラインで紹介していない機能も多く提供している。
-    Spring Securityが提供するすべての機能を知りたい場合は、\ `Spring Security Reference <https://docs.spring.io/spring-security/site/docs/5.0.7.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
+    Spring Securityが提供するすべての機能を知りたい場合は、\ `Spring Security Reference -The Security Filter Chain- <https://docs.spring.io/spring-security/site/docs/5.1.3.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
 
 .. note:: **Spring Securityのバージョン**
 
@@ -122,7 +122,7 @@ Spring Securityのモジュール
     * - \ ``spring-security-acl``\
       - EntityなどのドメインオブジェクトをAccess Control List(ACL)を使用して認可制御するために必要となるコンポーネントが格納されている。
         本モジュールは依存関係の都合上、フレームワークスタックに含まれているモジュールであるため、本ガイドラインにおいて使用方法の説明は行わない。
-    * - \ ``thymeleaf-extras-springsecurity4``\
+    * - \ ``thymeleaf-extras-springsecurity5``\
       - 認証情報や認可機能にアクセスするためのThymeleafのダイアレクトが格納されている。
 
 要件に合わせて使用するモジュール群
@@ -240,7 +240,7 @@ Spring Securityは、サーブレットフィルタの仕組みを使用してWe
 |
 
 Webアプリケーション向けのフレームワーク処理を構成する主要なコンポーネントは以下の通りである。
-詳細は \ `Spring Security Reference -The Security Filter Chain- <https://docs.spring.io/spring-security/site/docs/5.0.7.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
+詳細は \ `Spring Security Reference -The Security Filter Chain- <https://docs.spring.io/spring-security/site/docs/5.1.3.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
 
 
 FilterChainProxy
@@ -282,7 +282,7 @@ Security Filterクラスは、フレームワーク機能やセキュリティ�
 
 Spring Securityは、複数のSecurity Filterを連鎖させることでWebアプリケーションのセキュリティ対策を行う仕組みになっている。
 ここでは、認証と認可機能を実現するために必要となるコアなクラスを紹介する。
-詳細は \ `Spring Security Reference -Core Security Filters- <https://docs.spring.io/spring-security/site/docs/5.0.7.RELEASE/reference/htmlsingle/#core-web-filters>`_\ を参照されたい。
+詳細は \ `Spring Security Reference -Core Security Filters- <https://docs.spring.io/spring-security/site/docs/5.1.3.RELEASE/reference/htmlsingle/#core-web-filters>`_\ を参照されたい。
 
 .. _SpringSecurityTableSecurityFilter:
 
@@ -357,7 +357,7 @@ Spring Securityと共通ライブラリの関連については、:ref:`framewor
     </dependency>
     <dependency>
         <groupId>org.thymeleaf.extras</groupId>
-        <artifactId>thymeleaf-extras-springsecurity4</artifactId>  <!-- (3) -->
+        <artifactId>thymeleaf-extras-springsecurity5</artifactId>  <!-- (3) -->
     </dependency>
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -372,7 +372,7 @@ Spring Securityと共通ライブラリの関連については、:ref:`framewor
     * - \ (2)
       - アプリケーション層のプロジェクトでSpring Securityの機能を使用する場合は、terasoluna-gfw-security-webをdependencyに追加する。
     * - \ (3)
-      - アプリケーション層のプロジェクトでThymeleafのHTMLテンプレートにてSpring Securityの機能を使用する場合は、thymeleaf-extras-springsecurity4をdependencyに追加する。
+      - アプリケーション層のプロジェクトでThymeleafのHTMLテンプレートにてSpring Securityの機能を使用する場合は、thymeleaf-extras-springsecurity5をdependencyに追加する。
 
 
 .. note::
@@ -473,7 +473,7 @@ Spring Securityのコンポーネントをbean定義するため、以下のよ�
       <property name="templateResolver" ref="templateResolver" />
       <property name="additionalDialects">
         <set>
-          <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" /> <!-- (1) -->
+          <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect" /> <!-- (1) -->
           <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
         </set>
       </property>
@@ -488,7 +488,7 @@ Spring Securityのコンポーネントをbean定義するため、以下のよ�
     * - 項番
       - 説明
     * - \ (1)
-      - TemplateEngineに、\ ``thymeleaf-extras-springsecurity4``\ が提供するダイアレクト(\ ``SpringSecurityDialect``\) を利用する定義を追加する。
+      - TemplateEngineに、\ ``thymeleaf-extras-springsecurity5``\ が提供するダイアレクト(\ ``SpringSecurityDialect``\) を利用する定義を追加する。
 
 
 |

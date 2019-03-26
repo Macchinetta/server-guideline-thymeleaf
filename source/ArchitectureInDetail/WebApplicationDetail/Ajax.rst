@@ -91,7 +91,8 @@ Ajax通信時で使用されるContent-Type(``application/xml`` や ``applicatio
        | Jaxb2RootElementHttpMessageConverter
      - | XML
      - | リクエストBody又はレスポンスBodyとしてXMLを扱うための ``HttpMessageConverter`` 。
-       | JavaSE6からJAXB2.0が標準で同封されているため、デフォルトの状態で使用することができる。
+       | Java SE 8を利用する場合、JAXB2.0が標準で同封されているため、デフォルトの状態で使用することができる。
+       | Java SE 11でJAXBを利用するには\ :ref:`remove-jaxb-from-java11`\ を参照されたい。
 
  .. note::
 
@@ -676,12 +677,6 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
  
     上記例では、Ajaxの通信処理、DOM操作処理(描画処理)、エラー処理を同じfunction内で行っているが、これらの処理は分離して実装することを推奨する。
 
-<<<<<<< HEAD
- .. todo:: **TBD**
-    
-    クライアント側の実装方法については、次版以降で詳細化する予定である。
-=======
->>>>>>> Release version 1.6.0.RELEASE
 
 |
 

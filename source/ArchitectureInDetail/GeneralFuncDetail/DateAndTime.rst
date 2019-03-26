@@ -15,13 +15,6 @@ Overview
 | 本ガイドラインでは、``java.util.Date`` , ``java.util.Calendar`` に比べて、
 | 様々な日時計算が提供されている JSR-310 Date and Time API の使用を推奨する。
 
-    .. note::
-
-        JSR-310 Date and Time APIはJava8から導入されたため、
-        Java8未満の環境は、Joda Timeの利用を推奨している。
-        Joda Timeの利用方法は、 :doc:`./JodaTime` を参照されたい。
-
-
 How to use
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -362,9 +355,7 @@ Date and Time APIの各クラスの相互運用性
 java.util.Dateとの相互運用性
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-``java.time.LocalDate`` 等のクラスを、``java.util.Date`` に直接変換するメソッドは提供されていない。
-
-| ただし、Java8からは ``java.util.Date`` にDate and Time APIが提供する  ``java.time.Instant`` を変換するメソッドが追加されているため、``java.time.Instant`` を経由して変換を行うことが可能である。
+| ``java.time.LocalDate`` 等のクラスは、``java.time.Instant`` に変換したうえで ``java.util.Date`` に変換することが可能である。
 | 以下に例を示す。
 
 1. ``java.time.LocalDateTime`` から、 ``java.util.Date`` への変換。
@@ -553,6 +544,10 @@ org.terasoluna.gfw.common.date パッケージの利用方法
   <p th:text="|currentDate = ${currentDate}|"></p>
   <p th:text="|formattedCurrentDateString = ${formattedCurrentDateString}|"></p>
 
+.. note::
+
+    Java SE 11ではJava SE 8と日付の文字列表現が異なる場合がある。
+    Java SE 8と同様に表現するには\ :ref:`change-default-locale--data-from-java9`\ を参照されたい。
 
 文字列からのパース
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -728,6 +723,7 @@ org.terasoluna.gfw.common.date パッケージの利用方法
    // 32 ( day of year )
    int dayOfYear = localDate.getDayOfYear();
 
+.. _JapaneseDate:
 
 和暦（JapaneseDate）
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -835,31 +831,6 @@ Thymeleafのダイアレクト
 
 * pom.xmlの定義
 
-<<<<<<< HEAD
- * プロジェクトのルートのpom.xml
-
- .. code-block:: xml
-
-   <dependencyManagement>
-     <dependencies>
-       <!-- omitted -->
-       <!--(1)-->
-       <dependency>
-         <groupId>org.thymeleaf.extras</groupId>
-         <artifactId>thymeleaf-extras-java8time</artifactId>
-         <version>${thymeleaf-extras-java8time.version}</version>
-       </dependency>
-     </dependencies>
-   </dependencyManagement>
-   
-   <properties>
-     <!-- (2) -->
-     <thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-   </properties>
-
-
-=======
->>>>>>> Release version 1.6.0.RELEASE
  * [artifactID]-webプロジェクトのpom.xml
   
  .. code-block:: xml
@@ -874,22 +845,17 @@ Thymeleafのダイアレクト
     </dependencies>
 
 
-<<<<<<< HEAD
-=======
  .. note::
-     上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
-     上記のOpenPDFはterasoluna-gfw-parentが利用している\ `Spring IO Platform <http://platform.spring.io/platform/>`_\ で定義済みである。
 
->>>>>>> Release version 1.6.0.RELEASE
+    上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
+    上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.1.2.RELEASE/reference/htmlsingle/#appendix-dependency-versions>`_\ で管理されている。
+
+
 * spring-mvc.xmlの定義
 
  .. code-block:: xml
 
-<<<<<<< HEAD
-      <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
-=======
       <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
->>>>>>> Release version 1.6.0.RELEASE
           <!-- omitted -->
           <property name="additionalDialects">
               <set>
@@ -918,13 +884,6 @@ Thymeleafのダイアレクト
     * - | (4)
       - | ``additionalDialects`` に、``Java8TimeDialect`` を定義することで、テンプレートHTML内で、``#temporals`` が利用可能となる。
 
-<<<<<<< HEAD
-.. note::
-    ``thymeleaf-extras-java8time`` のバージョンについて、本来はSpring IO Platformで管理する前提であるが、Thymeleafに関するライブラリは独自にバージョン指定している。
-
-
-=======
->>>>>>> Release version 1.6.0.RELEASE
 .. _DateAndTimeImplementationView:
 
 Viewの実装

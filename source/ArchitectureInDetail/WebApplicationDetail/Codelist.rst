@@ -35,9 +35,9 @@ Overview
 
 |
 
-共通ライブラリでは、以下4種類のコードリスト実装を提供している。
-
 .. _listOfCodeList:
+
+共通ライブラリでは、以下のコードリスト実装クラスを提供している。
 
 .. tabularcolumns:: |p{0.50\linewidth}|p{0.30\linewidth}|p{0.20\linewidth}|
 .. list-table:: **コードリスト種類一覧**
@@ -60,10 +60,14 @@ Overview
      - \ ``Enum``\ クラスに定義した定数からコードリストを作成する際に使用する。
      - NO
    * - ``org.terasoluna.gfw.common.codelist.i18n.SimpleI18nCodeList``
-     - java.util.Localeに応じたコードリストを使用する。
+     - 国際化に対応し、java.util.Localeに応じたコードリストを使用する。
      - NO
+   * - ``org.terasoluna.gfw.common.codelist.i18n.SimpleReloadableI18nCodeList``
+     - 国際化に対応し、java.util.Localeに応じた更新可能なコードリストを使用する。(**5.4.2から追加**)
+     - YES
 
-上記コードリストのインターフェースについて、共通ライブラリに ``org.terasoluna.gfw.common.codelist.CodeList`` を提供している。
+| 上記コードリストのインタフェースについて、共通ライブラリに ``org.terasoluna.gfw.common.codelist.CodeList`` を提供している。
+| また国際化に対応しているコードリストのインタフェースについて、``org.terasoluna.gfw.common.codelist.i18n.I18nCodeList`` を提供している。
 
 共通ライブラリで提供しているコードリストのクラス図構成を以下に示す。
 
@@ -213,6 +217,15 @@ bean定義ファイルは、コードリスト用に作成することを推奨�
        | \ ``codeListIdPattern``\ プロパティは省略可能である。
        | \ ``codeListIdPattern``\ を省略した場合は、すべてのコードリスト(\ ``org.terasoluna.gfw.common.codelist.CodeList``\ インタフェースを実装しているbean)がリクエスト属性に設定される。
 
+.. warning:: **例外発生時のコードリスト利用について**
+
+    terasoluna-gfw-common 5.4.2.RELEASEより、Controllerのハンドラメソッドで例外が発生し \ ``@ExceptionHandler``\ や \ ``SystemExceptionResolver``\ で例外ハンドリングを行なった場合は、コードリストがリクエストスコープに登録されなくなった。
+    これは、 \ ``CodeListInterceptor``\ が \ ``HandlerInterceptor#postHandle``\ メソッドでコードリストの登録を行うように変更されたためである。
+
+    例外時に遷移する画面でコードリストを利用したい場合は、ハンドラメソッドで例外を捕捉(try-catch)するか、 :ref:`directRefCodeList` を利用してコードリストを取得することを検討されたい。
+    
+    例外ハンドリングの方法については、 :ref:`exception-handling-method-label` を参照されたい。
+
 |
 
 **テンプレートHTML実装例**
@@ -270,6 +283,7 @@ Javaクラスでコードリストを利用する場合、 ``javax.inject.Inject
 
   import org.terasoluna.gfw.common.codelist.CodeList;
 
+  @Service
   public class OrderServiceImpl implements OrderService {
 
       @Inject
@@ -529,7 +543,6 @@ JdbcCodeListの使用方法
 テンプレートHTMLでのコードリスト使用
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 | テンプレートHTMLでコードリストを使用する方法については、前述した :ref:`テンプレートHTMLでのコードリスト使用<clientSide>` を参照されたい。
-<<<<<<< HEAD
 
 **テンプレートHTML実装例**
 
@@ -546,24 +559,6 @@ JdbcCodeListの使用方法
    :widths: 10 90
    :class: longtable
 
-=======
-
-**テンプレートHTML実装例**
-
-.. code-block:: html
-
-  <span th:each="authority : ${CL_AUTHORITIES}">
-      <input type="checkbox" th:field="*{authorities}" th:value="${authority.key}">
-      <label th:for="${#ids.prev('authorities')}" th:text="${authority.value}"></label> <!--/* (9) */-->
-  </span>
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-   :header-rows: 1
-   :widths: 10 90
-   :class: longtable
-
->>>>>>> Release version 1.6.0.RELEASE
    * - 項番
      - 説明
    * - | (9)
@@ -783,13 +778,15 @@ Javaクラスでコードリストを使用する方法については、
 
 .. _codelisti18n:
 
-SimpleI18nCodeListの使用方法
+I18nCodeListの使用方法
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``org.terasoluna.gfw.common.codelist.i18n.SimpleI18nCodeList`` は、国際化に対応しているコードリストである。
+``org.terasoluna.gfw.common.codelist.i18n.I18nCodeList`` は、国際化に対応しているコードリストである。
 ロケール毎にコードリストを設定することで、ロケールに対応したコードリストを返却できる。
 
-**SimpleI18nCodeListのイメージ**
+``I18nCodeList`` の実装クラスとして、 ``org.terasoluna.gfw.common.codelist.i18n.SimpleI18nCodeList`` および ``org.terasoluna.gfw.common.codelist.i18n.SimpleReloadableI18nCodeList`` を提供している。
+
+**I18nCodeList（SimpleI18nCodeList）のイメージ**
 
 .. figure:: ./images/codelist-i18n.png
    :alt: codelist i18n
@@ -800,7 +797,7 @@ SimpleI18nCodeListの使用方法
 コードリスト設定例
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-``SimpleI18nCodeList``\ は行が\ ``Locale``\ 、列がコード値、セルの内容がラベルである2次元のテーブルをイメージすると理解しやすい。
+``I18nCodeList``\ は行が\ ``Locale``\ 、列がコード値、セルの内容がラベルである2次元のテーブルをイメージすると理解しやすい。
 
 料金を選択するセレクトボックスの場合を例に挙げると以下のようなテーブルができる。
 
@@ -840,7 +837,16 @@ SimpleI18nCodeListの使用方法
 * 行単位でLocale毎の\ ``java.util.Map``\ (key=コード値, value=ラベル)を設定する
 * 列単位でコード値毎の\ ``java.util.Map``\ (key=Locale, value=ラベル)を設定する
 
-基本的には、「行単位でLocale毎の\ ``CodeList``\ を設定する」方法でコードリストを設定することを推奨する。
+基本的には、**「行単位でLocale毎のCodeListを設定する」方法でコードリストを設定することを推奨する。**
+
+\ ``SimpleReloadableI18nCodeList``\ は更新可能なコードリストを行に持つ以下の設定方法を用意している。
+
+* 行単位でLocale毎の \ ``ReloadableCodeList``\ （ \ ``JdbcCodeList``\ ）を設定する
+
+.. note::
+
+    terasoluna-gfw-common 5.4.2.RELEASEからリロードに対応した ``SimpleReloadableI18nCodeList`` が追加された。
+    更新可能なコードリストを行に持つ ``SimpleI18nCodeList`` を利用している場合は、 ``SimpleReloadableI18nCodeList`` に置き換えることを推奨する。
 
 上記例の料金を選択するセレクトボックスの場合を行単位でLocale毎の\ ``CodeList``\ を設定する方法について説明する。
 他の設定方法については  :ref:`afterCodelisti18n` 参照されたい。
@@ -934,7 +940,7 @@ SimpleI18nCodeListの使用方法
 .. code-block:: xml
   
     <bean id="CL_I18N_PRICE"
-        class="org.terasoluna.gfw.common.codelist.i18n.SimpleI18nCodeList">
+        class="org.terasoluna.gfw.common.codelist.i18n.SimpleReloadableI18nCodeList">  <!-- (4) -->
         <property name="rowsByCodeList">
             <util:map>
                 <entry key="en" value-ref="CL_PRICE_EN" />
@@ -943,14 +949,14 @@ SimpleI18nCodeListの使用方法
         </property>
     </bean>
   
-    <bean id="CL_PRICE_EN" parent="AbstractJdbcCodeList">  <!-- (4) -->
+    <bean id="CL_PRICE_EN" parent="AbstractJdbcCodeList">  <!-- (5) -->
         <property name="querySql"
             value="SELECT code, label FROM price WHERE locale = 'en' ORDER BY code" />
         <property name="valueColumn" value="code" />
         <property name="labelColumn" value="label" />
     </bean>
   
-    <bean id="CL_PRICE_JA" parent="AbstractJdbcCodeList">  <!-- (5) -->
+    <bean id="CL_PRICE_JA" parent="AbstractJdbcCodeList">  <!-- (6) -->
         <property name="querySql"
             value="SELECT code, label FROM price WHERE locale = 'ja' ORDER BY code" />
         <property name="valueColumn" value="code" />
@@ -965,8 +971,10 @@ SimpleI18nCodeListの使用方法
     * - 項番
       - 説明
     * - | (4)
-      - | ロケールが"en"であるbean定義 ``CL_PRICE_EN`` について、コードリストクラスを ``JdbcCodeList`` で設定している。
+      - | 更新可能なコードリストを行に持つ場合は、``SimpleReloadableI18nCodeList`` を利用する。
     * - | (5)
+      - | ロケールが"en"であるbean定義 ``CL_PRICE_EN`` について、コードリストクラスを ``JdbcCodeList`` で設定している。
+    * - | (6)
       - | ロケールが"ja"であるbean定義 ``CL_PRICE_JA`` について、コードリストクラスを ``JdbcCodeList`` で設定している。
   
 
@@ -1022,12 +1030,57 @@ SimpleI18nCodeListの使用方法
 
    \newpage
 
+|
+
+I18nCodeListにおけるロケール解決
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+\ ``I18nCodeList``\は要求されたロケールがコードリストに定義されていない場合、以下の順序でロケールの解決を行う。
+
+#. 国と言語を組み合わせたロケール（例：ja_JP）がコードリストに定義されていない場合、対応する言語のみのロケール（例：ja）を使用する。
+#. 言語のみのロケールがコードリストに定義されていない場合、デフォルトのロケールを使用する。
+
+デフォルトのロケールは以下の順序で決定する。
+
+#. ``fallbackTo`` プロパティが指定されている場合は、指定されたロケールを使用する。
+#. ``fallbackTo`` プロパティが指定されていない場合は、JVMインスタンスの\ `デフォルトロケール <https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#getDefault-->`_ \、もしくは対応する言語のみのロケールを使用する。
+
 .. warning::
 
-    現時点で ``SimpleI18nCodeList`` はreloadableに対応していない。
-    ``SimpleI18nCodeList`` が参照している ``JdbcCodeList`` (reloadableなCodeList)をリロードしても、 ``SimpleI18nCodeList`` には反映されないことに注意。
-    もし、reloadableに対応したい場合は独自実装する必要がある。
-    実装方法については、 :ref:`originalCustomizeCodeList` を参照されたい。
+    デフォルトのロケールに対応するコードリストが定義されていなかった場合、Bean生成時にエラーとなりアプリケーションの起動に失敗する。
+
+    このため、様々な環境でアプリケーションを運用する場合や、デフォルトとしたいロケールとJVMインスタンスのデフォルトロケールが異なる場合は、``fallbackTo`` プロパティを指定することを強く推奨する。
+
+|
+
+
+``fallbackTo`` プロパティの設定例を以下に示す。
+
+**fallbackToプロパティの設定**
+
+.. code-block:: xml
+  
+    <bean id="CL_I18N_PRICE"
+        class="org.terasoluna.gfw.common.codelist.i18n.SimpleI18nCodeList">
+        <property name="rowsByCodeList">
+            <util:map>
+                <entry key="en" value-ref="CL_PRICE_EN" />
+                <entry key="ja" value-ref="CL_PRICE_JA" />
+            </util:map>
+        </property>
+        <property name="fallbackTo" value="en" />  <!-- (1) -->
+    </bean>
+  
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+  
+    * - 項番
+      - 説明
+    * - | (1)
+      - | \ ``fallbackTo``\プロパティにロケール"en"を設定する。
+        | これにより、要求されたロケールの言語ロケールが"en"、"ja"以外の場合、ロケール"en"が使用される。
 
 |
 
@@ -1039,40 +1092,6 @@ SimpleI18nCodeListの使用方法
 テンプレートHTMLの基本的な実装は :ref:`テンプレートHTMLでのコードリスト使用<clientSide>` と同様のため、説明は省略する。
 
 ここでは、 リクエストのロケールがコードリスト定義されていなかった場合に対応するため、インターセプターでリクエスト属性に ``SimpleI18nCodeList`` を設定し、テンプレートHTMLに渡す方法を紹介する。
-
-**bean定義ファイル(spring-mvc.xml)の定義**
-
-.. code-block:: xml
-
-    <mvc:interceptors>
-      <mvc:interceptor>
-        <mvc:mapping path="/**" />
-        <bean
-          class="org.terasoluna.gfw.web.codelist.CodeListInterceptor">
-          <property name="codeListIdPattern" value="CL_.+" />
-          <property name="fallbackTo" value="en" />  <!-- (1) -->
-        </bean>
-      </mvc:interceptor>
-
-      <!-- omitted -->
-
-    </mvc:interceptors>
-
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-   :header-rows: 1
-   :widths: 10 90
-
-   * - 項番
-     - 説明
-   * - | (1)
-     - | リクエストのロケールがコードリスト定義されていなかった場合、
-       | fallbackToプロパティに設定されたロケールでコードリストを取得する。
-       | fallbackToプロパティが設定されていない場合、JVMのデフォルトロケールがfallbackToプロパティとして使用される。
-       | fallbackToプロパティに設定されたロケールでも、コードリストが取得されない場合、WARNログを出力し、空のMapを返却する。
-
-|
 
 **テンプレートHTML実装例**
 
@@ -1122,35 +1141,45 @@ SimpleI18nCodeListの使用方法
 
 |
 
+.. _codelist-i18nCodeLst-java-implement:
+
 Javaクラスでのコードリスト使用
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-基本的な実装は、前述した :ref:`Javaクラスでのコードリスト使用<serverSide>` と同様のため、説明は省略する。
+\ ``I18nCodeList``\からコードリストを取得するには、以下のいずれかのメソッドを使用する。
+
+- `asMap()` メソッド
+    ``org.springframework.context.i18n.LocaleContextHolder`` を利用して適切なロケールのコードリストを取得する。``LocaleContextHolder`` は ``org.springframework.web.servlet.LocaleResolver`` を利用してクライアントから指定されたロケールを取得する。
+- `asMap(Locale)` メソッド
+    指定されたロケールのコードリストを取得する。
+
+.. note::
+
+    ``LocaleResolver``\ の設定方法については、\ :doc:`../WebApplicationDetail/Internationalization`\ を参照されたい。
+
+    ``LocaleResolver``\の ``defaultLocale`` プロパティを指定している場合は、コードリストの\ ``fallbackTo``\プロパティに同じロケールを指定することで、 ``LocaleResolver`` で意図したロケールのコードリストを使用させることができる。
+
+|
+
+``asMap()`` メソッドを利用する場合、前述した :ref:`serverSide` と同様の方法で実装を行うことができる。
 
 .. code-block:: java
 
-    @RequestMapping("orders")
-    @Controller
-    public class OrderController {
+  import javax.inject.Named;
 
-        @Inject
-        @Named("CL_I18N_PRICE")
-        I18nCodeList priceCodeList;
+  import org.terasoluna.gfw.common.codelist.CodeList;
 
-        // ...
+  @Service
+  public class OrderServiceImpl implements OrderService {
 
-        @RequestMapping(method = RequestMethod.POST, params = "confirm")
-        public String confirm(OrderForm form, Locale locale) {
-            // ...
-            String priceMassage = getPriceMessage(form.getPriceCode(), locale);
-            // ...
-        }
+      @Inject
+      @Named("CL_ORDERSTATUS")
+      I18nCodeList orderStatusCodeList;
 
-        private String getPriceMessage(String targetPrice, Locale locale) {
-             return priceCodeList.asMap(locale).get(targetPrice);  // (1)
-        }
-
-    }
+      public boolean existOrderStatus(String target) {
+          return orderStatusCodeList.asMap().containsKey(target); // (1)
+      }
+  }
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1160,7 +1189,41 @@ Javaクラスでのコードリスト使用
    * - 項番
      - 説明
    * - | (1)
-     - | I18nCodeList#asMap(Locale)で対応したロケールのMapを取得することができる。
+     - | ``I18nCodeList#asMap()`` メソッドでコードリストを ``java.util.Map`` 形式で取得する。
+
+|
+
+業務要件によって、特定のロケールのコードリストを取得する必要がある場合は\ ``asMap(Locale)``\メソッドを使用する
+
+.. code-block:: java
+
+  import java.util.Locale;
+  import javax.inject.Named;
+
+  import org.terasoluna.gfw.common.codelist.CodeList;
+
+  @Service
+  public class OrderServiceImpl implements OrderService {
+
+      @Inject
+      @Named("CL_ORDERSTATUS")
+      I18nCodeList orderStatusCodeList;
+
+      public boolean existOrderStatus(String target) {
+          return orderStatusCodeList.asMap(Locale.ENGLISH).containsKey(target); // (1)
+      }
+  }
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+   :header-rows: 1
+   :widths: 10 90
+
+   * - 項番
+     - 説明
+   * - | (1)
+     - | ``I18nCodeList#asMap(Locale)`` メソッドで、指定したロケールのコードリストを ``java.util.Map`` 形式で取得する。
+       | ここでは \ ``Locale.ENGLISH``\（"en"）を指定している。
 
 |
 
@@ -1177,11 +1240,7 @@ Javaクラスでのコードリスト使用
 
 .. code-block:: html
 
-<<<<<<< HEAD
-    <span th:text="|Order Status : ${CL_ORDERSTATUS[__${orderForm.orderStatus}__]}|"></span> <!--/* (1) */-->
-=======
-    <span th:text="'Order Status : ' + (${orderForm.orderStatus} != null ? ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']})"></span> <!--/* (1) */-->
->>>>>>> Release version 1.6.0.RELEASE
+    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']}|"></span> <!--/* (1) */-->
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1193,7 +1252,8 @@ Javaクラスでのコードリスト使用
    * - | (1)
      - コードリストを定義したbeanID(この例では ``CL_ORDERSTATUS`` ) を属性名として、コードリスト( ``java.util.Map`` インタフェース)を取得する。
        取得した ``Map`` インタフェースのキーとしてコード値(この例では ``orderStatus`` に格納された値) を指定することで、対応するコード名を表示することができる。
-
+       キーとして利用する変数値は必ず\ ``null``\ チェックを行うことを推奨する。詳細は、\ :doc:`../WebApplicationDetail/Thymeleaf`\ の\ :ref:`SpEL評価時におけるnull-safetyの影響について <ThymeleafOverviewNullSafetyAtSpEL>`\ を参照されたい。
+       プリプロセッシングについての詳細は、:ref:`view_thymeleaf_preprocessing-label` を参照されたい。
 
 |
 
@@ -1295,13 +1355,12 @@ BeanValidationや、メッセージ出力方法の詳細については、 :doc:
 
 上記の結果、 ``gender`` にM、F以外の文字が格納されている場合、エラーになる。
 
-.. tip::
+.. note::
 
-    ``@ExistInCodeList`` の入力チェックでサポートしている型は、 \ ``CharSequence``\ インタフェースの実装クラス(\ ``String``\ など) または \ ``Character``\ のみである。
-    そのため、 \ ``@ExistInCodeList``\ をつけるフィールドは意味的に整数型であっても、\ ``String``\ で定義する必要がある。(年・月・日等)
+    terasoluna-gfw-common 5.4.2.RELEASEから、``@ExistInCodeList`` の入力チェックの対象として、 \ ``CharSequence``\ インタフェースの実装クラス(\ ``String``\ など) または \ ``Character``\ に加え、
+    \ ``Number``\ 継承クラス（\ ``Integer``\ など）をサポートするよう変更された。
 
-    また、\ ``@ExistInCodeList``\ はコレクション内の値には対応していないため、複数選択可能な画面項目（チェックボックスや複数選択ドロップダウンなど）に\ ``@ExistInCodeList``\ アノテーションを対応させるためには実装を工夫する必要がある。
-    詳細については :ref:`Validation_for_parameter_object_in_collection_corresponding_annotation` を参照されたい。
+    \ ``NumberRangeCodeList``\ の \ ``valueFormat``\ プロパティを指定している場合、 \ ``Number``\ 型フィールドの値を当該プロパティを利用してフォーマットした値がコードリストに存在することをチェックする。
 
 
 |
@@ -1320,22 +1379,23 @@ How to extend
 
 例：JdbcCodeListを使用して、DBのマスタを変更した時にコードリストの更新を行う場合。
 
-共通ライブラリでは、 ``org.terasoluna.gfw.common.codelist.ReloadableCodeList`` インタフェースを用意している。
-上記インタフェースを実装したクラスは、refreshメソッドを実装しており、refreshメソッドを呼ぶことでコードリストの更新が可能となる。
-JdbcCodeListは、ReloadableCodeListインターフェースを実装しているため、コードリストの更新ができる。
+共通ライブラリでは、コードリストを更新可能とするインタフェースを提供している。
+
+#. ``org.terasoluna.gfw.common.codelist.ReloadableCodeList`` ：コードリストを更新する
+#. ``org.terasoluna.gfw.common.codelist.i18n.ReloadableI18nCodeList`` ：行に持つコードリストを含むコードリストを更新する
 
 コードリストの更新方法としては、以下2点の方法がある。
 
 #. Task Schedulerで実現する方法
 #. Controller(Service)クラスでrefreshメソッドを呼び出す方法
 
-本ガイドラインでは、\ `Springから提供されているTask Scheduler <https://docs.spring.io/spring/docs/5.0.8.RELEASE/spring-framework-reference/integration.html#scheduling>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
+本ガイドラインでは、\ `Springから提供されているTask Scheduler <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/integration.html#scheduling>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
 
 ただし、任意のタイミングでコードリストをリフレッシュする必要がある場合はControllerクラスでrefreshメソッドを呼び出す方法で実現すればよい。
 
 .. note::
 
-    ReloadableCodeListインターフェースを実装しているコードリストについては、 :ref:`コードリスト種類一覧<listOfCodeList>` を参照されたい。
+    ``ReloadableCodeList`` および ``ReloadableI18nCodeList`` インターフェースを実装しているコードリストについては、 :ref:`コードリスト種類一覧<listOfCodeList>` を参照されたい。
 
 |
 
@@ -1385,7 +1445,7 @@ Task Schedulerの設定例について、以下に示す。
        | 平日の9-17時の毎時実行 「0 0 9-17 \* \* MON-FRI」
        |
        | 詳細はJavaDocを参照されたい。
-       | https://docs.spring.io/spring/docs/5.0.8.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
+       | https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html
 
 |
 
@@ -1479,6 +1539,14 @@ JdbcCodeListのrefreshメソッドをServiceクラスで呼び出す場合の実
    * - | (7)
      - | ReloadableCodeListインターフェースを実装したコードリストのrefreshメソッド。
        | refreshメソッドを実行することで、コードリストが更新される。
+
+.. note::
+
+    terasoluna-gfw-common 5.4.2.RELEASEで追加された ``SimpleReloadableI18nCodeList`` では、refreshメソッドで行に持つすべてのReloadableCodeListを更新することが可能である。
+
+    アプリケーションの実装によっては、行に持つReloadableCodeListが更新されている前提で ``SimpleReloadableI18nCodeList`` のみ更新すれば良い場合もあり得る。
+    この場合は、``ReloadableI18nCodeList#refresh(boolean)`` メソッドの引数に ``false`` をセットして実行すれば良い。
+
 
 |
 
@@ -1595,11 +1663,7 @@ JdbcCodeListのrefreshメソッドをServiceクラスで呼び出す場合の実
 .. code-block:: html
 
   <select th:field="*{mostRecentYear}">
-<<<<<<< HEAD
-      <option th:each="recentYear : ${CL_YEAR}" th:value="${recentYear.key}" th:text="${recentYear.value}"></option> <!--/* (5) */-->
-=======
       <option th:each="recentYear : ${CL_YEAR}" th:value="${recentYear.key}" th:text="${recentYear.value}"></option> <!--/* (1) */-->
->>>>>>> Release version 1.6.0.RELEASE
   </select>
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1609,11 +1673,7 @@ JdbcCodeListのrefreshメソッドをServiceクラスで呼び出す場合の実
 
    * - 項番
      - 説明
-<<<<<<< HEAD
-   * - | (5)
-=======
    * - | (1)
->>>>>>> Release version 1.6.0.RELEASE
      - | コンポーネント登録した ``CL_YEAR`` を 変数式 ``${}`` で指定することで、該当のコードリストを取得することができる。
 
 **出力HTML**
@@ -1922,11 +1982,6 @@ NumberRangeCodeListのインターバルの変更
 ここでは、リクエスト毎のオーバーヘッドの増加を防ぐ方法の一つとして、コードリストBeanをテンプレートHTMLから直接参照する方法を紹介する。
 ThymeleafではSpEL式を利用して直接Beanを参照することができるが、こちらを利用することでオーバーヘッドの増加を防止することができる。
 いずれの方法を利用するかは、プロジェクトの要件によって適切に検討されたい。
-
-.. note::
-
- 国際化対応のため ``SimpleI18nCodeList`` を使用している場合は :ref:`CodeListAppendixDirectReferenceSimpleI18nCodeList` で紹介している方法を参照されたい。
- :ref:`directRefCodeList` を使用する場合は、``CodeListInterceptor`` が実施しているような、``SimpleI18nCodeList`` の ``asMap`` メソッドに渡すロケールを決定するロジックを独自に実装する必要があるためである。
 
 .. _codeListDirectRefCodeListSpringMvc:
 
