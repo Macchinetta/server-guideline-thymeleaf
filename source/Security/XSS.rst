@@ -187,37 +187,7 @@ XSSを防ぐために、\ ``th:text``\属性を使用すること。
 .. note:: **インライン記法を使用する場合**
 
   Thymeleafでテキストを出力する方法には\ ``th:text``\、\ ``th:utext``\の他にインライン記法が存在する。
-  インライン記法は[[xxx]]、[(xxx)]という二つの形式で記述することができる。
-  
-  * [[xxx]]の形式を使用すると、値をエスケープして出力する
-  * [(xxx)]の形式を使用すると、値をエスケープせずに出力する
-  
-  XSSを防ぐために、[[xxx]]の形式を使用すること。
-  
-  使用例を下記に示す。
-  
-  **HTML**
-  
-    .. code-block:: html
-    
-      <p>[[${warnCode}]]</p>
-    
-    .. tabularcolumns:: |p{0.20\linewidth}|p{0.80\linewidth}|
-    .. list-table::
-       :header-rows: 1
-       :widths: 20 80
-    
-       * - 属性名
-         - 値
-       * - | warnCode
-         - | ``</p><script>alert('XSS Attack!')</script><p>``
-  
-  **出力結果**
-  
-    .. code-block:: html
-    
-      <p>&lt;/p&gt;&lt;script&gt;alert(&#39;XSS Attack!&#39;)&lt;/script&gt;&lt;p&gt;</p>
-    
+  インライン記法については、 :ref:`thymeleaf-javascript-template-overview` のインライン記法の項を参照されたい。
 
 .. _xss_how_to_use_javascript_escaping:
 
@@ -429,13 +399,13 @@ XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を�
 Event handler Escaping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-javascript のイベントハンドラの値をエスケープする場合、Thymeleafの\ ``#strings.escapeJavaScript()``\ を使用する。
+javascript のイベントハンドラの値をエスケープする場合、Thymeleafの\ ``#strings.escapeJavaScript()``\ メソッドを使用する。
 
 理由としては、 \ ``<input type="submit" onclick="callback('xxxx');">``\ のようなイベントハンドラの値に\ ``');alert("XSS Attack");//``\ を指定された場合、別のスクリプトを挿入できてしまうため、文字参照形式にエスケープ後、HTMLエスケープを行う必要がある。
 
 .. note:: 
 
-   \ ``#strings.escapeJavaScript()``\ を使用すると、"\ ``/``\"のエスケープは\ ``</script>``\のようなタグを閉じる際にのみ必要となるため、"\ ``<``\"の後の"\ ``/``\"のみエスケープが行われる。
+   \ ``#strings.escapeJavaScript()``\ メソッドを使用すると、"\ ``/``\"のエスケープは\ ``</script>``\のようなタグを閉じる際にのみ必要となるため、"\ ``<``\"の後の"\ ``/``\"のみエスケープが行われる。
 
 出力値をエスケープしない脆弱性のある例
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -493,7 +463,7 @@ XSS問題が発生する例を、以下に示す。
    * - 項番
      - 説明
    * - | (1)
-     - | \ ``#strings.escapeJavaScript()``\ を使用することにより、エスケープしている。
+     - | \ ``#strings.escapeJavaScript()``\ メソッドを使用することにより、エスケープしている。
 
 マウスオーバ時、XSSのダイアログは出力されない。
 

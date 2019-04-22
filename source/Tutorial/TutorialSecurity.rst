@@ -56,7 +56,7 @@ URL一覧を以下に示す。
     * - 1
       - ログインフォーム表示
       - GET
-      - /login.jsp
+      - /login/loginForm
       - ログインフォームを表示する
     * - 2
       - ログイン
@@ -99,7 +99,7 @@ Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.5.1.RELEASE^
+     -DarchetypeVersion=1.5.2.RELEASE^
      -DgroupId=com.example.security^
      -DartifactId=first-springsecurity^
      -Dversion=1.0.0-SNAPSHOT
@@ -538,9 +538,9 @@ Spring Securityの設定
    
    * - | URL
      - | 説明
-   * - | /login.jsp
+   * - | /login/loginForm
      - | ログインフォームを表示するためのURL
-   * - | /login.jsp?error=true
+   * - | /login/loginForm?error=true
      - | 認証エラー時に遷移するページ(ログインページ)を表示するためのURL
    * - | /login
      - | 認証処理を行うためのURL
@@ -566,16 +566,16 @@ Spring Securityの設定
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:sec="http://www.springframework.org/schema/security"
         xsi:schemaLocation="
-            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd
+            http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
         ">
 
         <sec:http pattern="/resources/**" security="none"/>
         <sec:http>
             <!-- (1) -->
             <sec:form-login
-                login-page="/login.jsp"
-                authentication-failure-url="/login.jsp?error=true" />
+                login-page="/login/loginForm"
+                authentication-failure-url="/login/loginForm?error=true" />
             <!-- (2) -->
             <sec:logout
                 logout-success-url="/"
@@ -584,7 +584,7 @@ Spring Securityの設定
             <sec:custom-filter ref="userIdMDCPutFilter" after="ANONYMOUS_FILTER"/>
             <sec:session-management />
             <!-- (3) -->
-            <sec:intercept-url pattern="/login.jsp" access="permitAll" />
+            <sec:intercept-url pattern="/login/**" access="permitAll" />
             <sec:intercept-url pattern="/**" access="isAuthenticated()" />
         </sec:http>
 
@@ -609,7 +609,7 @@ Spring Securityの設定
                         <bean
                             class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                             <property name="errorPage"
-                                value="/WEB-INF/views/common/error/invalidCsrfTokenError.jsp" />
+                                value="/common/error/invalidCsrfTokenError" />
                         </bean>
                     </entry>
                     <entry
@@ -617,7 +617,7 @@ Spring Securityの設定
                         <bean
                             class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                             <property name="errorPage"
-                                value="/WEB-INF/views/common/error/missingCsrfTokenError.jsp" />
+                                value="/common/error/missingCsrfTokenError" />
                         </bean>
                     </entry>
                 </map>
@@ -626,7 +626,7 @@ Spring Securityの設定
                 <bean
                     class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                     <property name="errorPage"
-                        value="/WEB-INF/views/common/error/accessDeniedError.jsp" />
+                        value="/common/error/accessDeniedError" />
                 </bean>
             </constructor-arg>
         </bean>
@@ -686,50 +686,86 @@ Spring Securityの設定
 
 |
 
+ログインページを返すControllerの作成
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+| ログインページを返すControllerを作成する。
+| ``src/main/java/com/example/security/app/login/LoginController.java``
+
+.. code-block:: java
+  
+    package com.example.security.app.login;
+
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.GetMapping;
+    import org.springframework.web.bind.annotation.RequestMapping;
+
+    @Controller
+    @RequestMapping("/login")
+    public class LoginController {
+
+        @GetMapping("/loginForm") // (1)
+        public String view() {
+            return "login/loginForm";
+        }
+    }
+  
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+  
+    * - 項番
+      - 説明
+    * - | (1)
+      - ログインページである、\ ``login/loginForm``\ を返す。 
+
+|
+
 ログインページの作成
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 | ログインページにログインフォームを作成する。
-| ``src/main/webapp/login.jsp``
+| ``src/main/webapp/WEB-INF/views/login/loginForm.html``
 
-.. code-block:: jsp
+.. code-block:: html
   
     <!DOCTYPE html>
-    <html>
+    <html xmlns:th="http://www.thymeleaf.org">
     <head>
     <title>Login Page</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/app/css/styles.css">
+    <link rel="stylesheet" th:href="@{/resources/app/css/styles.css}">
     </head>
     <body>
         <div id="wrapper">
             <h3>Login with Username and Password</h3>
 
-            <!-- (1) -->
-            <c:if test="${param.containsKey('error')}">
-                <!-- (2) -->
-                <t:messagesPanel messagesType="error"
-                    messagesAttributeName="SPRING_SECURITY_LAST_EXCEPTION" />
-            </c:if>
+            <!--/* (1) */-->
+            <div th:if="${param.containsKey('error')}"
+            th:with="exception = ${SPRING_SECURITY_LAST_EXCEPTION} ?: ${session[SPRING_SECURITY_LAST_EXCEPTION]}"> <!--/* (2) */-->
+                <ul th:if="${exception != null}" class="alert alert-error">
+                    <li th:text="${exception.message}"></li>
+                </ul>
+            </div>
 
-            <!-- (3) -->
-            <form:form action="${pageContext.request.contextPath}/login">
+            <!--/* (3) */-->
+            <form th:action="@{/login}" method="post">
                 <table>
                     <tr>
                         <td><label for="username">User:</label></td>
                         <td><input type="text" id="username"
-                            name="username" value="demo">(demo)</td><!-- (4) -->
+                            name="username" value="demo">(demo)</td> <!--/* (4) */-->
                     </tr>
                     <tr>
                         <td><label for="password">Password:</label></td>
                         <td><input type="password" id="password"
-                            name="password" value="demo" />(demo)</td><!-- (5) -->
+                            name="password" value="demo">(demo)</td> <!--/* (5) */-->
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
-                        <td><input name="submit" type="submit" value="Login" /></td>
+                        <td><input name="submit" type="submit" value="Login"></td>
                     </tr>
                 </table>
-            </form:form>
+            </form>
         </div>
     </body>
     </html>
@@ -742,14 +778,16 @@ Spring Securityの設定
     * - 項番
       - 説明
     * - | (1)
-      - 認証が失敗した場合、\ ``/login.jsp?error=true``\ が呼び出され、ログインページを表示する。
-        そのため、認証エラー後の表示の時のみエラーメッセージが表示されるように\ ``<c:if>``\ タグを使用する。
+      - 認証が失敗した場合、\ ``/login/loginForm?error=true``\ が呼び出され、ログインページを表示する。
+        そのため、認証エラー後の表示の時のみエラーメッセージが表示されるように\ ``th:if``\ 属性を使用する。
     * - | (2)
-      - 共通ライブラリから提供されている\ ``<t:messagesPanel>``\ タグを使用してエラーメッセージを表示する。
+      - エラーメッセージを表示する。
 
-        認証が失敗した場合、認証エラーの例外オブジェクトが\ ``SPRING_SECURITY_LAST_EXCEPTION``\ という属性名でセッションスコープに格納される。
+        認証が失敗した場合、Spring Securityのデフォルトの設定で使用される、\ ``org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler``\ では、認証エラー時に発生した例外オブジェクトを\ ``SPRING_SECURITY_LAST_EXCEPTION``\ という属性名で、リダイレクト時はセッション、フォワード時はリクエスト属性に格納する。
+        
+        ここでは、認証エラー時にはリダイレクトするため、認証エラー時に発生した例外オブジェクトは、セッションに格納される。
     * - | (3)
-      - \ ``<form:form>``\ タグの\ ``action``\ 属性に、認証処理用のURL(\ ``/login``\ )を設定する。このURLはSpring Securityのデフォルトである。
+      - \ ``<form>``\ タグの\ ``th:action``\ 属性に、認証処理用のURL(\ ``/login``\ )を設定する。このURLはSpring Securityのデフォルトである。
 
         認証処理に必要なパラメータ(ユーザー名とパスワード)をPOSTメソッドで送信する。
     * - | (4)
@@ -761,76 +799,38 @@ Spring Securityの設定
 
         Spring Securityのデフォルトのパラメータ名は\ ``password``\ である。
 
-|
-
-| セッションスコープに格納される認証エラーの例外オブジェクトをJSPから取得できるようにする。
-| ``src/main/webapp/WEB-INF/views/common/include.jsp``
-
-.. code-block:: jsp
-    :emphasize-lines: 1
-
-    <%@ page session="true"%> <!-- (6) -->
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-    <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-    <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-    <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
-    <%@ taglib uri="http://terasoluna.org/tags" prefix="t"%>
-    <%@ taglib uri="http://terasoluna.org/functions" prefix="f"%>
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (6)
-      - \ ``page``\ ディレクティブの\ ``session``\ 属性を\ ``true``\ にする。
-
-.. note::
-
-    ブランクプロジェクトのデフォルト設定では、JSPからセッションスコープにアクセスできないようになっている。
-    これは、安易にセッションが使用されないようにするためであるが、
-    認証エラーの例外オブジェクトをJSPから取得する場合は、JSPからセッションスコープにアクセスできるようにする必要がある。
-
-| 
-
 | ブラウザのアドレスバーに http://localhost:8080/first-springsecurity/ を入力し、ウェルカムページを表示しようとする。
-| 未ログイン状態のため、\ ``<sec:form-login>``\ タグの\ ``login-page``\ 属性の設定値( http://localhost:8080/first-springsecurity/login.jsp )に遷移し、以下のような画面が表示される。
+| 未ログイン状態のため、\ ``<sec:form-login>``\ タグの\ ``login-page``\ 属性の設定値( http://localhost:8080/first-springsecurity/login/loginForm )に遷移し、以下のような画面が表示される。
 
 .. figure:: ./images_Security/security_tutorial_login_page.png
    :width: 80%
 
+|
 
-JSPからログインユーザーのアカウント情報へアクセス
+ThymeleafのテンプレートHTMLからログインユーザーのアカウント情報へアクセス
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+| 本ガイドラインでは、HTMLで作成したプロトタイプにThymeleafのタグを付与してテンプレート化したものを、「テンプレートHTML」と呼ぶ。
+| テンプレートHTMLからログインユーザーのアカウント情報にアクセスし、氏名を表示する。
+| ``src/main/webapp/WEB-INF/views/welcome/home.html``
 
-| JSPからログインユーザーのアカウント情報にアクセスし、氏名を表示する。
-| ``src/main/webapp/WEB-INF/views/welcome/home.jsp``
-
-.. code-block:: xml
-    :emphasize-lines: 9-10,16-17
+.. code-block:: html
+    :emphasize-lines: 12-13
   
     <!DOCTYPE html>
-    <html>
+    <html xmlns:th="http://www.thymeleaf.org">
     <head>
     <meta charset="utf-8">
     <title>Home</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/app/css/styles.css">
+    <link rel="stylesheet" th:href="@{/resources/app/css/styles.css}">
     </head>
-
-    <!-- (1) -->
-    <sec:authentication property="principal.account" var="account" />
-
     <body>
         <div id="wrapper">
             <h1>Hello world!</h1>
-            <p>The time on the server is ${serverTime}.</p>
-            <!-- (2) -->
-            <p>Welcome ${f:h(account.firstName)} ${f:h(account.lastName)} !!</p>
+            <p th:text="|The time on the server is ${serverTime}.|"></p>
+            <!--/* (1) */-->
+            <p th:object="${#authentication.principal.account}" th:text="|Welcome *{firstName} *{lastName} !! |"></p>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/account">view account</a></li>
+                <li><a th:href="@{/account}">view account</a></li>
             </ul>
         </div>
     </body>
@@ -844,14 +844,9 @@ JSPからログインユーザーのアカウント情報へアクセス
     * - 項番
       - 説明
     * - | (1)
-      - \ ``<sec:authentication>``\ タグを使用して、ログインユーザーの\ ``org.springframework.security.core.Authentication``\ オブジェクトにアクセスする。
+      - Spring Security Dialectから提供されている\ ``#authentication``\ を使用して、ログインユーザーの\ ``org.springframework.security.core.Authentication``\ オブジェクトにアクセスする。
 
-        \ ``property``\ 属性を使用すると\ ``Authentication``\ オブジェクトが保持する任意のプロパティにアクセスする事ができ、アクセスしたプロパティ値は\ ``var``\ 属性を使用して任意のスコープに格納することできる。
-        デフォルトではpageスコープが設定され、このJSP内のみで参照可能となる。
-
-        チュートリアルでは、ログインユーザーの\ ``Account``\ オブジェクトを\ ``account``\ という属性名でpageスコープに格納する。
-    * - | (2)
-      - ログインユーザーの\ ``Account``\ オブジェクトにアクセスして、\ ``firstName``\ と\ ``lastName``\ を表示する。
+        ログインユーザーの\ ``Account``\ オブジェクトにアクセスして、\ ``firstName``\ と\ ``lastName``\ を表示する。
 
 |
 
@@ -865,34 +860,32 @@ JSPからログインユーザーのアカウント情報へアクセス
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 | ログアウトするためのボタンを追加する。
-| ``src/main/webapp/WEB-INF/views/welcome/home.jsp``
+| ``src/main/webapp/WEB-INF/views/welcome/home.html``
 
-.. code-block:: xml
-    :emphasize-lines: 17-20
-
+.. code-block:: html
+    :emphasize-lines: 15-18
+    
     <!DOCTYPE html>
-    <html>
+    <html xmlns:th="http://www.thymeleaf.org">
     <head>
     <meta charset="utf-8">
     <title>Home</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/app/css/styles.css">
+    <link rel="stylesheet" th:href="@{/resources/app/css/styles.css}">
     </head>
-
-    <sec:authentication property="principal.account" var="account" />
 
     <body>
         <div id="wrapper">
             <h1>Hello world!</h1>
-            <p>The time on the server is ${serverTime}.</p>
-            <p>Welcome ${f:h(account.firstName)} ${f:h(account.lastName)} !!</p>
+            <p th:text="|The time on the server is ${serverTime}.|"></p>
+            <p th:object="${#authentication.principal.account}" th:text="|Welcome *{firstName} *{lastName} !! |"></p>
             <p>
-                <!-- (1) -->
-                <form:form action="${pageContext.request.contextPath}/logout">
+                <!--/* (1) */-->
+                <form th:action="@{/logout}" method="post">
                     <button type="submit">Logout</button>
-                </form:form>
+                </form>
             </p>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/account">view account</a></li>
+                <li><a th:href="@{/account}">view account</a></li>
             </ul>
         </div>
     </body>
@@ -906,16 +899,21 @@ JSPからログインユーザーのアカウント情報へアクセス
     * - 項番
       - 説明
     * - | (1)
-      - \ ``<form:form>``\ タグを使用して、ログアウト用のフォームを追加する。
+      -  \ ``<form>``\ タグを使用して、ログアウト用のフォームを追加する。
 
-        \ ``action``\ 属性には、ログアウト処理用のURL(\ ``/logout``\ )を指定して、Logoutボタンを追加する。このURLはSpring Securityのデフォルトである。
+         \ ``th:action``\  属性には、ログアウト処理用のURL( \ ``/logout``\ )を指定して、Logoutボタンを追加する。このURLはSpring Securityのデフォルトである。
 
 |
 
-Logoutボタンを押下し、アプリケーションからログアウトする(ログインページが表示される)。
+ウェルカムページにLogoutボタンが表示される。
 
 .. figure:: ./images_Security/security_tutorial_add_logout.png
     :width: 70%
+
+ウェルカムページでLogoutボタンを押下すると、アプリケーションからログアウトする(ログインページが表示される)。
+
+.. figure:: ./images_Security/security_tutorial_login_page.png
+   :width: 80%
 
 
 Controllerからログインユーザーのアカウント情報へアクセス
@@ -932,6 +930,7 @@ Controllerからログインユーザーのアカウント情報へアクセス
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.RequestMapping;
 
     import com.example.security.domain.model.Account;
@@ -941,7 +940,7 @@ Controllerからログインユーザーのアカウント情報へアクセス
     @RequestMapping("account")
     public class AccountController {
 
-        @RequestMapping
+        @GetMapping
         public String view(
                 @AuthenticationPrincipal SampleUserDetails userDetails, // (1)
                 Model model) {
@@ -967,32 +966,32 @@ Controllerからログインユーザーのアカウント情報へアクセス
 | 
 
 | Controllerから引き渡されたアカウント情報にアクセスし、アカウント情報を表示する。
-| ``src/main/webapp/WEB-INF/views/account/view.jsp``
+| ``src/main/webapp/WEB-INF/views/account/view.html``
 
-.. code-block:: jsp
+.. code-block:: html
 
     <!DOCTYPE html>
-    <html>
+    <html xmlns:th="http://www.thymeleaf.org">
     <head>
     <meta charset="utf-8">
     <title>Home</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/app/css/styles.css">
+    <link rel="stylesheet" th:href="@{/resources/app/css/styles.css}">
     </head>
     <body>
         <div id="wrapper">
             <h1>Account Information</h1>
-            <table>
+            <table th:object="${account}">
                 <tr>
                     <th>Username</th>
-                    <td>${f:h(account.username)}</td>
+                    <td th:text="*{username}"></td>
                 </tr>
                 <tr>
                     <th>First name</th>
-                    <td>${f:h(account.firstName)}</td>
+                    <td th:text="*{firstName}"></td>
                 </tr>
                 <tr>
                     <th>Last name</th>
-                    <td>${f:h(account.lastName)}</td>
+                    <td th:text="*{lastName}"></td>
                 </tr>
             </table>
         </div>
@@ -1026,7 +1025,7 @@ Package ExplorerのPackage PresentationはHierarchicalを使用している。
 * Spring Securityによる基本的な認証・認可
 * 認証ユーザーオブジェクトのカスタマイズ方法
 * RepositoryおよびServiceクラスを用いた認証処理の設定
-* JSPでログイン済みアカウント情報にアクセスする方法
+* ThymeleafのテンプレートHTMLからログイン済みアカウント情報にアクセスする方法
 * Controllerでログイン済みアカウント情報にアクセスする方法
 
 |
@@ -1056,8 +1055,8 @@ spring-security.xml
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:sec="http://www.springframework.org/schema/security"
         xsi:schemaLocation="
-            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd
+            http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
         ">
 
         <!-- (1) -->
@@ -1089,7 +1088,7 @@ spring-security.xml
                         <bean
                             class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                             <property name="errorPage"
-                                value="/WEB-INF/views/common/error/invalidCsrfTokenError.jsp" />
+                                value="/common/error/invalidCsrfTokenError" />
                         </bean>
                     </entry>
                     <entry
@@ -1097,7 +1096,7 @@ spring-security.xml
                         <bean
                             class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                             <property name="errorPage"
-                                value="/WEB-INF/views/common/error/missingCsrfTokenError.jsp" />
+                                value="/common/error/missingCsrfTokenError" />
                         </bean>
                     </entry>
                 </map>
@@ -1106,7 +1105,7 @@ spring-security.xml
                 <bean
                     class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
                     <property name="errorPage"
-                        value="/WEB-INF/views/common/error/accessDeniedError.jsp" />
+                        value="/common/error/accessDeniedError" />
                 </bean>
             </constructor-arg>
         </bean>
@@ -1168,7 +1167,7 @@ spring-mvc.xml
 Spring Securityと関係のない設定については、説明を割愛する。
 
 .. code-block:: xml
-    :emphasize-lines: 22-24,85-87
+    :emphasize-lines: 22-24,86-87,97-99
 
     <?xml version="1.0" encoding="UTF-8"?>
     <beans xmlns="http://www.springframework.org/schema/beans"
@@ -1177,11 +1176,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
         xmlns:mvc="http://www.springframework.org/schema/mvc"
         xmlns:util="http://www.springframework.org/schema/util"
         xmlns:aop="http://www.springframework.org/schema/aop"
-        xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+            http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd
         ">
 
         <context:property-placeholder
@@ -1232,20 +1231,41 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         <!-- Settings View Resolver. -->
         <mvc:view-resolvers>
-            <mvc:bean-name />
-            <mvc:tiles />
-            <mvc:jsp prefix="/WEB-INF/views/" />
+            <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+                <property name="templateEngine" ref="templateEngine" />
+                <property name="characterEncoding" value="UTF-8" />
+                <property name="forceContentType" value="true" />
+                <property name="contentType" value="text/html;charset=UTF-8" />
+            </bean>
         </mvc:view-resolvers>
 
-        <mvc:tiles-configurer>
-            <mvc:definitions location="/WEB-INF/tiles/tiles-definitions.xml" />
-        </mvc:tiles-configurer>
+        <!-- TemplateResolver. -->
+        <bean id="templateResolver"
+            class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+            <property name="prefix" value="/WEB-INF/views/" />
+            <property name="suffix" value=".html" />
+            <property name="templateMode" value="HTML" />
+            <property name="characterEncoding" value="UTF-8" />
+        </bean>
+
+        <!-- TemplateEngine. -->
+        <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+            <property name="templateResolver" ref="templateResolver" />
+            <property name="enableSpringELCompiler" value="true" />
+            <property name="additionalDialects">
+                <set>
+                    <!-- (2) -->
+                    <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                    <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" /> 
+                </set>
+            </property>
+        </bean>
 
         <bean id="requestDataValueProcessor"
             class="org.terasoluna.gfw.web.mvc.support.CompositeRequestDataValueProcessor">
             <constructor-arg>
                 <util:list>
-                    <!-- (2) -->
+                    <!-- (3) -->
                     <bean
                         class="org.springframework.security.web.servlet.support.csrf.CsrfRequestDataValueProcessor" />
                     <bean
@@ -1277,6 +1297,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
                     <entry key="common/error/dataAccessError" value="500" />
                 </map>
             </property>
+            <property name="excludedExceptions">
+                <array>
+                    <value>org.springframework.web.util.NestedServletException</value>
+                </array>
+            </property>
             <property name="defaultErrorView" value="common/error/systemError" />
             <property name="defaultStatusCode" value="500" />
         </bean>
@@ -1304,7 +1329,11 @@ Spring Securityと関係のない設定については、説明を割愛する�
 
         \ ``<mvc:argument-resolvers>``\ タグに\ ``AuthenticationPrincipalArgumentResolver``\ を指定する。
     * - | (2)
-      - \ ``<form:form>``\ タグ(JSPタグライブラリ)を使用して、CSRFトークン値をHTMLフォームに埋め込むための設定。
+      - テンプレートHTML内で、Spring Securityの認証・認可制御を可能にするための設定。
+
+        \ ``SpringTemplateEngine``\ の \ ``additionalDialects``\ プロパティに\ ``SpringSecurityDialect``\ を指定する。
+    * - | (3)
+      - CSRFトークン値をHTMLフォームに埋め込むための設定。
 
         \ ``CompositeRequestDataValueProcessor``\ のコンストラクタに\ ``CsrfRequestDataValueProcessor``\ を指定する。
 

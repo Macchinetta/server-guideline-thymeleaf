@@ -51,7 +51,7 @@ Spring MVCを用いたWebアプリケーションの開発に対するイメー�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-     -DarchetypeVersion=1.5.1.RELEASE^
+     -DarchetypeVersion=1.5.2.RELEASE^
      -DgroupId=com.example.helloworld^
      -DartifactId=helloworld^
      -Dversion=1.0.0-SNAPSHOT
@@ -63,7 +63,7 @@ Spring MVCを用いたWebアプリケーションの開発に対するイメー�
     C:\work>mvn archetype:generate -B^
     More?  -DarchetypeGroupId=com.github.macchinetta.blank^
     More?  -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-    More?  -DarchetypeVersion=1.5.1.RELEASE^
+    More?  -DarchetypeVersion=1.5.2.RELEASE^
     More?  -DgroupId=com.example.helloworld^
     More?  -DartifactId=helloworld^
     More?  -Dversion=1.0.0-SNAPSHOT
@@ -79,9 +79,9 @@ Spring MVCを用いたWebアプリケーションの開発に対するイメー�
     [INFO]
     [INFO] --- maven-archetype-plugin:2.4:generate (default-cli) @ standalone-pom ---
     [INFO] Generating project in Batch mode
-    [INFO] Archetype repository not defined. Using the one from [com.github.macchinetta.blank:macchinetta-web-blank-noorm-thymeleaf-archetype:1.5.1.RELEASE] found in catalog remote
+    [INFO] Archetype repository not defined. Using the one from [com.github.macchinetta.blank:macchinetta-web-blank-noorm-thymeleaf-archetype:1.5.2.RELEASE] found in catalog remote
     [INFO] ----------------------------------------------------------------------------
-    [INFO] Using following parameters for creating project from Archetype: macchinetta-web-blank-noorm-thymeleaf-archetype:1.5.1.RELEASE
+    [INFO] Using following parameters for creating project from Archetype: macchinetta-web-blank-noorm-thymeleaf-archetype:1.5.2.RELEASE
     [INFO] ----------------------------------------------------------------------------
     [INFO] Parameter: groupId, Value: com.example.helloworld
     [INFO] Parameter: artifactId, Value: helloworld
@@ -131,11 +131,11 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
         xmlns:mvc="http://www.springframework.org/schema/mvc"
         xmlns:util="http://www.springframework.org/schema/util"
         xmlns:aop="http://www.springframework.org/schema/aop"
-        xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+            http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd
         ">
 
         <context:property-placeholder
@@ -213,6 +213,7 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
             <property name="additionalDialects">
                 <set>
                     <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" />
+                    <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
                 </set>
             </property>
         </bean>
@@ -276,7 +277,7 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
    * - 項番
      - 説明
    * - | (1)
-     - \ ``<mvc:annotation-driven>``\要素を定義することにより、Spring MVCのデフォルト設定が行われる。デフォルトの設定については、 Springの公式ページである `Enabling the MVC Java Config or the MVC XML Namespace <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-config-enable>`_ を参照されたい。
+     - \ ``<mvc:annotation-driven>``\要素を定義することにより、Spring MVCのデフォルト設定が行われる。デフォルトの設定については、 Springの公式ページである `Enabling the MVC Java Config or the MVC XML Namespace <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/mvc.html#mvc-config-enable>`_ を参照されたい。
    * - | (2)
      - Spring MVCで使用するコンポーネントを探すパッケージを定義する。
    * - | (3)
@@ -388,7 +389,7 @@ Spring MVCの設定方法を理解するために、生成されたSpring MVCの
        そのため、テンプレートHTMLで\ ``${serverTime}``\ と記述し、Thymeleafの ``th:text`` 属性を使用することで、Controllerで設定した値を画面に出力することができる。
 
        ``th:text`` 属性はHTMLエスケープをして出力を行うため、自動的にXSS対策をとることができる。
-       詳細については :doc:`Cross Site Scripting <../Security/XSS>` を参照されたい。
+       詳細については :ref:`xss_how_to_use_ouput_escaping` を参照されたい。
 
 |
 
@@ -554,8 +555,8 @@ Controllerの作成
         <!--/* (2) */-->
         <form th:object="${echoForm}" th:action="@{/echo/hello}" method="post">
             <label for="name">Input Your Name:</label>
-            <input th:field="*{name}" /> <!--/* (3) */-->
-            <input type="submit" />
+            <input th:field="*{name}"> <!--/* (3) */-->
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -595,10 +596,10 @@ Controllerの作成
     </head>
     <body>
         <form action="/helloworld/echo/hello" method="post">
-            <input type="hidden" name="_csrf" value="43595f38-3edd-4c08-843b-3c31a00d2b15" />      
+            <input type="hidden" name="_csrf" value="43595f38-3edd-4c08-843b-3c31a00d2b15">
             <label for="name">Input Your Name:</label>
-            <input id="name" name="name" value=""/>
-            <input type="submit" />
+            <input id="name" name="name" value="">
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -759,9 +760,9 @@ Spring MVCでは、 `Bean Validation <http://jcp.org/en/jsr/detail?id=349>`_\ �
     <body>
         <form th:object="${echoForm}" th:action="@{/echo/hello}" method="post">
             <label for="name">Input Your Name:</label>
-            <input th:field="*{name}" />
+            <input th:field="*{name}">
             <span th:errors="*{name}" style="color:red"></span> <!--/* (1) */-->
-            <input type="submit" />
+            <input type="submit">
         </form>
     </body>
     </html>
@@ -803,11 +804,11 @@ Spring MVCでは、 `Bean Validation <http://jcp.org/en/jsr/detail?id=349>`_\ �
     </head>
     <body>
         <form action="/helloworld/echo/hello" method="post">
-          <input type="hidden" name="_csrf" value="6e94a78d-4a2c-4a41-a514-0a60f0dbedaf" />
+          <input type="hidden" name="_csrf" value="6e94a78d-4a2c-4a41-a514-0a60f0dbedaf">
           <label for="name">Input Your Name:</label>
-          <input id="name" name="name" value=""/>
+          <input id="name" name="name" value="">
           <span style="color:red">size must be between 1 and 5</span>
-          <input type="submit" />
+          <input type="submit">
         </form>
     </body>
     </html>

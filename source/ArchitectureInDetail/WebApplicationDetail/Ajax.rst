@@ -12,12 +12,6 @@ Overview
 
 本章では、Ajaxを利用するアプリケーションの実装方法について説明する。
 
- .. todo::
-    
-    **TBD**
-
-        クライアント側の実装方法などについては、次版以降で詳細化する予定である。
-
 Ajaxとは、以下の処理を非同期に行うための技術の総称である。
 
 * ブラウザ上で行われる画面操作
@@ -103,100 +97,12 @@ Ajax通信時で使用されるContent-Type(``application/xml`` や ``applicatio
 
     **jackson version 1.x.x から jackson version 2.x.xへ変更する場合の注意点** は\ :ref:`こちら <REST_note_changed_jackson_version>`\ を参照されたい。
 
+ .. _AjaxWarningXXEProtection:
 
- .. warning:: **XXE(XML External Entity) Injection 対策について**
- 
-    Ajax通信でXML形式のデータを扱う場合は、\ `XXE(XML External Entity) Injection <https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing>`_\対策を行う必要がある。
-    terasoluna-gfw-web 1.0.1.RELEASE以上では、XXE Injection 対策が行われているSpring MVC(3.2.10.RELEASE以上)に依存しているため、個別に対策を行う必要はない。
-    
-    terasoluna-gfw-web 1.0.0.RELEASEを使用している場合は、XXE Injection対策が行われていないSpring MVC(3.2.4.RELEASE)に依存しているため、Spring-oxmから提供されているクラスを使用すること。
-    
-    - :file:`spring-mvc.xml`
-    
-     .. code-block:: xml
-    
-        <!-- (1) -->
-        <bean id="xmlMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-            <property name="packagesToScan" value="com.examples.app" /> <!-- (2) -->
-        </bean>
-    
-        <!-- ... -->
-    
-        <mvc:annotation-driven>
-    
-            <mvc:message-converters>
-                <!-- (3) -->
-                <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
-                    <property name="marshaller" ref="xmlMarshaller" /> <!-- (4) -->
-                    <property name="unmarshaller" ref="xmlMarshaller" /> <!-- (5) -->
-                </bean>
-            </mvc:message-converters>
-    
-            <!-- ... -->
-    
-        </mvc:annotation-driven>
-    
-        <!-- ... -->
-    
-     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-     .. list-table::
-       :header-rows: 1
-       :widths: 10 90
-       :class: longtable
-    
-       * - | 項番
-         - | 説明
-       * - | (1)
-         - | Spring-oxmから提供されている\ ``Jaxb2Marshaller``\のbean定義を行う。
-           | \ ``Jaxb2Marshaller``\はデフォルトの状態で XXE Injection対策が行われている。
-       * - | (2)
-         - | ``packagesToScan`` プロパティに JAXB用のJavaBean( ``javax.xml.bind.annotation.XmlRootElement`` アノテーションなどが付与されているJavaBean)が格納されているパッケージ名を指定する。
-           | 指定したパッケージ配下に格納されているJAXB用のJavaBeanがスキャンされ、marshal、unmarshal対象のJavaBeanとして登録される。
-           | ``<context:component-scan>`` の base-package属性と同じ仕組みでスキャンされる。
-       * - | (3)
-         - | ``<mvc:annotation-driven>`` の子要素である ``<mvc:message-converters>`` 要素に、 ``MarshallingHttpMessageConverter`` のbean定義を追加する。
-       * - | (4)
-         - | ``marshaller`` プロパティに (1)で定義した ``Jaxb2Marshaller`` のbeanを指定する。
-       * - | (5)
-         - | ``unmarshaller`` プロパティに (1)で定義した ``Jaxb2Marshaller`` のbeanを指定する。
-         
-     .. raw:: latex
+ .. note:: **XXE(XML External Entity) 対策について**
 
-        \newpage
-
-    |
-
-    Spring-oxmを依存するアーティファクトとして追加する。
-
-    - :file:`pom.xml`
-
-     .. code-block:: xml
-
-        <!-- omitted -->
-
-        <!-- (1) -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-oxm</artifactId>
-            <version>${org.springframework-version}</version> <!-- (2) -->
-        </dependency>
-
-        <!-- omitted -->
-
-     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-     .. list-table::
-       :header-rows: 1
-       :widths: 10 90
-       :class: longtable
-
-       * - | 項番
-         - | 説明
-       * - | (1)
-         - | Spring-oxm を依存アーティファクトとして追加する。
-       * - | (2)
-         - | Springのバージョンは、terasoluna-gfw-parent の :file:`pom.xml` に定義されているSpringのバージョン番号を管理するためのプレースホルダ(${org.springframework-version})から取得すること。
-
-
+    Ajax通信でXML形式のデータを扱う場合は、\ `XXE(XML External Entity) <https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing>`_\対策を行う必要がある。
+    Macchinetta Server Framework (1.x)では、XXE 対策が行われているSpring MVC(3.2.10.RELEASE以上)に依存しているため、個別に対策を行う必要はない。
 
 |
 
@@ -357,15 +263,9 @@ Ajaxを使ってデータを取得する方法について説明する。
 
 |
 
-- HTML(JSP)
+- ThymeleafのテンプレートHTML
 
- .. code-block:: jsp
-
-    <!-- omitted -->
-
-    <meta name="contextPath" content="${pageContext.request.contextPath}" />
-
-    <!-- omitted -->
+ .. code-block:: html
 
     <!-- (10)  -->
     <form id="searchForm">
@@ -384,11 +284,11 @@ Ajaxを使ってデータを取得する方法について説明する。
      - | 検索条件を入力するためのフォーム。
        | 上記例では、検索条件を入力するためのテキストボックスと検索ボタンをもっている。
 
- .. code-block:: jsp
+ .. code-block:: html
 
     <!-- (11) -->
     <script type="text/javascript"
-        src="${pageContext.request.contextPath}/resources/vendor/jquery/jquery-1.10.2.js">
+        th:src="@{/resources/vendor/jquery/jquery-1.10.2.js}">
     </script>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -441,13 +341,11 @@ Ajaxを使ってデータを取得する方法について説明する。
     
 - JavaScript
 
- .. code-block:: javascript
-
-    var contextPath = $("meta[name='contextPath']").attr("content");
+ .. code-block:: text
 
     // (13)
     function searchByFreeWord() {
-        $.ajax(contextPath + "/ajax/search", {
+        $.ajax([[@{/ajax/search}]], {
             type : "GET",
             data : $("#searchForm").serialize(),
             dataType : "json", // (14)
@@ -489,8 +387,8 @@ Ajaxを使ってデータを取得する方法について説明する。
 
  .. tip::
 
-    上記例ではWebアプリケーションのコンテキストパス( ``${pageContext.request.contextPath}`` ) をHTMLの ``<meta>`` 要素に設定しておくことで、
-    JavaScriptのコードからJSPのコードを排除している。
+    上記例ではインライン記法を用いることで、指定されたパスにWebアプリケーションのコンテキストパスを付与した値を取得している。
+    JavaScriptにおけるインライン記法の詳細は\ :doc:`Thymeleaf`\のJavaScriptのテンプレート化を参照されたい。
 
 |
 
@@ -594,6 +492,20 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
    * - | (2)
      - | 処理結果を格納するためのJavaBeanを作成する。
 
+ .. warning::
+
+    電文からJava Beanにデシリアライズする際、プロパティにジェネリクスやインターフェイスを使用しているなどの理由で型を特定できない場合は
+    \ ``@com.fasterxml.jackson.annotation.JsonTypeInfo``\ アノテーションを付与する。
+    \ ``@JsonTypeInfo``\ アノテーションを付与したプロパティをシリアライズするとJSONに型情報が出力され、これを読み取ってデシリアライズが行われる。
+
+    ただし、\ ``@JsonTypeInfo``\ アノテーションのuse属性に\ ``Id.CLASS``\ や\ ``Id.MINIMAL_CLASS``\ を使用すると、
+    JSONに出力されたクラス名を元にデシリアライズが行われるため、これにより不正にリモートコードが実行される危険がある。
+    このため、(信頼できない送信元を含み得る)不特定多数からの電文を受け付ける前提のシステムにおいては、
+    \ ``Id.CLASS``\ や\ ``Id.MINIMAL_CLASS``\ を指定してはならない。
+
+    なお、\ ``ObjectMapper``\ の\ ``defaultTyping``\ を利用すると、上記のようなデシリアライズ時の型判断をアプリケーション全体に適用することが可能である。
+    こちらも合わせて注意されたい。
+
 |
 
 - Controller
@@ -639,17 +551,9 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
 
 |
 
-- HTML(JSP)
+- テンプレートHTML
 
- .. code-block:: jsp
-
-    <!-- omitted -->
-
-    <meta name="contextPath" content="${pageContext.request.contextPath}" />
-
-    <sec:csrfMetaTags />
-
-    <!-- omitted -->
+ .. code-block:: html
 
     <!-- (7)  -->
     <form id="calculationForm">
@@ -676,20 +580,17 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
 
 - JavaScript
 
- .. code-block:: javascript
+ .. code-block:: text
 
-    var contextPath = $("meta[name='contextPath']").attr("content");
 
-    // (9)
-    var csrfToken = $("meta[name='_csrf']").attr("content");
-    var csrfHeaderName = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend(function(event, xhr, options) {
-        xhr.setRequestHeader(csrfHeaderName, csrfToken);
+        // (9)
+        xhr.setRequestHeader([[${_csrf.headerName}]], [[${_csrf.token}]]);
     });
 
     // (10)
     function plus() {
-        $.ajax(contextPath + "/ajax/plusForForm", {
+        $.ajax([[@{/ajax/plusForForm}]], {
             type : "POST",
             data : $("#calculationForm").serialize(),
             dataType : "json"
@@ -734,7 +635,7 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
      - | 説明
    * - | (9)
      - | POSTメソッドでリクエストを行う場合、CSRFトークンをHTTPヘッダに設定して送信する必要がある。
-       | 上記例では、\ ``<sec:csrfMetaTags />``\ を利用して ``<meta>`` 要素にCSRFトークンヘッダー名とCSRFトークン値を設定し、JavaScriptで値を取得するようにしている。
+       | 上記例では、インライン記法を用いることでCSRFトークンヘッダー名とCSRFトークン値をJavaScriptで取得している。
        | CSRF対策の詳細については、 「 :doc:`../../Security/CSRF` 」を参照されたい。
    * - | (10)
      - | フォームに指定された数値をリクエストパラメータに変換し、POSTメソッドで ``/ajax/plusForForm`` に対してリクエストを送信するAjax関数。
@@ -773,16 +674,6 @@ Ajaxを使ってフォームのデータをPOSTし、処理結果を取得する
  
     上記例では、Ajaxの通信処理、DOM操作処理(描画処理)、エラー処理を同じfunction内で行っているが、これらの処理は分離して実装することを推奨する。
 
- .. todo:: **TBD**
-    
-    クライアント側の実装方法については、次版以降で詳細化する予定である。
-
- .. tip::
-
-    上記例では\ ``<sec:csrfMetaTags />``\ を利用して、CSRFトークン値とCSRFトークンヘッダー名をHTMLの ``<meta>`` 要素に設定しておくことで、
-    JavaScriptのコードからJSPのコードを排除している。\ :ref:`csrf_ajax-token-setting`\ を参照されたい。
-
-    尚、CSRFトークン値とCSRFトークンヘッダー名はそれぞれ\ ``${_csrf.token}``\ と\ ``${_csrf.headerName}``\ を用いても取得可能である。
 
 |
 
@@ -890,7 +781,7 @@ Ajaxを使ってフォームのデータをJSON形式に変換してからPOST�
 
 |
 
-- JavaScript/HTML(JSP)
+- JavaScript/HTML
 
  .. code-block:: javascript
 

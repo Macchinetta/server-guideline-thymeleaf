@@ -25,7 +25,7 @@ Overview
     一部のアプリケーションサーバ上でServlet 3.0のファイルアップロード機能を使用すると、
     リクエストパラメータやファイル名のマルチバイト文字が文字化けすることがある。
 
-    version 1.5.1.RELEASE時点で問題の発生が確認されているアプリケーションサーバは以下の通りである。
+    version 1.5.2.RELEASE時点で問題の発生が確認されているアプリケーションサーバは以下の通りである。
     
     * WebLogic 12.1.3
     * JBoss EAP 7.0
@@ -33,6 +33,7 @@ Overview
     
     このうちJBoss EAP 7.0では、アプリケーションサーバ独自の設定を追加することで問題を回避することができる。
     詳細は、\ `JBoss EAP 7.0を利用する際の注意点 <https://github.com/terasolunaorg/terasoluna-gfw/wiki/JBoss7_ja>`_\を参照されたい。
+    なお、JBoss EAP 7.2では問題が解消され、設定の追加は不要であることを確認している。
 
     その他の問題が発生するアプリケーションサーバを使用する場合は、Commons FileUploadを使用することで問題を回避することができる。
     Commons FileUploadを使用するための設定方法については、「:ref:`file-upload_usage_commons_fileupload`」を参照されたい。
@@ -42,7 +43,8 @@ Overview
     使用するアプリケーションサーバのファイルアップロードの実装が、Apache Commons FileUploadの実装に依存している場合、\ `CVE-2014-0050 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0050>`_\および\ `CVE-2016-3092 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-3092>`_\で報告されているセキュリティの脆弱性が発生する可能性がある。
     使用するアプリケーションサーバに同様の脆弱性がない事を確認されたい。
     
-    Tomcatを使用する場合、7.0系は7.0.70以上、8.0系は8.0.36以上、8.5系は8.5.3以上を使用する必要がある。
+    Tomcatを使用する場合、7.0系は7.0.70以上、8.5系は8.5.3以上を使用する必要がある。
+    Tomcat 9.0系ではこの脆弱性は対策済みである。
 
 アップロード処理の基本フロー
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,7 +138,7 @@ Spring Webから提供されているファイルアップロード用のクラ�
 
  .. tip::
 
-    本ガイドラインでは、Servlet 3.0から導入されたファイルアップロード機能を使うことを前提としているが、Spring Webでは、\ `「Apache Commons FileUpload」用の実装クラスも提供している <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html#mvc-multipart-resolver-commons>`_\ 。
+    本ガイドラインでは、Servlet 3.0から導入されたファイルアップロード機能を使うことを前提としているが、Spring Webでは、\ `「Apache Commons FileUpload」用の実装クラスも提供している <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/mvc.html#mvc-multipart-resolver-commons>`_\ 。
     アップロード処理の実装の違いは、\ ``MultipartResolver``\ と、\ ``MultipartFile``\ オブジェクトによって吸収されるため、Controllerの実装に影響を与えることはない。
 
 |
@@ -339,7 +341,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
     また、プロジェクト独自で作成するServlet Filterでリクエストパラメータにアクセスするものがある場合は、そのServlet Filterより前に定義すること。
 
     ただし、\ ``springSecurityFilterChain``\ より前に定義することで、認証又は認可されていないユーザーからのアップロード(一時ファイル作成)を許容することになる。
-    この動作を回避する方法が\ `Spring Security Reference -Cross Site Request Forgery (CSRF)- <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#csrf-include-csrf-token-in-action>`_\ の中で紹介されているが、セキュリティ上のリスクを含む回避方法になるため、本ガイドラインでは回避策の適用は推奨していない。
+    この動作を回避する方法が\ `Spring Security Reference -Cross Site Request Forgery (CSRF)- <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#csrf-include-csrf-token-in-action>`_\ の中で紹介されているが、セキュリティ上のリスクを含む回避方法になるため、本ガイドラインでは回避策の適用は推奨していない。
 
  .. warning:: **ファイルアップロードの許容サイズを超過した場合の注意点**
 
@@ -371,7 +373,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
         <!-- (1) -->
         <exception-type>org.springframework.web.multipart.MultipartException</exception-type>
         <!-- (2) -->
-        <location>/WEB-INF/views/common/error/fileUploadError.jsp</location>
+        <location>/common/error/fileUploadError</location>
     </error-page>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -384,22 +386,26 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - | (1)
      - | ハンドリング対象の例外クラスとして、\ ``MultipartException``\を指定する。
    * - | (2)
-     - | \ ``MultipartException``\ が発生した際に表示するファイルを指定する。
+     - | \ ``MultipartException``\ が発生した際に遷移するパスを指定する。
        |
-       | 上記例では、\ ``/WEB-INF/views/common/error/fileUploadError.jsp``\ を指定している。
+       | 上記例では、\ ``/common/error/fileUploadError``\ を指定している。
 
-- :file:`fileUploadError.jsp`
+- :file:`CommonErrorController.java`
 
- .. code-block:: jsp
+ .. code-block:: java
 
-    <%-- (3) --%>
-    <% response.setStatus(HttpServletResponse.SC_BAD_REQUEST); %>
-    <!DOCTYPE html>
-    <html>
+    @Controller
+    @RequestMapping("common/error")
+    public class CommonErrorController {
     
-        <!-- omitted -->
+        // omitted
 
-    </html>
+        @RequestMapping("fileUploadError")
+        @ResponseStatus(HttpStatus.BAD_REQUEST) // (3)
+        public String fileUploadError() {
+          return "common/error/fileUploadError";
+        }
+    }
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -409,7 +415,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - 項番
      - 説明
    * - | (3)
-     - | HTTPステータスコードは、\ ``HttpServletResponse``\ のAPIを呼び出して設定する。
+     - | HTTPステータスコードは、\ ``@ResponseStatus``\ のアノテーションを付与して設定する。
        |
        | 上記例では、\ ``400``\ (Bad Request) を設定している。
        | 明示的に設定しない場合、HTTPステータスコードは\ ``500``\ (Internal Server Error)となる。
@@ -452,7 +458,7 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
    * - 項番
      - 説明
    * - | (4)
-     - | \ ``SystemExceptionResolver``\ の\ ``exceptionMappings``\ に、\ ``MultipartException``\ が発生した際に表示するView(JSP)の定義を追加する。
+     - | \ ``SystemExceptionResolver``\ の\ ``exceptionMappings``\ に、\ ``MultipartException``\ が発生した際に表示するView(ThymeleafのテンプレートHTML)の定義を追加する。
        |
        | 上記例では、\ ``common/error/fileUploadError``\ を指定している。
    * - | (5)
@@ -466,8 +472,8 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
 
 | \ ``MultipartException``\ に対する例外コードを設ける場合は、例外コードの設定を追加する。
 | 例外コードは、共通ライブラリのログ出力機能により出力されるログに、出力される。
-| 例外コードは、View(JSP)から参照することもできる。
-| View(JSP)から例外コードを参照する方法については、\ :ref:`exception-handling-how-to-use-codingpoint-jsp-exceptioncode-label`\ を参照されたい。
+| 例外コードは、View(テンプレートHTML)から参照することもできる。
+| View(テンプレートHTML)から例外コードを参照する方法については、\ :ref:`exception-handling-how-to-use-codingpoint-view-exceptioncode-label`\ を参照されたい。
 
 - :file:`applicationContext.xml`
 
@@ -544,35 +550,34 @@ multipart/form-dataリクエストの時、ファイルアップロードで許�
      - | フォームオブジェクトに、\ ``org.springframework.web.multipart.MultipartFile``\ のプロパティを定義する。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/upload" method="post"
-      modelAttribute="fileUploadForm" enctype="multipart/form-data"> <!-- (1) (2) -->
+    <form th:action="@{/article/upload}" method="post"
+      enctype="multipart/form-data" th:object="${fileUploadForm}"> <!--/* (1) (2) */-->
       <table>
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="file" /> <!-- (3) -->
-            <form:errors path="file" />
+            <input type="file" th:field="*{file}"> <!--/* (3) */-->
+            <span th:errors="*{file}"></span>
           </td>
         </tr>
         <tr>
           <th width="35%">Description</th>
           <td width="65%">
-            <form:input path="description" />
-            <form:errors  path="description" />
+            <input th:field="*{description}">
+            <span th:errors="*{description}"></span>
           </td>
         </tr>
         <tr>
           <td>&nbsp;</td>
-          <td><form:button>Upload</form:button></td>
+          <td><button>Upload</button></td>
         </tr>
       </table>
-    </form:form>
+    </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -582,12 +587,12 @@ JSPの実装
    * - 項番
      - 説明
    * - | (1)
-     - | \ ``<form:form>``\ 要素のenctype属性に、\ ``multipart/form-data``\ を指定する。
+     - | \ ``<form>``\ 要素のenctype属性に、\ ``multipart/form-data``\ を指定する。
    * - | (2)
-     - | \ ``<form:form>``\ 要素のmodelAttribute属性に、フォームオブジェクトの属性名を指定する。
+     - | \ ``<form>``\ 要素のth:object属性に、フォームオブジェクトの属性名を指定する。
        | 上記例では、\ ``fileUploadForm``\ を指定している。
    * - | (3)
-     - | \ ``<form:input>``\ 要素type属性に、\ ``file``\ を指定し、path属性に、\ ``MultipartFile``\ プロパティ名を指定する。
+     - | \ ``<input>``\ 要素のtype属性に、\ ``file``\ を指定し、th:field属性に、\ ``MultipartFile``\ プロパティ名を指定する。
        | 上記例では、アップロードされたファイルは、\ ``FileUploadForm``\ オブジェクトの\ ``file``\ プロパティに格納される。
 
 
@@ -716,7 +721,7 @@ Controllerの実装
  .. note:: **MultipartFileについて**
 
     MultipartFileには、アップロードされたファイルを操作するためのメソッドが用意されている。
-    各メソッドの利用方法については、\ `MultipartFileクラスのJavaDoc <http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/web/multipart/MultipartFile.html>`_\ を参照されたい。
+    各メソッドの利用方法については、\ `MultipartFileクラスのJavaDoc <https://docs.spring.io/spring/docs/4.3.23.RELEASE/javadoc-api/org/springframework/web/multipart/MultipartFile.html>`_\ を参照されたい。
 
 .. _fileupload_validator:
 
@@ -737,16 +742,16 @@ Controllerの実装
  .. code-block:: java
 
     // (1)
-    @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+    @Retention(RUNTIME)
     @Constraint(validatedBy = UploadFileRequiredValidator.class)
     public @interface UploadFileRequired {
         String message() default "{com.examples.upload.UploadFileRequired.message}";
         Class<?>[] groups() default {};
         Class<? extends Payload>[] payload() default {};
 
-        @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-        @Retention(RetentionPolicy.RUNTIME)
+        @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+        @Retention(RUNTIME)
         @Documented
         @interface List {
             UploadFileRequired[] value();
@@ -792,16 +797,16 @@ Controllerの実装
  .. code-block:: java
 
     // (3)
-    @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+    @Retention(RUNTIME)
     @Constraint(validatedBy = UploadFileNotEmptyValidator.class)
     public @interface UploadFileNotEmpty {
         String message() default "{com.examples.upload.UploadFileNotEmpty.message}";
         Class<?>[] groups() default {};
         Class<? extends Payload>[] payload() default {};
 
-        @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-        @Retention(RetentionPolicy.RUNTIME)
+        @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+        @Retention(RUNTIME)
         @Documented
         @interface List {
             UploadFileNotEmpty[] value();
@@ -853,8 +858,8 @@ Controllerの実装
  .. code-block:: java
 
     // (5)
-    @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+    @Retention(RUNTIME)
     @Constraint(validatedBy = UploadFileMaxSizeValidator.class)
     public @interface UploadFileMaxSize {
         String message() default "{com.examples.upload.UploadFileMaxSize.message}";
@@ -862,8 +867,8 @@ Controllerの実装
         Class<?>[] groups() default {};
         Class<? extends Payload>[] payload() default {};
 
-        @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-        @Retention(RetentionPolicy.RUNTIME)
+        @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+        @Retention(RUNTIME)
         @Documented
         @interface List {
             UploadFileMaxSize[] value();
@@ -1048,50 +1053,33 @@ Controllerの実装
    Bean Validationを使用してアップロードファイルの入力チェックを行う場合は、ファイル単位の情報を保持するオブジェクトを、List型のプロパティとして定義する方が相性がよい。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/uploadFiles" method="post"
-      modelAttribute="filesUploadForm" enctype="multipart/form-data">
-      <table>
+    <form th:action="@{/article/uploadFiles}" method="post"
+      enctype="multipart/form-data" th:object="${fileUploadForm}">
+      <table th:each="i : ${#numbers.sequence(0, 1)}">
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="fileUploadForms[0].file" /> <!-- (1) -->
-            <form:errors path="fileUploadForms[0].file" />
+            <input type="file" th:field="*{fileUploadForms[__${i}__].file}"> <!--/* (1) */-->
+            <span th:errors="*{fileUploadForms[__${i}__].file}"></span>
           </td>
         </tr>
         <tr>
           <th width="35%">Description</th>
           <td width="65%">
-            <form:input path="fileUploadForms[0].description" />
-            <form:errors  path="fileUploadForms[0].description" />
-          </td>
-        </tr>
-      </table>
-      <table>
-        <tr>
-          <th width="35%">File to upload</th>
-          <td width="65%">
-            <form:input type="file" path="fileUploadForms[1].file" /> <!-- (1) -->
-            <form:errors path="fileUploadForms[1].file" />
-          </td>
-        </tr>
-        <tr>
-          <th width="35%">Description</th>
-          <td width="65%">
-            <form:input path="fileUploadForms[1].description" />
-            <form:errors path="fileUploadForms[1].description" />
+            <input th:field="*{fileUploadForms[__${i}__].description}">
+            <span th:errors="*{fileUploadForms[__${i}__].description}"></span>
           </td>
         </tr>
       </table>
       <div>
-        <form:button>Upload</form:button>
+        <button>Upload</button>
       </div>
-    </form:form>
+    </form>
 
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1105,6 +1093,14 @@ JSPの実装
      - | アップロードファイルをバインドするList内の位置を指定する。
        | バインドするリスト内の位置は、\ ``[]``\ の中に指定する。開始位置は、"\ ``0``\" 開始となる。
 
+.. note:: **#numbers.sequenceメソッドについて**
+
+    ``#numbers``\ を利用すると、数値に対してフォーマットの指定やシーケンスの作成が容易になる。
+    上記の実装例では、\ ``#numbers.sequence``\ メソッドを利用して0から1までのシーケンス（配列）を作成し、\ ``th:each`` \ 属性でJavaの \ ``for`` \ 文のようなインデックスループを実現している。
+
+    ``#numbers``\ の詳細については、\ `公式ドキュメントの#numbersの説明 <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#numbers>`_\ を参照されたい。
+
+|
 
 Controllerの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1246,8 +1242,8 @@ Validatorの実装
 
  .. code-block:: java
 
-    @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+    @Retention(RUNTIME)
     @Constraint(validatedBy = 
         {UploadFileNotEmptyValidator.class,
          UploadFileNotEmptyForCollectionValidator.class}) // (5)
@@ -1270,27 +1266,26 @@ Validatorの実装
        | こうすることで、  ``@UploadFileNotEmpty`` アノテーションを付与したプロパティに対する妥当性チェックを行う際に、(1)で作成したクラスが実行される。
 
 
-JSPの実装
+テンプレートHTMLの実装
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
- .. code-block:: jsp
+ .. code-block:: html
 
-    <form:form
-      action="${pageContext.request.contextPath}/article/uploadFiles" method="post"
-      modelAttribute="filesUploadForm2" enctype="multipart/form-data">
+    <form th:action="@{/article/uploadFiles}" method="post"
+      enctype="multipart/form-data" th:object="${filesUploadForm}">
       <table>
         <tr>
           <th width="35%">File to upload</th>
           <td width="65%">
-            <form:input type="file" path="files" multiple="multiple" /> <!-- (1) -->
-            <form:errors path="files" />
+            <input type="file" th:field="*{files}" multiple="multiple"> <!--/* (1) */-->
+            <span th:errors="*{files}"></span>
           </td>
         </tr>
       </table>
       <div>
-        <form:button>Upload</form:button>
+        <button>Upload</button>
       </div>
-    </form:form>
+    </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -1509,7 +1504,7 @@ How to extend
     不要なファイルを残したままにすると、ディスクを圧迫する可能性があるため、必ず不要なファイルを削除する仕組みを用意すること。
 
 本ガイドラインでは、Spring Frameworkから提供されている「Task Scheduler」機能を使用して、不要なファイルを削除する方法について説明する。
-「Task Scheduler」の詳細については、\ `公式リファレンスの"Task Execution and Scheduling" <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/scheduling.html>`_\ を参照されたい。
+「Task Scheduler」の詳細については、\ `公式リファレンスの"Task Execution and Scheduling" <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/scheduling.html>`_\ を参照されたい。
 
  .. note::
 
@@ -1659,7 +1654,7 @@ How to extend
      * ``0 0 * * * *`` : 毎時 0分に実行される。
      * ``0 0 9-17 * * MON-FRI`` : 平日9時～17時の間の毎時0分に実行される。
 
-    cronの指定値の詳細については、\ `CronSequenceGeneratorのJavaDoc <http://docs.spring.io/spring/docs/4.3.14.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html>`_\ を参照されたい。
+    cronの指定値の詳細については、\ `CronSequenceGeneratorのJavaDoc <https://docs.spring.io/spring/docs/4.3.23.RELEASE/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html>`_\ を参照されたい。
 
     実行タイミングは、アプリケーションをデプロイする環境によって異なる可能性があるため、外部プロパティから取得すること。
     外部プロパティの詳細については、\ :doc:`../GeneralFuncDetail/PropertyManagement`\ を参照されたい。
@@ -1787,7 +1782,7 @@ Commons FileUploadを使用する場合は以下の設定を行う。
 
     Apache Commons FileUploadを使用する場合、1.3.2以上を使用する必要がある。
 
-    なお、Macchinetta Server Framework version 1.5.1.RELEASEが準拠しているSpring IO Platform Brussels-SR5.RELEASEで管理されているバージョンを使用すれば、CVE-2014-0050およびCVE-2016-3092で報告されている脆弱性は発生しない。
+    なお、Macchinetta Server Framework version 1.5.2.RELEASEが準拠しているSpring IO Platform Brussels-SR17.RELEASEで管理されているバージョンを使用すれば、CVE-2014-0050およびCVE-2016-3092で報告されている脆弱性は発生しない。
     意図的にApache Commons FileUploadのバージョンを変更する場合は、当該脆弱性が対処されているバージョンを指定すること。
 
 |
@@ -1817,7 +1812,7 @@ Commons FileUploadを使用する場合は以下の設定を行う。
    * - | (2)
      - | ファイルアップロードで許容する最大サイズを設定する。
        | Commons FileUploadの場合、最大値はHTTPヘッダを含めたリクエスト全体のサイズであることに注意すること。
-       | また、**デフォルト値は-1(無制限)なので、必ず値を設定すること。** その他のプロパティは\ `JavaDoc <http://docs.spring.io/spring-framework/docs/4.3.14.RELEASE/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartResolver.html>`_\ を参照されたい。
+       | また、**デフォルト値は-1(無制限)なので、必ず値を設定すること。** その他のプロパティは\ `JavaDoc <https://docs.spring.io/spring/docs/4.3.23.RELEASE/javadoc-api/org/springframework/web/multipart/commons/CommonsMultipartResolver.html>`_\ を参照されたい。
 
 .. warning::
 

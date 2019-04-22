@@ -16,14 +16,14 @@ Spring Securityはスタンドアロンなアプリケーションでも利用�
 .. tip:: **ガイドラインで紹介していない機能**
 
     Spring Securityは、本ガイドラインで紹介していない機能も多く提供している。
-    Spring Securityが提供するすべての機能を知りたい場合は、\ `Spring Security Reference <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
+    Spring Securityが提供するすべての機能を知りたい場合は、\ `Spring Security Reference <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
 
 .. note:: **Spring Securityのバージョン**
 
     本ガイドラインでは、Spring Securityのバージョンは4.xを使用することを前提としている。
     Spring Securityが4.0にバージョンアップするにあたり、様々な変更が適用されており、以降で記述されるサンプルについても、Spring Security 4を使用したサンプルとなっている。
 
-    変更内容については\ `Migrating from Spring Security 3.x to 4.x (XML Configuration) <http://docs.spring.io/spring-security/site/migrate/current/3-to-4/html5/migrate-3-to-4-xml.html>`_\ を参照されたい。
+    変更内容については\ `Migrating from Spring Security 3.x to 4.x (XML Configuration) <https://docs.spring.io/spring-security/site/migrate/current/3-to-4/html5/migrate-3-to-4-xml.html>`_\ を参照されたい。
 
 .. _SpringSecurityFunctionalities:
 
@@ -240,7 +240,7 @@ Spring Securityは、サーブレットフィルタの仕組みを使用してWe
 |
 
 Webアプリケーション向けのフレームワーク処理を構成する主要なコンポーネントは以下の通りである。
-詳細は \ `Spring Security Reference -The Security Filter Chain- <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
+詳細は \ `Spring Security Reference -The Security Filter Chain- <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#security-filter-chain>`_\ を参照されたい。
 
 
 FilterChainProxy
@@ -282,7 +282,7 @@ Security Filterクラスは、フレームワーク機能やセキュリティ�
 
 Spring Securityは、複数のSecurity Filterを連鎖させることでWebアプリケーションのセキュリティ対策を行う仕組みになっている。
 ここでは、認証と認可機能を実現するために必要となるコアなクラスを紹介する。
-詳細は \ `Spring Security Reference -Core Security Filters- <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#core-web-filters>`_\ を参照されたい。
+詳細は \ `Spring Security Reference -Core Security Filters- <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#core-web-filters>`_\ を参照されたい。
 
 .. _SpringSecurityTableSecurityFilter:
 
@@ -394,8 +394,8 @@ Spring Securityのコンポーネントをbean定義するため、以下のよ�
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:sec="http://www.springframework.org/schema/security"
         xsi:schemaLocation="
-            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd
+            http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
         "> <!-- (1) -->
 
         <sec:http pattern="/resources/**" security="none"/> <!-- (2) -->
@@ -474,6 +474,7 @@ Spring Securityのコンポーネントをbean定義するため、以下のよ�
       <property name="additionalDialects">
         <set>
           <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect" /> <!-- (1) -->
+          <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
         </set>
       </property>
     </bean>

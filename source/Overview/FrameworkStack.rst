@@ -29,13 +29,13 @@ DIコンテナ
 DIコンテナとしてSpring Frameworkを利用する。
 
 
-* `Spring Framework 4.3 <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/beans.html>`_
+* `Spring Framework 4.3 <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/beans.html>`_
 
 MVCフレームワーク
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Web MVCフレームワークとしてSpring MVCを利用する。
 
-* `Spring MVC 4.3 <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/mvc.html>`_
+* `Spring MVC 4.3 <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/mvc.html>`_
 
 O/R Mapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -60,7 +60,7 @@ Viewには、Thymeleafを利用する。
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 認証・認可のフレームワークとしてSpring Securityを利用する。
 
-* `Spring Security 4.1 <http://projects.spring.io/spring-security/>`_
+* `Spring Security 4.2 <http://projects.spring.io/spring-security/>`_
 
 .. tip::
 
@@ -81,7 +81,7 @@ Viewには、Thymeleafを利用する。
 
   * 実装は、\ `Hibernate Validator 5.3 <http://docs.jboss.org/hibernate/validator/5.3/reference/en-US/html/>`_\ を利用する。
 
-* 相関チェックには\ `Bean Validation <http://download.oracle.com/otn-pub/jcp/bean_validation-1_1-fr-eval-spec/bean-validation-specification.pdf>`_\ 、もしくは\ `Spring Validation <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/html/validation.html#validator>`_\ を利用する。
+* 相関チェックには\ `Bean Validation <http://download.oracle.com/otn-pub/jcp/bean_validation-1_1-fr-eval-spec/bean-validation-specification.pdf>`_\ 、もしくは\ `Spring Validation <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/html/validation.html#validator>`_\ を利用する。
 
   * 使い分けについては\ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\ を参照されたい。
 
@@ -105,7 +105,7 @@ Viewには、Thymeleafを利用する。
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.5.2.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. tip::
 
@@ -123,7 +123,7 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
 
     \ **ただし、Thymeleafに限っては、バージョン3.0を利用する為、Spring IO platformで定義されたバージョンより上位のバージョンを採用している。**\
 
-    なお、version 1.5.1.RELEASEで指定しているSpring IO platformのバージョンは、`Brussels-SR5 <http://docs.spring.io/platform/docs/Brussels-SR5/reference/htmlsingle/>`_\ である。
+    なお、version 1.5.2.RELEASEで指定しているSpring IO platformのバージョンは、`Brussels-SR17 <https://docs.spring.io/platform/docs/Brussels-SR17/reference/htmlsingle/>`_\ である。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
@@ -140,141 +140,135 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - Spring
       - org.springframework
       - spring-aop
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-aspects
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-beans
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-context
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-context-support
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-core
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-expression
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-jdbc
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-orm
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-tx
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-web
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-webmvc
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-jms
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework
       - spring-messaging
-      - 4.3.14.RELEASE
+      - 4.3.23.RELEASE
       -
       -
     * - Spring
       - org.springframework.data
       - spring-data-commons
-      - 1.13.7.RELEASE
+      - 1.13.20.RELEASE
       - \*
       -
     * - Spring
       - org.springframework.security
       - spring-security-acl
-      - 4.2.4.RELEASE
+      - 4.2.12.RELEASE
       -
       -
     * - Spring
       - org.springframework.security
       - spring-security-config
-      - 4.2.4.RELEASE
+      - 4.2.12.RELEASE
       -
       -
     * - Spring
       - org.springframework.security
       - spring-security-core
-      - 4.2.4.RELEASE
+      - 4.2.12.RELEASE
       -
       -
     * - Spring
       - org.springframework.security
       - spring-security-web
-      - 4.2.4.RELEASE
+      - 4.2.12.RELEASE
       -
       -
     * - Spring
       - org.springframework.security.oauth
       - spring-security-oauth2
-      - 2.0.14.RELEASE
+      - 2.0.17.RELEASE
       - \*
       -
     * - MyBatis3
       - org.mybatis
       - mybatis
-      - 3.4.5
+      - 3.4.6
       -
       - \*1
     * - MyBatis3
       - org.mybatis
       - mybatis-spring
-      - 1.3.1
+      - 1.3.2
       -
       - \*1
-    * - MyBatis3
-      - org.mybatis
-      - mybatis-typehandlers-jsr310
-      - 1.0.2
-      -
-      - \*1*5
     * - DI
       - javax.inject
       - javax.inject
@@ -284,19 +278,19 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - AOP
       - aopalliance
       - aopalliance
-      - 1
+      - 1.0
       - \*
       -
     * - AOP
       - org.aspectj
       - aspectjrt
-      - 1.8.10
+      - 1.8.14
       - \*
       -
     * - AOP
       - org.aspectj
       - aspectjweaver
-      - 1.8.10
+      - 1.8.14
       - \*
       -
     * - ログ出力
@@ -320,13 +314,13 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - ログ出力
       - org.slf4j
       - jcl-over-slf4j
-      - 1.7.25
+      - 1.7.26
       - \*
       -
     * - ログ出力
       - org.slf4j
       - slf4j-api
-      - 1.7.25
+      - 1.7.26
       - \*
       -
     * - JSON
@@ -338,25 +332,25 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - JSON
       - com.fasterxml.jackson.core
       - jackson-core
-      - 2.8.10
+      - 2.8.11
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.core
       - jackson-databind
-      - 2.8.10
+      - 2.8.11.3
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.datatype
       - jackson-datatype-joda
-      - 2.8.10
+      - 2.8.11
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.datatype
       - jackson-datatype-jsr310
-      - 2.8.10
+      - 2.8.11
       - \*
       - \*5
     * - 入力チェック
@@ -368,13 +362,13 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - 入力チェック
       - org.hibernate
       - hibernate-validator
-      - 5.3.5.Final
+      - 5.3.6.Final
       - \*
       -
     * - 入力チェック
       - org.jboss.logging
       - jboss-logging
-      - 3.3.1.Final
+      - 3.3.2.Final
       - \*
       - \*3
     * - 入力チェック
@@ -422,7 +416,7 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
     * - コネクションプール
       - org.apache.commons
       - commons-pool2
-      - 2.4.2
+      - 2.4.3
       - \*
       - \*2
     * - ユーティリティ
@@ -444,24 +438,6 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
       - \*
       - \*2
     * - Thymeleaf
-      - ognl
-      - ognl
-      - 3.1.12
-      -
-      - \*3
-    * - Thymeleaf
-      - org.attoparser
-      - attoparser
-      - 2.0.4.RELEASE
-      -
-      - \*3
-    * - Thymeleaf
-      - org.javassist
-      - javassist
-      - 3.21.0-GA
-      -
-      - \*3
-    * - Thymeleaf
       - org.thymeleaf
       - thymeleaf
       - 3.0.9.RELEASE
@@ -480,11 +456,11 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
       - \*
       - \*6
     * - Thymeleaf
-      - org.unbescape
-      - unbescape
-      - 1.1.5.RELEASE
-      -
-      - \*3
+      - org.thymeleaf.extras
+      - thymeleaf-extras-java8time
+      - 3.0.1 RELEASE
+      - \*
+      - \*6
 
 
 #. | データアクセスに、MyBatis3を使用する場合に依存するライブラリ
@@ -505,7 +481,7 @@ version 1.5.1.RELEASEで利用するOSSの一覧を以下に示す。
 --------------------------------------------------------------------------------
 
 Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
-共通ライブラリは、Macchinetta Server Framework (1.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
+共通ライブラリは、Macchinetta Server Framework (1.x)やTERASOLUNA Server Framework for Java (5.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
 基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
 また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
 

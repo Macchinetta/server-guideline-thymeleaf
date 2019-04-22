@@ -26,7 +26,7 @@ Spring Securityでは、以下の3つのリソースに対してアクセスポ�
 
 本節では、「Webリソース」「Javaメソッド」「画面項目」のアクセスに対して認可処理を適用するための実装例(定義例)を紹介しながら、Spring Securityの認可機能について説明する。
 
-.. [#fSpringSecurityAuthorization1] ドメインオブジェクトのアクセスに対する認可処理については、 \ `Spring Security Reference -Domain Object Security (ACLs)- <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#domain-acls>`_\ を参照されたい。
+.. [#fSpringSecurityAuthorization1] ドメインオブジェクトのアクセスに対する認可処理については、 \ `Spring Security Reference -Domain Object Security (ACLs)- <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#domain-acls>`_\ を参照されたい。
 
 |
 
@@ -155,7 +155,7 @@ How to use
 
 Spring Securityは、アクセスポリシーを指定する記述方法としてSpring Expression Language(SpEL)をサポートしている。
 SpELを使わない方法もあるが、本ガイドラインではExpressionを使ってアクセスポリシーを指定する方法で説明を行う。
-SpELの使い方については本節でも紹介するが、より詳しい使い方を知りたい場合は \ `Spring Framework Reference Documentation -Spring Expression Language (SpEL)- <http://docs.spring.io/spring/docs/4.3.14.RELEASE/spring-framework-reference/htmlsingle/#expressions>`_\ を参照されたい。
+SpELの使い方については本節でも紹介するが、より詳しい使い方を知りたい場合は \ `Spring Framework Reference Documentation -Spring Expression Language (SpEL)- <https://docs.spring.io/spring/docs/4.3.23.RELEASE/spring-framework-reference/htmlsingle/#expressions>`_\ を参照されたい。
 
 |
 
@@ -329,7 +329,7 @@ bean定義ファイルを使用して、Webリソースに対してアクセス�
       - | 「http」、もしくは「https」を指定する。指定したプロトコルでのアクセスを強制するための属性。
         | 指定しない場合、どちらでもアクセス可能である。
 
-上記以外の属性については、\ `<intercept-url> <http://docs.spring.io/spring-security/site/docs/4.2.4.RELEASE/reference/htmlsingle/#nsa-intercept-url>`_\ を参照されたい。
+上記以外の属性については、\ `<intercept-url> <https://docs.spring.io/spring-security/site/docs/4.2.12.RELEASE/reference/htmlsingle/#nsa-intercept-url>`_\ を参照されたい。
 
 * \ ``<sec:intercept-url>``\ タグ\ ``pattern``\ 属性の定義例（spring-security.xml）
 
@@ -680,6 +680,7 @@ Spring Securityは、以下のアノテーションをサポートしている�
 ここでポイントになるのは、Expressionの中からメソッドの引数にアクセスしている部分である。
 具体的には、「\ ``#username``\ 」の部分が引数にアクセスしている部分である。
 Expression内で「# + 引数名」形式のExpressionを指定することで、メソッドの引数にアクセスすることができる。
+なお、引数のプロパティやメソッドにアクセスする場合などは、実行時エラーを防止するため引数の\ ``null``\ チェックを行うよう注意されたい。
 
 .. tip:: **引数名を指定するアノテーション**
 
@@ -727,6 +728,7 @@ Expression内で「# + 引数名」形式のExpressionを指定することで�
 ここでポイントになるのは、Expressionの中からメソッドの返り値にアクセスしている部分である。
 具体的には、「\ ``returnObject.departmentCode``\ 」の部分が返り値にアクセスしている部分である。
 Expression内で「\ ``returnObject``\ 」を指定すると、メソッドの返り値にアクセスすることができる。
+なお、返り値のプロパティやメソッドにアクセスする場合などは、実行時エラーを防止するため返り値の\ ``null``\ チェックを行うよう注意されたい。
 
 |
 
@@ -749,7 +751,7 @@ Spring Security Dialectを使用して画面項目に対してアクセスポリ
 .. code-block:: html
 
     <html xmlns:th="http://www.thymeleaf.org"
-        xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!--/* (1) */-->
     <div sec:authorize="hasRole('ADMIN')"> <!--/* (2) */-->
@@ -816,37 +818,42 @@ Webリソースに指定したアクセスポリシーと連動させる場合�
 
 |
 
-認可処理の判定結果を変数に格納
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-\ 認可処理の判定結果は、変数に格納して使いまわすことができる。
+.. tip:: **#authorizationの紹介**
 
-* Thymeleafのテンプレートの実装例
+    ここでは、\ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性を用いて、画面項目に対してアクセスポリシーを定義する実装例を説明したが、
+    \ ``#authorization``\ を用いても、ThymeleafのテンプレートHTMLから認可情報にアクセスする事が可能である。
+    \ ``#authorization``\ は、変数式 ``${}`` にて使用できるため、条件判定やリテラル置換等\ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性より複雑な使い方が可能である。
 
-.. code-block:: html
+    上記の例は、以下のように記述できる
 
-    <div th:with="hasAccountsAuthority=${#authorization.url('/admin/accounts')}"> <!--/* (1) (2) */-->
-        <div th:if="${hasAccountsAuthority}"> <!--/* (3) */-->
+        .. code-block:: HTML
+
+            <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"><!--/* (1) */-->
             <!--/* omitted */-->
-        </div>
-    </div>
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
+            <div th:if="${#authorization.expr('isAuthenticated()')}"> <!--/* (2) */-->
+                <!--/* omitted */-->
+            </div>
 
-    * - 項番
-      - 説明
-    * - |  (1)
-      - | \ ``th:with``\ 属性に判定結果を格納するための変数名を指定する。
-        | アクセスが許可された場合は、変数に\ ``true``\ が設定される。
-    * - |  (2)
-      - | \ ``#authorization``\ はSpringSecurityDialectが提供するユーティリティオブジェクトで、
-        | urlメソッドによるURLによるアクセス制御やexpressionメソッドによるSpEL式を用いた認可制御を実装出来る。
-        | ここでは、\ ``#authorization.url('/admin/accounts')``\ で、'/admin/accounts'に対するアクセス可否情報を取得している。
-    * - | (3)
-      - | 変数の値を参照して表示処理を実装する。
+            <div th:if="${#authorization.url('/admin/accounts')}"> <!--/* (3) */-->
+                <!--/* omitted */-->
+            </div>
+
+     .. tabularcolumns:: |p{0.25\linewidth}|p{0.75\linewidth}|
+     .. list-table::
+         :header-rows: 1
+         :widths: 25 75
+
+         * - 項番
+           - 説明
+         * - | (1)
+           - | \ ``sec:authorize``\ 属性や\ ``sec:authorize-url``\ 属性を使用する際には\ ``<html>``\ タグに\ ``xmlns:sec``\ 属性を定義していたが、
+             | \ ``#authorization``\ を使用する際には、\ ``xmlns:sec``\ 属性の定義は不要である。
+         * - | (2)
+           - | \ ``#authorization.expr``\ の引数には、\ ``sec:authorize``\ 属性と同様にアクセスポリシーを指定する。
+         * - | (3)
+           - | \ ``#authorization.url``\ の引数には、\ ``sec:authorize-url``\ 属性と同様にWebリソースへアクセスするためのURLを指定する。
 
 |
 
