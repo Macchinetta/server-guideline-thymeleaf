@@ -75,7 +75,7 @@ HTMLにおいてエスケープが必要な特殊文字の例と、エスケー�
      - | ``&#39;``
 
 Thymeleafでテキストを出力する方法には\ ``th:text``\属性、\ ``th:utext``\属性の二種類が存在する。
-詳細は、\ `Unescaped Text <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text>`_\ を参照されたい。
+詳細は、\ `Tutorial: Using Thymeleaf -Unescaped Text- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text>`_\ を参照されたい。
 
  * \ ``th:text``\属性を使用すると値をエスケープして出力する
  * \ ``th:utext``\属性を使用すると値をエスケープせずに出力する
@@ -286,7 +286,7 @@ XSS問題が発生する例を、以下に示す。
 出力値をエスケープする例
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を推奨する。詳細は、\ `JavaScript inlining <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#javascript-inlining>`_\ を参照されたい。
+XSSを防ぐために、Thymeleafの\ ``th:inline="javascript"``\ の使用を推奨する。詳細は、\ `Tutorial: Using Thymeleaf -JavaScript inlining- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#javascript-inlining>`_\ を参照されたい。
 
 使用例を、下記に示す。
 

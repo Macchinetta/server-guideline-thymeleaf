@@ -160,7 +160,7 @@ Controllerクラスの作成方法
               // ...
           }
 
-    詳細は、`Spring Framework Documentation - Request Mapping <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping>`_ を参照されたい。
+    詳細は、`Spring Framework Documentation -Request Mapping- <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping>`_ を参照されたい。
 
 |
 
@@ -196,6 +196,10 @@ Controllerクラスの作成方法
    * - | (2)
      - クラスレベルで\ ``@RequestMapping("sample")``\ アノテーションを付けることでこのクラス内のハンドラメソッドがsample配下のURLにマッピングされる。
 
+       .. note::
+
+           \ ``@RequestMapping``\ の値（value属性）を省略した場合、サーブレットルート（"\ ``/``\" ）のURLにマッピングされる。
+
 |
 
 .. _controller-mapping-path-label:
@@ -217,7 +221,7 @@ Controllerクラスの作成方法
     @RequestMapping(value = {"hello", "bonjour"})
     public String hello() {
 
-指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`URI patterns <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
+指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`Spring Framework Documentation -URI patterns- <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
 
 |
 
@@ -226,7 +230,7 @@ Controllerクラスの作成方法
 HTTPメソッドでマッピング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 下記の定義の場合、 ``sample/hello`` というURLにPOSTメソッドでアクセスすると、helloメソッドが実行される。
-サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
+サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.2.3.RELEASE/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
 指定しない場合、サポートしている全てのHTTPメソッドがマッピング対象となる。
 
  .. code-block:: java
@@ -333,6 +337,24 @@ Acceptヘッダでマッピング
   | 同じURLとは \ ``@RequestMapping(value = "xxx")``\ のvalue属性の値を同じ値にすることを意味する。
   | 処理内の画面フローで使用するハンドラメソッドの切り替えは、HTTPメソッドとHTTPパラメータによって行う。
 
+.. warning::
+
+    Spring MVCでは \ ``@RequestMapping(value = "xxx")``\ のvalue属性によってリクエストがマッピングされる際、
+    サーブレットパスとパス情報は区別されず、パス情報が存在する場合はパス情報、存在しない場合はサーブレットパスがマッピングに利用される。
+    
+    そのため、サーブレットパスとパス情報に同一のパスを設定した場合、意図せぬパス（URL）がマッピングされる可能性がある。
+    
+    具体的には、\ :ref:`controller-mapping-path-label`\ のようにハンドラメソッドにマッピングするパスを「\ ``/sample/hello``\」と定義した場合、
+    web.xmlでサーブレットパスを同じ「\ ``/sample/hello/*``\」と定義すると、
+    本来マッピングしたい"/sample/hello/sample/hello"だけでなく、意図しない"/sample/hello"もマッピングされてしまう。
+    
+    業務上、意図せぬパス（URL）でハンドラメソッドにアクセスできてしまう可能性があり、
+    また、Spring MVCのリクエストマッピング（\ ``@RequestMapping``\）ではサーブレット内のパスを指定するのに対し、
+    Spring Security（Servlet Filter）の認可（\ ``<sec:intercept-url>``\）ではWebアプリケーション内のパスを指定する。
+    このため、意図しないパス（上記の場合、"/sample/hello"）への認可設定が漏れ、認可をバイパスされる脆弱性を作りこんでしまう恐れがある。
+    
+    サーブレットパスとパス情報には異なる値を設定するようにされたい。
+
 以下にベーシックな画面フローを行うサンプルアプリケーションを例にして、リクエストとハンドラメソッドの具体的なマッピング例を示す。
 
  * :ref:`controller-mapping-policy-sampleapp-overview-label`
@@ -427,7 +449,7 @@ Acceptヘッダでマッピング
 
  .. note::
 
-     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
+     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
      サンプルアプリケーションでは、操作するEntityのIDを指定する。
 
  画面フロー図に各処理に割り振られたURLをマッピングすると以下のようになる。
@@ -1081,7 +1103,7 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
 ハンドラメソッドの引数について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-arguments>`_ が、
+`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-ann-arguments>`_ が、
 基本的には次に挙げるものは原則として使用しないこと。
 
 * ServletRequest
@@ -1749,7 +1771,7 @@ Cookieに値を書き込む
 
 ハンドラメソッドの返り値について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-ann-return-types>`_ が、
+`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-ann-return-types>`_ が、
 基本的には次に挙げるもののみを使用すること。
 
 - String(View名)
@@ -1810,7 +1832,7 @@ HTMLを応答する
 
 .. warning:: **<mvc:view-controller>使用に関する留意点**
 
-    Spring Framework 4.3へのバージョンアップによって、\ ``<mvc:view-controller>``\ が許可するHTTPメソッドはGETとHEADのみに限定される様になったため(`SPR-13130 <https://jira.spring.io/browse/SPR-13130>`_)、
+    Spring Framework 4.3以降では、\ ``<mvc:view-controller>``\ が許可するHTTPメソッドはGETとHEADのみに限定される様になったため(`SPR-13130 <https://jira.spring.io/browse/SPR-13130>`_)、
     HTTPメソッドがGETとHEAD以外(POSTなど)でアクセスするページの場合、\ ``<mvc:view-controller>``\ は使用できない。
     GETとHEAD以外(POSTなど)からフォワードされた場合も同様となるため、エラーページへの遷移などフォワード元のHTTPメソッドが限定できない場合には\ ``<mvc:view-controller>``\ を使用しないよう注意されたい。
 
@@ -2236,9 +2258,9 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
 
     Spring Frameworkは、以下の3つの仕組みを使って型変換を行っており、基本的な型への変換は標準でサポートされている。各変換機能の詳細については、リンク先のページを参照されたい。
 
-    * `Spring Type Conversion <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#core-convert>`_\
-    * `Spring Field Formatting <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#format>`_\
-    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/core.html#beans-beans-conversion>`_\
+    * `Spring Type Conversion <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/core.html#core-convert>`_\
+    * `Spring Field Formatting <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/core.html#format>`_\
+    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/core.html#beans-beans-conversion>`_\
 
  .. warning::
 
@@ -2284,7 +2306,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - style
-     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
+     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.2.3.RELEASE/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
    * - 2.
      - pattern
      - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
@@ -2329,7 +2351,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - iso
-     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.1.4.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
+     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.2.3.RELEASE/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
    * - 2.
      - pattern
      - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
@@ -2676,10 +2698,10 @@ ThymeleafのテンプレートHTMLの実装
      - ドキュメント
    * - 1.
      - Thymeleafのダイアレクト
-     - - `<http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html>`_\
+     - - `<https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html>`_\
    * - 2.
      - Thymeleaf + Springのダイアレクト
-     - - `<http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-springstandard-dialect>`_\
+     - - `<https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-springstandard-dialect>`_\
    * - 3.
      - ThymeleafのSpring Security連携用ダイアレクト
      - - `<https://github.com/thymeleaf/thymeleaf-extras-springsecurity>`_\
@@ -2708,7 +2730,7 @@ Thymeleafのネームスペースを設定する
      本ガイドラインでは解説しないが、HTML5に準拠する形でThymeleafを使用することも可能である。
      具体的には、HTML5で独自の属性を使用する場合は属性名に ``data-`` をつけるが、Thymeleafでもこれを使用して ``data-th-text`` のように属性を記述することができる。
 
-     詳細については、"The Standard Dialect"の `3.1 A multi-language welcome <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#a-multi-language-welcome>`_\ を参照されたい。
+     詳細については、`Tutorial: Using Thymeleaf -A multi-language welcome- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#a-multi-language-welcome>`_\ を参照されたい。
 
 |
 
@@ -2852,7 +2874,7 @@ Thymeleafのネームスペースを設定する
  .. note::
     ``#numbers`` は、配列やリストなどを対象にフォーマットを行うことも可能である。
 
-     詳細については、"The Standard Dialect"の `19 Appendix B: Expression Utility Objects 内のNumbers <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#numbers>`_\ を参照されたい。
+     詳細については、`Tutorial: Using Thymeleaf -Numbers- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#numbers>`_\ を参照されたい。
 
 |
 
@@ -2884,7 +2906,7 @@ Thymeleafのネームスペースを設定する
  .. note::
       ``#dates`` は、配列やリストを対象にフォーマットを行うことも可能である。
       
-      詳細については、"The Standard Dialect"の `19 Appendix B: Expression Utility Objects 内のDates <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#dates>`_\ を参照されたい。
+      詳細については、`Tutorial: Using Thymeleaf -Dates- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#dates>`_\ を参照されたい。
 
 |
 
@@ -2910,7 +2932,7 @@ Thymeleafのネームスペースを設定する
  .. note::
       ``#calendars`` は、配列やリストを対象にフォーマットを行うことも可能である。
       
-      詳細については、"The Standard Dialect"の `19 Appendix B: Expression Utility Objects 内のCalendars <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#calendars>`_\ を参照されたい。
+      詳細については、`Tutorial: Using Thymeleaf -Calendars- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#calendars>`_\ を参照されたい。
 
 |
 
@@ -3007,7 +3029,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
  .. note::
     リンクURL式 ``@{}`` は、コンテキストルートからの相対パスやページ現在のパスからの相対パスを生成するほか、サーバールートからの相対パス、プロトコルからの相対パスも生成できる。
 
-    詳細については、"The Standard Dialect"の `4.4 Link URLs <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#link-urls>`_\ を参照されたい。
+    詳細については、`Tutorial: Using Thymeleaf -Link URLs- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#link-urls>`_\ を参照されたい。
 
 |
 
@@ -3100,7 +3122,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
         | 上記例では、リクエストURLが静的なURLであるため、\ ``build``\ メソッドのみを呼び出してリクエストURLを生成している。
         | リクエストURLが動的なURL(パス変数やクエリ文字列が存在するURL)の場合は、\ ``arg``\ メソッドや\ ``buildAndExpand``\ メソッドを呼び出す必要がある。
         | \ ``arg``\ メソッドと\ ``buildAndExpand``\ メソッドの具体的な使用例については、
-        | 「\ `Spring Framework Documentation(Links in views) <https://docs.spring.io/spring/docs/5.1.4.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
+        | 「\ `Spring Framework Documentation -Links in Views- <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
 
  .. note:: **リクエストマッピング名について**
 
@@ -3109,21 +3131,6 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
 
     リクエストマッピング名は重複しないようにする必要がある。
     名前が重複してしまった場合は、\ ``@RequestMapping``\ アノテーションの\ ``name``\ 属性に一意となる名前を指定する必要がある。
-
-    Controllerのメソッドに割り当てられたリクエストマッピング名を確認したい場合は、
-    \ :file:`logback.xml`\ に以下の設定を追加すればよい。
-
-     .. code-block:: xml
-
-        <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
-            <level value="trace" />
-        </logger>
-
-    上記設定を行った後に再起動すると、以下のようなログが出力されるようになる。
-
-     .. code-block:: text
-
-        date:2014-12-09 18:34:29	thread:RMI TCP Connection(2)-127.0.0.1	X-Track:	level:TRACE	logger:o.s.w.s.m.m.a.RequestMappingHandlerMapping      	message:Mapping name=HC#hello
 
 |
 
@@ -3276,7 +3283,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 | ThymeleafのテンプレートHTMLでは、式内で条件を判定し、その結果によって異なる動作をさせることができる。
 | 判定された結果は、 ``true`` または ``false`` で返却される。
-| 演算子の詳細については、"The Standard Dialect"の `4 Standard Expression Syntax <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#standard-expression-syntax>`_\ を参照されたい。
+| 演算子の詳細については、`Tutorial: Using Thymeleaf -Standard Expression Syntax- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#standard-expression-syntax>`_\ を参照されたい。
 
 演算子を用いた条件の判定の結果によって、2つの式のどちらかを選択する式を条件式という。
 
@@ -3316,7 +3323,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
 
  .. note::
     数値の配列やリストに対して、合計値や平均値を取得したい場合、 ``#aggregates`` を利用できる。
-    詳細については、"The Standard Dialect"の `19 Appendix B: Expression Utility Objects 内のAggregates <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#aggregates>`_\ を参照されたい。
+    詳細については、`Tutorial: Using Thymeleaf -Aggregates- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#aggregates>`_\ を参照されたい。
 
 条件の判定の結果によって処理が変わる式としては、条件式のほかに、デフォルト式と呼ばれるものもある。
 
@@ -3476,10 +3483,10 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
          - | ``th:each`` 属性の左項に、要素の番号を格納する変数を2つ目に指定する。
        * - | (2)
          - | ``th:each`` 属性の左項で2つ目に指定した変数から、現在処理を行っている要素の位置を取得している。countは、要素の位置を1始まりで取得している。
-           | count以外の属性については、"The Standard Dialect"の `6.2 Keeping iteration status <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#keeping-iteration-status>`_\ を参照されたい。
+           | count以外の属性については、`Tutorial: Using Thymeleaf -Keeping iteration status- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#keeping-iteration-status>`_\ を参照されたい。
 
  .. note::
-     ``th:each`` 属性の詳細は、"The Standard Dialect"の `6 Iteration basis <http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#iteration>`_\ を参照されたい。
+     ``th:each`` 属性の詳細は、`Tutorial: Using Thymeleaf -Iteration- <https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#iteration>`_\ を参照されたい。
 
 |
 
@@ -3918,7 +3925,6 @@ HandlerInterceptorでは以下の３つのポイントで処理を実行する�
         <mvc:interceptor>
             <mvc:mapping path="/**" /> <!-- (2) -->
             <mvc:exclude-mapping path="/resources/**" /> <!-- (3) -->
-            <mvc:exclude-mapping path="/**/*.html" />
             <bean class="x.y.z.SuccessLoggingInterceptor" /> <!-- (4) -->
         </mvc:interceptor>
         <!-- ... -->
@@ -4104,7 +4110,7 @@ HandlerMethodArgumentResolverを実装してControllerの引数として受け�
            @ControllerAdvice(annotations = LoginFormModelAttributeSetter.LoginFormModelAttribute.class)
            public class LoginFormModelAttributeSetter {
                @Target(TYPE)
-               @Retention(RetentionPolicy.RUNTIME)
+               @Retention(RUNTIME)
                public static @interface LoginFormModelAttribute {}
                // ...
            }

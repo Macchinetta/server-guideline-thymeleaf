@@ -1372,7 +1372,6 @@ ResultMessagesを使用しない結果メッセージの表示
 
         import java.io.BufferedReader;
         import java.io.File;
-        import java.io.FileInputStream;
         import java.io.IOException;
         import java.io.InputStream;
         import java.io.InputStreamReader;
@@ -1380,21 +1379,20 @@ ResultMessagesを使用しない結果メッセージの表示
         import java.util.regex.Pattern;
 
         import org.apache.commons.io.FileUtils;
-        import org.apache.commons.io.IOUtils;
+        import org.springframework.core.io.ClassPathResource;
 
         public class MessageKeysGen {
             public static void main(String[] args) throws IOException {
                 // message properties file
-                InputStream inputStream = new FileInputStream("src/main/resources/i18n/application-messages.properties");
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                 Class<?> targetClazz = MessageKeys.class;
-                File output = new File("src/main/java/"
-                        + targetClazz.getName().replaceAll(Pattern.quote("."), "/")
-                        + ".java");
-                System.out.println("write " + output.getAbsolutePath());
-                PrintWriter pw = new PrintWriter(FileUtils.openOutputStream(output));
+                File output = new File("src/main/java/" + targetClazz.getName()
+                        .replaceAll(Pattern.quote("."), "/") + ".java");
 
-                try {
+                try (InputStream inputStream = new ClassPathResource("i18n/application-messages.properties")
+                        .getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        PrintWriter pw = new PrintWriter(FileUtils.openOutputStream(
+                                output))) {
                     pw.println("package " + targetClazz.getPackage().getName() + ";");
                     pw.println("/**");
                     pw.println(" * Message Id");
@@ -1402,23 +1400,20 @@ ResultMessagesを使用しない結果メッセージの表示
                     pw.println("public class " + targetClazz.getSimpleName() + " {");
 
                     String line;
-                    while ((line = br.readLine()) != null) {
+                    while ((line = bufferedReader.readLine()) != null) {
                         String[] vals = line.split("=", 2);
                         if (vals.length > 1) {
                             String key = vals[0].trim();
                             String value = vals[1].trim();
                             pw.println("    /** " + key + "=" + value + " */");
-                            pw.println("    public static final String "
-                                    + key.toUpperCase().replaceAll(Pattern.quote("."),
-                                            "_").replaceAll(Pattern.quote("-"), "_")
-                                    + " = \"" + key + "\";");
+                            pw.println("    public static final String " + key
+                                    .toUpperCase().replaceAll(Pattern.quote("."), "_")
+                                    .replaceAll(Pattern.quote("-"), "_") + " = \"" + key
+                                    + "\";");
                         }
                     }
                     pw.println("}");
                     pw.flush();
-                } finally {
-                    IOUtils.closeQuietly(br);
-                    IOUtils.closeQuietly(pw);
                 }
             }
         }
