@@ -25,7 +25,7 @@ Overview
     一部のアプリケーションサーバ上でServlet 3.0のファイルアップロード機能を使用すると、
     リクエストパラメータやファイル名のマルチバイト文字が文字化けすることがある。
 
-    version 1.7.0.RELEASEまでで問題の発生を確認した実績のあるアプリケーションサーバは以下の通りである。
+    version 1.7.1.RELEASEまでで問題の発生を確認した実績のあるアプリケーションサーバは以下の通りである。
     
     * WebLogic 12.1.3
     * JBoss EAP 7.0
@@ -1796,7 +1796,7 @@ Commons FileUploadを使用する場合は以下の設定を行う。
 
     Apache Commons FileUploadを使用する場合、1.3.2以上を使用する必要がある。
 
-    なお、Macchinetta Server Framework version 1.7.0.RELEASEで管理されているバージョンを使用すれば、CVE-2014-0050およびCVE-2016-3092で報告されている脆弱性は発生しない。
+    なお、Macchinetta Server Framework version 1.7.1.RELEASEで管理されているバージョンを使用すれば、CVE-2014-0050およびCVE-2016-3092で報告されている脆弱性は発生しない。
     意図的にApache Commons FileUploadのバージョンを変更する場合は、当該脆弱性が対処されているバージョンを指定すること。
 
 |

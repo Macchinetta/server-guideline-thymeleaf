@@ -497,7 +497,7 @@ Thymeleafテンプレートの実装
 
      <tr>
        <th>Product Name</th>
-       <td><span id="productName" th:text="${productId} != null ? ${productMap['__${productId}__']}"></span></td> <!--/* (1) */-->
+       <td><span id="productName" th:text="${productId} != null ? ${productMap.get(productId)}"></span></td> <!--/* (1) */-->
      </tr>
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -509,7 +509,7 @@ Thymeleafテンプレートの実装
      * - | 項番
        - | 説明
      * - | (1)
-       - | \ ``productId``\の値が\ ``null``\でない場合のみ、対応する\ ``Map``\の値を表示する。プリプロセッシングで解決した値をシングルクォートで囲む必要がある。プリプロセッシングについての詳細は、\ :ref:`view_thymeleaf_preprocessing-label`\ を参照されたい。
+       - | \ ``productId``\の値が\ ``null``\でない場合のみ、対応する\ ``Map``\の値を表示する。
 
  .. note:: **テンプレートHTMLのデバッグについて**
 

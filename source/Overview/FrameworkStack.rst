@@ -109,7 +109,7 @@ Viewには、Thymeleafを利用する。
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.7.0.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.7.1.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. note::
 
@@ -124,7 +124,7 @@ version 1.7.0.RELEASEで利用するOSSの一覧を以下に示す。
     への依存関係を解決しており、
     Macchinetta Server Framework (1.x)で使用するOSSのバージョンは、原則として、Spring Bootで管理されているバージョンに準ずる。
 
-    なお、version 1.7.0.RELEASEでは\ `Spring Boot 2.2.4.RELEASE <https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
+    なお、version 1.7.1.RELEASEでは\ `Spring Boot 2.2.4.RELEASE <https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
@@ -628,7 +628,7 @@ Javaソースコードを含まないものは、ライブラリの依存関係�
 
 .. note::
 
-  version 1.7.0.RELEASEでは TERASOLUNA Server Framework for Java 5.6.0.RELEASE の共通ライブラリを使用している。
+  version 1.7.1.RELEASEでは TERASOLUNA Server Framework for Java 5.6.1.RELEASE の共通ライブラリを使用している。
 
 terasoluna-gfw-common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

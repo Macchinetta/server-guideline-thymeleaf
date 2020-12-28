@@ -11,6 +11,40 @@
       - 更新箇所
       - 更新内容
 
+    * - 2021-01-07
+      - \-
+      - 1.7.1 RELEASE版公開
+
+    * -
+      - :doc:`../ImplementationAtEachLayer/ApplicationLayer`
+      - 記載内容の修正
+
+        * プリプロセッシングの実装例において、本来プリプロセッシングが不要な実装を実装例としていたため修正
+
+    * -
+      - :doc:`../ArchitectureInDetail/WebApplicationDetail/Thymeleaf`
+      - 記載内容の修正
+
+        * SpEL評価時におけるnull-safetyの影響についての実装例において、本来プリプロセッシングが不要な実装でプリプロセッシングを使用していたため修正
+
+    * -
+      - :doc:`../ArchitectureInDetail/WebApplicationDetail/SessionManagement`
+      - 記載内容の追加
+
+        * 「同一セッション内のリクエストの同期化」の適用範囲についての注意事項を追加
+
+    * -
+      - :doc:`../ArchitectureInDetail/WebApplicationDetail/Codelist`
+      - 記載内容の修正
+
+        * テンプレートHTMLの実装例において、本来プリプロセッシングが不要な実装でプリプロセッシングを使用していたため修正
+
+    * -
+      - :doc:`../ArchitectureInDetail/WebApplicationDetail/TemplateLayout`
+      - 記載内容の修正
+
+        * テンプレートHTMLの実装例において、本来プリプロセッシングが不要な実装でプリプロセッシングを使用していたため修正
+
     * - 2020-06-29
       - \-
       - 1.7.0 RELEASE版公開

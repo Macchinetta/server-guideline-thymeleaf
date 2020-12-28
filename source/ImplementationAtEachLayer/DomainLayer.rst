@@ -553,7 +553,7 @@ Repositoryインタフェースのメソッド定義
 
  .. note::
 
-     Macchinetta Server Framework 1.7.0.RELEASEが利用するSpring Data 2.xでは\ ``CrudRepository``\ 等のメソッドシグネチャが変更されているが、
+     Macchinetta Server Framework 1.7.1.RELEASEが利用するSpring Data 2.xでは\ ``CrudRepository``\ 等のメソッドシグネチャが変更されているが、
      本章で示すメソッド名のルールはSpring Data 1.xのメソッドシグネチャに従っている。
 
      次版以降で、Spring Data 2.xのメソッドシグネチャへの移行が検討される予定である。

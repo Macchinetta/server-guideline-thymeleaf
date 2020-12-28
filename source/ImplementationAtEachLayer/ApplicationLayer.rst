@@ -3515,6 +3515,16 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
    * - | (2)
      - | オブジェクトのプロパティを選択変数式 ``*{}`` で指定する。これは、変数式を用いて ``th:text="${helloBean.message}`` と指定するのと同じ結果になる。
 
+.. warning::
+    テンプレートレイアウトにより部品化する際に、後述する :ref:`view_thymeleaf_preprocessing-label` を利用すると、フラグメント（部品）に引数として式を与えることが可能になるが、
+    この場合、引数に渡す式は部品を呼び出す側に記述され、式の評価は部品側で行われることになる。
+    選択変数式 ``*{}`` は、記述された位置で有効な ``th:object`` ではなく、評価時に有効な ``th:object`` (部品で ``th:object`` が使用され、その有効範囲内で引数に渡された式が評価される場合は、部品側に記載された ``th:object`` )が使用されるため、
+    フラグメント（部品）に引数として式を与える場合には、式を ``th:object`` と選択変数式 ``*{}`` ではなく、変数式 ``${}`` で組み立てなければならない。
+
+    これは、部品内で ``th:object`` と選択変数式 ``*{}`` を使用していても、部品を呼び出す側が与えた式の意味(参照するもの)が変わらないようにするための(裏を返せば、部品内での ``th:object`` と選択変数式 ``*{}`` の使用を制限せずに済むための)ルールである。
+
+    テンプレートHTMLの実装については :ref:`こちらのNote <TemplateLayoutNoteFragment>` も参考にされたい。
+
 |
 
 .. _view_thymeleaf_with-label:
@@ -3551,17 +3561,28 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
 プリプロセッシング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-| ThymeleafのテンプレートHTMLでは通常、式は左から順に評価される。
-| そのため、先に処理したい部分が式内にある場合は特殊な記法が必要となり、それはプリプロセッシングと呼ばれている。
+| プリプロセッシングを利用することで、式の一部を事前に評価し動的に式を構築することができる。
+| 事前に評価する式は ``__`` で囲み ``__${val}__`` のように記述する。
+| 式を構築する仕組みであるため、利用には細心の注意が必要となる。**必ず** :ref:`Warning <ApplicationLayerWarningPreprocessing>` **を参照されたい。**
 
  .. code-block:: html
-    :emphasize-lines: 1
+    :emphasize-lines: 7-9,11-12
 
-    <div th:each="address, status : ${userForm.addresses}">
-        <span th:text="*{addresses[__${status.index}__].name}"></span> <!--/* (1) */-->
-        <span th:text="*{addresses[__${status.index}__].postcode}"></span>    
-        <span th:text="*{addresses[__${status.index}__].address}"></span>
-    </div>
+    <form method="post" th:action="@{/sample/app/sampleModel}"
+      th:object="${userManagementForm}" class="form-horizontal">
+      <!-- ... -->
+        <div class="form-group" th:each="userForm, status : *{userFormList}">
+          <div class="col col-md-2" th:text="|氏名${status.count}|"></div>
+          <div class="col col-md-3">
+            <!--/* (1) */-->
+            <input type="text" th:field="*{userFormList[__${status.index}__].userName}"
+              class="form-control input-sm" />
+          </div>
+          <!--/* (2) */-->
+          <div class="col col-md-4" th:text="${userForm.userAge}"></div>
+        </div>
+      <!-- ... -->
+    </form>
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -3571,15 +3592,38 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
    * - 項番
      - 説明
    * - | (1)
-     - | 添え字などを先に解決する場合、プリプロセッシングが利用される。
-       | 例では、現在 ``th:each`` 要素で処理を行っている要素の位置を ``status.index`` で取得してから、 ``addresses`` リストの添え字としている。
-       | プリプロセッシングを利用しない場合、 ``addresses[${status.index}]`` において ``${status.index}`` を文字列として扱ってしまい、、 ``java.lang.NumberFormatException`` エラーが発生する。
+     - | ``th:field`` 属性には選択変数式でフォームオブジェクト直下からプロパティを指定する必要があり、ここでは ``th:field="*{userFormList[1].userName}"`` のように指定する。
+       | 配列インデックスの指定に ``th:each`` のインデックスを利用したいが、``th:field`` 属性や ``th:errors`` 属性ではSpELは配列インデックスに指定した式を評価しないため、 ``userFormList[status.index]`` のように指定するとインデックスが文字列"status.index"となってしまう。
+       | このため、式"status.index"をプリプロセッシングで先に評価する必要がある。
+   * - | (2)
+     - | ``th:text`` 属性ではフォームオブジェクト直下からプロパティを指定する必要はなく、 ``th:each`` 属性で定義した変数 ``userForm`` を利用し、 ``${userForm.userAge}`` のように指定できる。
+       | また、``th:text`` 属性ではSpELは配列インデックスに指定した式を評価するため、フォームオブジェクト直下からプロパティを取得する場合でも ``th:text="${userManagementForm.userFormList[status.index].userAge}"`` または ``th:text="*{userFormList[#ctx.status.index].userAge}"`` と書くことができ、プリプロセッシングは不要である。
+       | (2つ目の例でインデックスに ``#ctx`` を使用しているのは、 ``#ctx`` を使用しない場合 ``th:obejct`` で指定したものの ``status`` プロパティを参照してしまうためである。)
 
+.. _ApplicationLayerWarningPreprocessing:
 .. warning::
+    プリプロセッシングは式を動的に構築するためのものであるため、ユーザの入力値(リクエストから入力するものであれば、画面上に入力欄が存在しないものも含む)をプリプロセッシングした場合、サーバーで任意のコードを実行されてしまう可能性がある。
+    アプリケーションの実装次第では入力チェック後にもTOCTOUで不正な値が紛れ込む余地があり、開発者が問題を認識することが難しく、問題を見逃した場合の影響が甚大であるため、入力チェック対象の項目である場合でも、入力値をプリプロセッシングしないことを推奨する。
 
-    プリプロセッシングで解決された値は、自動的に型が判定される。（\ ``1``\のような数字なら\ ``Number``\型として扱われ、\ ``"a"``\のような文字列なら\ ``String``\型として扱われる。）
+    TOCTOU（Time of check to time of use）とは、ある値がチェックされてから使用されるまでの間に変更されることにより発生する問題である。
+    例えば、半角英数字のみという条件で入力チェックを行ったのち、何らかの原因によって入力値が変更され、記号などの不正な値が混入した状態で使用されてしまうなどである。
 
-    このため、\ ``String``\型をキーに持つ\ ``java.util.Map``\のキー値にプリプロセッシングで解決した値を利用する場合は、明示的にシングルクォート等で囲むことを推奨する。
+    TOCTOUが発生する典型的なケースとしては以下のようなものがある。
+
+    * 入力画面で入力チェックを行った後、確認画面を表示し画面の操作(確定ボタン押下等)によって処理を実行するアプリにて、
+      確定ボタン押下時に再チェックを行っていないことで実質任意の値が入力可能になっている。(入力チェックの実装漏れ)
+    * セッションスコープにフォームオブジェクトを格納している場合、入力チェックを通過したフォーム内の値が、ハンドラメソッド実行中に別スレッドから書き換えられ、不正な値で処理を実行してしまう。
+      Springの機能( ``RequestMappingHandlerAdapter`` の ``synchronizeOnSession`` )で対策可能であり、 :ref:`session-management_how_to_extend_synchronizeOnSession` でも案内している。
+
+    上記の典型的なケースの対策が行われていても、Springの機能( ``RequestMappingHandlerAdapter`` の ``synchronizeOnSession`` )により同期化が行われるのはControllerの範囲であるため、
+    ViewであるThymeleafのテンプレートHTMLでセッションスコープのフォームオブジェクトから値を取得している場合は、別スレッドから書き換えられた不正な値が得られる可能性がある。
+
+    **当ガイドラインのプリプロセッシングに対する推奨事項としては以下の通りになる。**
+
+    1. プリプロセッシングを利用せずとも実装できないか検討を行う。
+    2. プリプロセッシングを利用しなければならない場合は、サーバ上の安全なデータを用いる。
+    3. どうしてもユーザの入力値などの安全でないデータをプリプロセッシングする必要がある場合は、入力値を利用する直前に入力チェックを行っていること、及びその値が状態により変更されないことを十分に確認した上で利用する。
+       (ただし、上述の通り、開発者が問題を認識することが難しい上、問題を見逃した場合の影響が甚大であるため、安易に採用しないこと。)
 
 |
 
@@ -3587,11 +3631,7 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
 フォームオブジェクトのプロパティをバインドする
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-| Thymeleaf + Springの ``th:field`` 属性を使用すると、フォームオブジェクトのプロパティをバインドすることができる。
-
- .. note:: 
-    フォームオブジェクトのプロパティのバインドそのものは ``th:field`` 属性を使用することで可能となるが、
-    ``th:object`` 属性と併用することで簡潔な記述となり、可読性が高まるため、これを推奨する。
+| Thymeleaf + Springの ``th:object`` 属性と ``th:field`` 属性を使用すると、フォームオブジェクトのプロパティをバインドすることができる。
 
  .. code-block:: html
     :emphasize-lines: 1-2
@@ -3609,8 +3649,16 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
      - 説明
    * - | (1)
      - \ ``<form>``\ タグの ``th:object`` 属性に、\ ``Model``\ に格納されているフォームオブジェクトを指定する。
+       \ ``<form>``\ タグの ``th:object`` では以下の点に注意されたい。
+
+       * 変数式に ``${sample.sampleForm}`` のようにネストしたプロパティを指定することはできない。
+       * \ ``<form>``\ タグ内でさらに ``th:object`` を使用することはできない。
    * - | (2)
      - \ ``<input>``\ タグの ``th:field`` 属性に、バインドするプロパティ名を指定する。
+       ``th:field`` では以下の点に注意されたい。
+
+       * 変数式 ``${}`` は使用できず、必ず選択変数式 ``*{}`` を使用する必要がある。
+       * 選択変数式に ``*{receiverAddress.postcode}`` のようにネストしたプロパティを指定することはできる。
 
 |
 
@@ -3714,7 +3762,7 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 
  .. code-block:: html
 
-    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']}|"></span> <!-- (1) -->
+    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS.get(orderForm.orderStatus)}|"></span> <!-- (1) -->
 
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
@@ -3726,7 +3774,20 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
    * - | (1)
      - | セレクトボックス作成時と同様に、コードリスト名( ``CL_ORDERSTATUS`` ) を属性名として格納されたコードリスト( ``java.util.Map`` インタフェース)を取得する。
        | 取得したコードリストのキー値として、セレクトボックスで選択した値を指定することで、コード名を表示することができる。
-       | プリプロセッシングについての詳細は、:ref:`view_thymeleaf_preprocessing-label` を参照されたい。
+
+.. warning::
+    ``Map.get(key)`` は ``Map[key]`` と書くこともできる。ただし、 ``Map[key]`` でキーに式を指定する場合、式に「.」を含む場合は式として評価されるが、
+    含まない場合はキーに指定した式を式ではなく文字列として評価してしまい、「`意図したキーを指定できないバグ <https://github.com/spring-projects/spring-framework/issues/20447>`_」の影響を受ける。
+
+    バグの影響を回避するために、キーに指定する式に「.」が含まれていない場合は、以下のいずれかの実装を行う必要がある。
+
+    * ``Map.get(key)`` ：EL式のブラケットを利用せず、getメソッドを利用する。
+    * ``Map[#ctx.key]`` ：コンテキストオブジェクトから変数を指定することで、強制的に「.」を付与する。
+    * ``Map['__${key}__']`` ：プリプロセッシングで先にキー値を解決する。（**非推奨**）
+
+    「.」を含むか含まないかで実装を変えるとバグを引き起こしやすいため、いずれかの方法で統一することを推奨する。本ガイドラインでは ``Map.get(key)`` で実装を統一している。
+
+    プリプロセッシングはセキュリティ上の問題を引き起こす危険性が高いため推奨しない。詳細は :ref:`view_thymeleaf_preprocessing-label` のWarningを参照されたい。
 
 |
 

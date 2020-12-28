@@ -446,7 +446,7 @@ Thymeleafのテンプレートレイアウト機能を使用した画面レイ�
   </body>
   </html>
 
-
+ .. _TemplateLayoutNoteFragment:
  .. note::
 
     | 上記の例では、\ ``body`` タグ内のコンテンツ以外に\ ``tilte`` タグを渡しているが、フラグメントに引数を追加することで任意のパラメータを個別画面からテンプレートに渡すことができる。
@@ -518,6 +518,11 @@ Thymeleafのテンプレートレイアウト機能を使用した画面レイ�
       * - | (2)
         - | 個別画面固有の\ ``script`` タグを定義し、使用するJavaScriptファイルを読み込んでいる。
 
+ .. warning::
+
+    テンプレートレイアウトにより部品化する際に、フラグメント（部品）に引数として式を与える場合には、式を ``th:object`` と選択変数式 ``*{}`` ではなく、変数式 ``${}`` で組み立てなければならない。
+    これは、部品内で ``th:object`` と選択変数式 ``*{}`` を使用していても、部品を呼び出す側が与えた式の意味(参照するもの)が変わらないようにするための(裏を返せば、部品内での ``th:object`` と選択変数式 ``*{}`` の使用を制限せずに済むための)ルールである。
+    こちらの詳細については、\ :ref:`view_thymeleaf_object-label`\ のWarningを参照されたい。
 
 How to extend
 --------------------------------------------------------------------------------
@@ -594,7 +599,7 @@ How to extend
       <div id="wrapper">
           <h1>Business Error!</h1>
           <div class="error">
-              <span th:text="${#strings.isEmpty(exceptionCode)} ? #{e.xx.fw.8001} : |[${exceptionCode}] #{__${exceptionCode}__}|"></span>
+              <span th:text="${#strings.isEmpty(exceptionCode)} ? #{e.xx.fw.8001} : |[${exceptionCode}] #{${exceptionCode}}|"></span>
               <!-- (1) -->
               <span th:replace="~{common/common-parts :: messagesPanel}"></span>
           </div>

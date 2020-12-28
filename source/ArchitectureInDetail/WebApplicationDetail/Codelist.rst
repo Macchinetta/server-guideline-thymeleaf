@@ -1240,7 +1240,7 @@ Javaクラスでのコードリスト使用
 
 .. code-block:: html
 
-    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS['__${orderForm.orderStatus}__']}|"></span> <!--/* (1) */-->
+    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS.get(orderForm.orderStatus)}|"></span> <!--/* (1) */-->
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1253,7 +1253,6 @@ Javaクラスでのコードリスト使用
      - コードリストを定義したbeanID(この例では ``CL_ORDERSTATUS`` ) を属性名として、コードリスト( ``java.util.Map`` インタフェース)を取得する。
        取得した ``Map`` インタフェースのキーとしてコード値(この例では ``orderStatus`` に格納された値) を指定することで、対応するコード名を表示することができる。
        キーとして利用する変数値は必ず\ ``null``\ チェックを行うことを推奨する。詳細は、\ :doc:`../WebApplicationDetail/Thymeleaf`\ の\ :ref:`SpEL評価時におけるnull-safetyの影響について <ThymeleafOverviewNullSafetyAtSpEL>`\ を参照されたい。
-       プリプロセッシングについての詳細は、:ref:`view_thymeleaf_preprocessing-label` を参照されたい。
 
 |
 
@@ -2115,8 +2114,8 @@ SimpleI18nCodeListをテンプレートHTMLから直接参照する方法
 .. code-block:: html
 
     <select th:field="*{basePrice}">
-        <option th:each="price : ${@CL_I18N_PRICE.asMap('__${requestLocale}__').isEmpty()} ? 
-        ${@CL_I18N_PRICE.asMap('__${fallBackLocale}__')} : ${@CL_I18N_PRICE.asMap('__${requestLocale}__')}"
+        <option th:each="price : ${@CL_I18N_PRICE.asMap(requestLocale).isEmpty()} ? 
+        ${@CL_I18N_PRICE.asMap(fallBackLocale)} : ${@CL_I18N_PRICE.asMap(requestLocale)}"
         th:value="${price.key}" th:text="${price.value}"></option> <!--/* (1) */-->
     </select>
 

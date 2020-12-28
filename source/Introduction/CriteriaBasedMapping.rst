@@ -32,6 +32,7 @@ OWASP(Open Web Application Security Project)による観点
    * - A1:2017
      - `Injection <https://www.owasp.org/index.php/Top_10-2017_A1-Injection>`_
      - * \ :ref:`secure-input-validation`\ 
+       * \ :ref:`view_thymeleaf_preprocessing-label` \
    * - A2:2017
      - `Broken Authentication <https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication>`_
      - * \ :ref:`SessionManagementSessionHijackingAttacksProtection`\ 

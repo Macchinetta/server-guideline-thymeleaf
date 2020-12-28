@@ -227,7 +227,7 @@ Delete TODO
         mvn archetype:generate -B\
          -DarchetypeGroupId=com.github.macchinetta.blank\
          -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype\
-         -DarchetypeVersion=1.7.0.RELEASE\
+         -DarchetypeVersion=1.7.1.RELEASE\
          -DgroupId=com.example.todo\
          -DartifactId=todo\
          -Dversion=1.0.0-SNAPSHOT
@@ -247,7 +247,7 @@ O/R Mapperに依存しないブランクプロジェクトの作成
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-     -DarchetypeVersion=1.7.0.RELEASE^
+     -DarchetypeVersion=1.7.1.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
@@ -265,7 +265,7 @@ MyBatis3を使用してデータベースにアクセスするRepositoryImpl用�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.7.0.RELEASE^
+     -DarchetypeVersion=1.7.1.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
