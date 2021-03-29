@@ -256,7 +256,7 @@ Thymeleaf + Springの機能
 
  Thymeleaf + Springを適用する場合、Thymeleaf単体で利用する場合とは以下の点で異なる。
 
-* 式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(`Spring Expression Language <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/core.html#expressions>`_)を利用する。
+* 式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(`Spring Expression Language <https://docs.spring.io/spring-framework/docs/5.2.12.RELEASE/spring-framework-reference/core.html#expressions>`_)を利用する。
 * メッセージリソースとして、SpringのMessageSourceを利用する。
 * Thymeleafが提供するフォーマット機能の代わりに、SpringのConversionサービスを利用する。 `Tutorial: Thymeleaf + Spring -The Conversion Service- <https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-conversion-service>`_ を参照されたい。
 
@@ -487,7 +487,7 @@ Thymeleafテンプレートの実装
  .. warning:: **SpEL評価時におけるnull-safetyの影響について**
 
    前述のとおり、Thymeleaf + Springでは式言語としてSpELを利用する。
-   Spring 5から、SpringのコアAPIに\ `null-safety <https://docs.spring.io/spring/docs/5.2.3.RELEASE/spring-framework-reference/core.html#null-safety>`_\ の機能が取り入れられており、SpELが解釈される際の\ ``null``\に対する動作も変更(\ `SPR-15540 <https://jira.spring.io/browse/SPR-15540>`_\ )されている。
+   Spring 5から、SpringのコアAPIに\ `null-safety <https://docs.spring.io/spring-framework/docs/5.2.12.RELEASE/spring-framework-reference/core.html#null-safety>`_\ の機能が取り入れられており、SpELが解釈される際の\ ``null``\に対する動作も変更(\ `SPR-15540 <https://jira.spring.io/browse/SPR-15540>`_\ )されている。
    例えば\ ``Map``\ 型プロパティのキーとして記述したSpELが\ ``null``\ として評価された場合、Spring 4以前ではそのまま\ ``Map``\ に\ ``null``\ が渡され該当する値がないため\ ``null``\ が返却されていたが、Spring 5以降ではキーとなるSpELを評価した結果に対するnullチェックが追加されており、\ ``null``\ の場合は\ ``IllegalStateException``\ が発生する。
    このため、キーとする値に対して事前に\ ``null``\ チェックを行うなど、\ ``null``\ を考慮した実装が必要となる。
 
@@ -891,7 +891,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 
  .. note::
    上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
-   上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.2.4.RELEASE/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
+   上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.2.12.RELEASE/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
 
 
 * spring-mvc.xmlの定義
@@ -1817,11 +1817,11 @@ Controllerから渡されたView名をキーとしてキャッシュの判定が
      .. code-block:: xml
      
        <configuration>
-           <!-- ･･･ -->
+           <!-- ・・・ -->
            <logger name="org.thymeleaf.TemplateEngine.cache">
                <level value="trace" />
            </logger>
-           <!-- ･･･ -->
+           <!-- ・・・ -->
        </configuration>
      
    

@@ -747,6 +747,7 @@ Spring Dataのページネーション機能を有効化するための設定
 
 .. code-block:: java
 
+    import org.apache.poi.ss.formula.functions.T;
     import org.springframework.data.domain.Page;
     import org.thymeleaf.util.NumberUtils;
 
