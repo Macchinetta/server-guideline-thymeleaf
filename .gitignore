@@ -12,3 +12,6 @@ conf/latexpdfen
 .settings
 .idea
 *.iml
+*.doc*
+*.ppt*
+*.xls*
