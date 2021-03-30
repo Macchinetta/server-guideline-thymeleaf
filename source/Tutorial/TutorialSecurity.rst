@@ -87,7 +87,7 @@ URL一覧を以下に示す。
 プロジェクトの作成
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf>`_\ を作成する。
+Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.8.0.RELEASE>`_\ を作成する。
 
 本チュートリアルでは、MyBatis3用のブランクプロジェクトを作成する。
 
@@ -99,7 +99,7 @@ Mavenのアーキタイプを利用し、\ `Macchinetta Server Framework (1.x)�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.7.1.RELEASE^
+     -DarchetypeVersion=1.8.0.RELEASE^
      -DgroupId=com.example.security^
      -DartifactId=first-springsecurity^
      -Dversion=1.0.0-SNAPSHOT
@@ -302,6 +302,8 @@ AccountSharedServiceの作成
     import org.springframework.stereotype.Service;
     import org.springframework.transaction.annotation.Transactional;
     import org.terasoluna.gfw.common.exception.ResourceNotFoundException;
+    import org.terasoluna.gfw.common.message.ResultMessage;
+    import org.terasoluna.gfw.common.message.ResultMessages;
 
     import com.example.security.domain.model.Account;
     import com.example.security.domain.repository.account.AccountRepository;
@@ -318,8 +320,10 @@ AccountSharedServiceの作成
             Account account = accountRepository.findOne(username);
             // (2)
             if (account == null) {
-                throw new ResourceNotFoundException("The given account is not found! username="
-                        + username);
+                ResultMessages messages = ResultMessages.error();
+                messages.add(ResultMessage.fromText(
+                        "The given account is not found! username=" + username));
+                throw new ResourceNotFoundException(messages);
             }
             return account;
         }
