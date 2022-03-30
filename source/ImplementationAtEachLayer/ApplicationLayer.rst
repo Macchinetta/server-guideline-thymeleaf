@@ -160,7 +160,7 @@ Controllerクラスの作成方法
               // ...
           }
 
-    詳細は、`Spring Framework Documentation -Request Mapping- <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc-ann-requestmapping>`_ を参照されたい。
+    詳細は、`Spring Framework Documentation -Request Mapping- <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-ann-requestmapping>`_ を参照されたい。
 
 |
 
@@ -221,7 +221,7 @@ Controllerクラスの作成方法
     @RequestMapping(value = {"hello", "bonjour"})
     public String hello() {
 
-指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`Spring Framework Documentation -URI patterns- <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
+指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`Spring Framework Documentation -URI patterns- <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
 
 |
 
@@ -230,7 +230,7 @@ Controllerクラスの作成方法
 HTTPメソッドでマッピング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 下記の定義の場合、 ``sample/hello`` というURLにPOSTメソッドでアクセスすると、helloメソッドが実行される。
-サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.3.2/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
+サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.3.13/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
 指定しない場合、サポートしている全てのHTTPメソッドがマッピング対象となる。
 
  .. code-block:: java
@@ -449,7 +449,7 @@ Acceptヘッダでマッピング
 
  .. note::
 
-     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
+     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
      サンプルアプリケーションでは、操作するEntityのIDを指定する。
 
  画面フロー図に各処理に割り振られたURLをマッピングすると以下のようになる。
@@ -1103,7 +1103,7 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
 ハンドラメソッドの引数について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc-ann-arguments>`_ が、
+`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-ann-arguments>`_ が、
 基本的には次に挙げるものは原則として使用しないこと。
 
 * ServletRequest
@@ -1299,7 +1299,7 @@ URLのパスから値を取得する
 
     なお、リクエストパスの拡張子によるパターンマッチングはブラウザから送信されるAcceptヘッダーを一貫して解釈することが困難だった古い時代の手法であり、
     拡張子ではなくAcceptヘッダーやURLのクエリパラメータでマッピングを切り分けることが、Springでは推奨されている。
-    詳細は \ `Spring Framework Documentation -Suffix Match- <https://docs.spring.io/spring/docs/5.3.0-M2/spring-framework-reference/web.html#mvc-ann-requestmapping-suffix-pattern-match>`_\ を参照されたい。
+    詳細は \ `Spring Framework Documentation -Suffix Match- <https://docs.spring.io/spring-framework/docs/5.3.0-M2/spring-framework-reference/web.html#mvc-ann-requestmapping-suffix-pattern-match>`_\ を参照されたい。
 
 
 |
@@ -1760,7 +1760,7 @@ Cookieに値を書き込む
     HTTP Cookieの処理を規定するRFC 6265では、Cookieの名前や値に一部使用できない文字があることに注意されたい。
     例えば、RFC 6265に準拠した実装のTomcat 8.5では、Cookieの値にスペースを使用することができない。
     
-    `RFC 6265(HTTP State Management Mechanism)の4.1 SetCookie <https://tools.ietf.org/html/rfc6265#section-4.1>`_ のSyntaxを参照されたい。
+    `RFC 6265(HTTP State Management Mechanism)の4.1 SetCookie <https://datatracker.ietf.org/doc/html/rfc6265#section-4.1>`_ のSyntaxを参照されたい。
 
 |
 
@@ -1804,7 +1804,7 @@ Cookieに値を書き込む
 
 ハンドラメソッドの返り値について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc-ann-return-types>`_ が、
+`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-ann-return-types>`_ が、
 基本的には次に挙げるもののみを使用すること。
 
 - String(View名)
@@ -1865,7 +1865,7 @@ HTMLを応答する
 
 .. warning:: **<mvc:view-controller>使用に関する留意点**
 
-    Spring Framework 4.3以降では、\ ``<mvc:view-controller>``\ が許可するHTTPメソッドはGETとHEADのみに限定される様になったため(`SPR-13130 <https://jira.spring.io/browse/SPR-13130>`_)、
+    Spring Framework 4.3以降では、\ ``<mvc:view-controller>``\ が許可するHTTPメソッドはGETとHEADのみに限定される様になったため(`SPR-13130 <https://jira.spring.io/browse/SPR-13130?redirect=false>`_)、
     HTTPメソッドがGETとHEAD以外(POSTなど)でアクセスするページの場合、\ ``<mvc:view-controller>``\ は使用できない。
     GETとHEAD以外(POSTなど)からフォワードされた場合も同様となるため、エラーページへの遷移などフォワード元のHTTPメソッドが限定できない場合には\ ``<mvc:view-controller>``\ を使用しないよう注意されたい。
 
@@ -2291,9 +2291,9 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
 
     Spring Frameworkは、以下の3つの仕組みを使って型変換を行っており、基本的な型への変換は標準でサポートされている。各変換機能の詳細については、リンク先のページを参照されたい。
 
-    * `Spring Type Conversion <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/core.html#core-convert>`_\
-    * `Spring Field Formatting <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/core.html#format>`_\
-    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/core.html#beans-beans-conversion>`_\
+    * `Spring Type Conversion <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#core-convert>`_\
+    * `Spring Field Formatting <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#format>`_\
+    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#beans-beans-conversion>`_\
 
  .. warning::
 
@@ -2339,10 +2339,10 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - style
-     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring/docs/5.3.2/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
+     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.13/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
    * - 2.
      - pattern
-     - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
+     - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
 
 |
 
@@ -2384,10 +2384,10 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - iso
-     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring/docs/5.3.2/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
+     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.13/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
    * - 2.
      - pattern
-     - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
+     - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
    * - 3.
      - style
      - | 日付と時刻のスタイルを2桁の文字列として指定する。
@@ -3155,7 +3155,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
         | 上記例では、リクエストURLが静的なURLであるため、\ ``build``\ メソッドのみを呼び出してリクエストURLを生成している。
         | リクエストURLが動的なURL(パス変数やクエリ文字列が存在するURL)の場合は、\ ``arg``\ メソッドや\ ``buildAndExpand``\ メソッドを呼び出す必要がある。
         | \ ``arg``\ メソッドと\ ``buildAndExpand``\ メソッドの具体的な使用例については、
-        | 「\ `Spring Framework Documentation -Links in Views- <https://docs.spring.io/spring/docs/5.3.2.RELEASE/spring-framework-reference/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
+        | 「\ `Spring Framework Documentation -Links in Views- <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
 
  .. note:: **リクエストマッピング名について**
 
@@ -3213,7 +3213,6 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
    * - | (2)
      - | メッセージ式にプロパティファイルのキー名を指定するとキー名に一致するプロパティ値が表示される。
 
-<<<<<<< HEAD
  * 変数式で ``#messages`` を使う場合
 
  .. code-block:: html

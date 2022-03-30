@@ -29,22 +29,22 @@ DIコンテナ
 DIコンテナとしてSpring Frameworkを利用する。
 
 
-* `Spring Framework 5.3 <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/core.html#beans>`_
+* `Spring Framework 5.3 <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#beans>`_
 
 MVCフレームワーク
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Web MVCフレームワークとしてSpring MVCを利用する。
 
-* `Spring MVC 5.3 <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/web.html#mvc>`_
+* `Spring MVC 5.3 <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/web.html#mvc>`_
 
 O/R Mapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 本ガイドラインでは、以下を想定している。
 
-* `MyBatis 3.5 <http://mybatis.github.io/mybatis-3/>`_
+* `MyBatis 3.5 <https://mybatis.org/mybatis-3/>`_
 
-  * Spring Frameworkとの連携ライブラリとして、\ `MyBatis-Spring <http://mybatis.github.io/spring/>`_\ を使用する。
+  * Spring Frameworkとの連携ライブラリとして、\ `MyBatis-Spring <https://mybatis.org/spring/>`_\ を使用する。
 
 .. note::
 
@@ -54,13 +54,13 @@ View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Viewには、Thymeleafを利用する。
 
-* `Thymeleaf 3.0 <http://www.thymeleaf.org/>`_ 
+* `Thymeleaf 3.0 <https://www.thymeleaf.org/>`_ 
 
 セキュリティ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 認証・認可のフレームワークとしてSpring Securityを利用する。
 
-* `Spring Security 5.4 <https://spring.io/projects/spring-security>`_
+* `Spring Security 5.6 <https://spring.io/projects/spring-security>`_
 
 .. tip::
 
@@ -79,9 +79,9 @@ Viewには、Thymeleafを利用する。
 
 * 単項目チェックには\ `BeanValidation 2.0 <https://beanvalidation.org/2.0/spec/>`_\ を利用する。
 
-  * 実装は、\ `Hibernate Validator 6.1 <http://docs.jboss.org/hibernate/validator/6.1/reference/en-US/html_single/>`_\ を利用する。
+  * 実装は、\ `Hibernate Validator 6.2 <https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/>`_\ を利用する。
 
-* 相関チェックには\ `Bean Validation 2.0 <https://beanvalidation.org/2.0/spec/>`_\ 、もしくは\ `Spring Validation <https://docs.spring.io/spring-framework/docs/5.3.2/reference/html/core.html#validator>`_\ を利用する。
+* 相関チェックには\ `Bean Validation 2.0 <https://beanvalidation.org/2.0/spec/>`_\ 、もしくは\ `Spring Validation <https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#validator>`_\ を利用する。
 
   * 使い分けについては\ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\ を参照されたい。
 
@@ -92,12 +92,22 @@ Viewには、Thymeleafを利用する。
 
 * ロガーのAPIは\ `SLF4J <http://www.slf4j.org>`_\ を使用する。
 
-  * ロガーの実装は、\ `Logback <http://logback.qos.ch/>`_\ を利用する。
+  * ロガーの実装は、\ `Logback <https://logback.qos.ch/>`_\ を利用する。
+
+.. tip::
+
+    Logback1.2.7には、攻撃者が設定ファイルを変更できる場合、JNDIを用いる機能を利用してリモートコード実行が可能な脆弱性(\ `CVE-2021-42550 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42550>`_\)が存在している。ただし、この脆弱性を利用できる状況は攻撃者が設定ファイルを変更できる状態であり、その状況自体がアプリケーション起因や環境起因の重大な脆弱性となる。
+
+    このような重大な脆弱性がアプリケーションや環境にない限り、本脆弱性の影響を受けることはない。(このような環境にある場合、本脆弱性を利用せずとも、RCEが可能である)
+
+    この脆弱性に対応するために、Logback1.2.8ではJNDIに関する機能をすべて削除し、以降のバージョンで脆弱性に対応した機能を復活させているが、削除された機能がすべて復活しているわけではない。
+
+    バージョンを上げることによりアプリケーションが動かなくなる可能性を考慮しLogbackのバージョンを1.2.7のままにしているため、必要に応じてLogbackのバージョンアップを検討されたい。
 
 
 共通ライブラリ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.0.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.0.RELEASE>`_\
+* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.RELEASE>`_\
 * 詳細は\ :ref:`frameworkstack_common_library`\ を参照されたい。
 
 .. note::
@@ -109,11 +119,11 @@ Viewには、Thymeleafを利用する。
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.8.1.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. note::
 
-    version 1.6.1.RELEASEより、\ `Spring Boot <https://spring.io/projects/spring-boot>`_\ が提供する\ `spring-boot-dependencies <https://docs.spring.io/spring-boot/docs/2.4.1/reference/htmlsingle/#using-boot-dependency-management>`_\ の\ ``<dependencyManagement>``\ をインポートする構成を採用している。
+    version 1.6.1.RELEASEより、\ `Spring Boot <https://spring.io/projects/spring-boot>`_\ が提供する\ `spring-boot-dependencies <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/#using-boot-dependency-management>`_\ の\ ``<dependencyManagement>``\ をインポートする構成を採用している。
 
     \ ``spring-boot-dependencies``\ の\ ``<dependencyManagement>``\ をインポートすることで、
 
@@ -124,7 +134,7 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     への依存関係を解決しており、
     Macchinetta Server Framework (1.x)で使用するOSSのバージョンは、原則として、Spring Bootで管理されているバージョンに準ずる。
 
-    なお、version 1.8.0.RELEASEでは\ `Spring Boot 2.4.1 <https://docs.spring.io/spring-boot/docs/2.4.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/2.4.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
+    なお、version 1.8.1.RELEASEでは\ `Spring Boot 2.6.1 <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
@@ -141,133 +151,145 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - Spring
       - org.springframework
       - spring-aop
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-aspects
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-beans
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-context
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-context-support
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-core
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-expression
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-jdbc
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-orm
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-oxm
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-tx
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-web
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-webmvc
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-jms
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework
       - spring-messaging
-      - 5.3.2
+      - 5.3.13
       - \*
       -
     * - Spring
       - org.springframework.data
       - spring-data-commons
-      - 2.4.2
+      - 2.6.0
       - \*
       -
     * - Spring
       - org.springframework.security
       - spring-security-acl
-      - 5.4.2
+      - 5.6.0
       - \*
       -
     * - Spring
       - org.springframework.security
       - spring-security-config
-      - 5.4.2
+      - 5.6.0
       - \*
       -
     * - Spring
       - org.springframework.security
       - spring-security-core
-      - 5.4.2
+      - 5.6.0
       - \*
       -
     * - Spring
       - org.springframework.security
       - spring-security-web
-      - 5.4.2
+      - 5.6.0
       - \*
       -
     * - Spring
-      - org.springframework.security.oauth
-      - spring-security-oauth2
-      - 2.5.0.RELEASE
+      - org.springframework.security
+      - spring-security-oauth2-client
+      - 5.6.0
+      - \*
       -
+    * - Spring
+      - org.springframework.security
+      - spring-security-oauth2-resource-server
+      - 5.6.0
+      - \*
+      -
+    * - Spring
+      - org.springframework.security
+      - spring-security-oauth2-jose
+      - 5.6.0
+      - \*
       -
     * - MyBatis3
       - org.mybatis
       - mybatis
-      - 3.5.6
+      - 3.5.7
       -
       - \*1
     * - MyBatis3
@@ -279,61 +301,61 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - DI
       - jakarta.inject
       - jakarta.inject-api
-      - 1.0.3
+      - 1.0.5
       -
       -
     * - AOP
       - org.aspectj
       - aspectjrt
-      - 1.9.6
+      - 1.9.7
       - \*
       -
     * - AOP
       - org.aspectj
       - aspectjweaver
-      - 1.9.6
+      - 1.9.7
       - \*
       -
     * - ログ出力
       - ch.qos.logback
       - logback-classic
-      - 1.2.3
+      - 1.2.7
       - \*
       -
     * - ログ出力
       - org.slf4j
       - slf4j-api
-      - 1.7.30
+      - 1.7.32
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.core
       - jackson-databind
-      - 2.11.3
+      - 2.13.0
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.datatype
       - jackson-datatype-joda
-      - 2.11.3
+      - 2.13.0
       - \*
       -
     * - JSON
       - com.fasterxml.jackson.datatype
       - jackson-datatype-jsr310
-      - 2.11.3
+      - 2.13.0
       - \*
       -
     * - Thymeleaf
       - org.thymeleaf
       - thymeleaf
-      - 3.0.11.RELEASE
+      - 3.0.12.RELEASE
       - \*
       -
     * - Thymeleaf
       - org.thymeleaf
       - thymeleaf-spring5
-      - 3.0.11.RELEASE
+      - 3.0.12.RELEASE
       - \*
       -
     * - Thymeleaf
@@ -351,7 +373,7 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - 入力チェック
       - org.hibernate.validator
       - hibernate-validator
-      - 6.1.6.Final
+      - 6.2.0.Final
       - \*
       -
     * - Bean変換
@@ -363,19 +385,19 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - Bean変換
       - com.github.dozermapper
       - dozer-core
-      - 6.5.0
+      - 6.5.2
       -
       -
     * - Bean変換
       - com.github.dozermapper
       - dozer-spring4
-      - 6.5.0
+      - 6.5.2
       -
       - \*2
     * - Bean変換
       - org.apache.commons
       - commons-lang3
-      - 3.11
+      - 3.12.0
       - \*
       -
     * - 日付操作
@@ -387,7 +409,7 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - コネクションプール
       - org.apache.commons
       - commons-dbcp2
-      - 2.8.0
+      - 2.9.0
       - \*
       -
     * - ファイルアップロード
@@ -405,13 +427,13 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - ファイルダウンロード
       - org.apache.poi
       - poi-ooxml
-      - 4.1.1
+      - 4.1.2
       -
       -
     * - E-mail送信(SMTP)
       - com.sun.mail
       - jakarta.mail
-      - 1.6.5
+      - 1.6.7
       - \*
       -
     * - HTTP通信
@@ -423,7 +445,7 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - ユーティリティ
       - com.google.guava
       - guava
-      - 27.0.1-jre
+      - 30.1.1-jre
       -
       -
     * - ユーティリティ
@@ -435,30 +457,28 @@ version 1.8.0.RELEASEで利用するOSSの一覧を以下に示す。
     * - ユーティリティ
       - commons-io
       - commons-io
-      - 2.6
+      - 2.11.0
       -
       -
     * - コーディングサポート
       - org.projectlombok
       - lombok
-      - 1.18.16
+      - 1.18.22
       - \*
       -
 
 #. | データアクセスに、MyBatis3を使用する場合に依存するライブラリ
 #. | Spring Framework 4.xに依存するが、ガイドラインで記述している内容においては、Spring Framework 5.xで動作する事を確認しているライブラリ
 
-
 .. _frameworkstack_common_library:
-
 
 共通ライブラリの構成要素
 --------------------------------------------------------------------------------
 
-Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.0.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
+Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
 共通ライブラリは、Macchinetta Server Framework (1.x)やTERASOLUNA Server Framework for Java (5.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
 基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
-また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.0.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.8.0.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
+また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.8.1.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
 
 .. tabularcolumns:: |p{0.05\linewidth}|p{0.15\linewidth}|p{0.40\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|
 .. list-table::
@@ -628,7 +648,7 @@ Javaソースコードを含まないものは、ライブラリの依存関係�
 
 .. note::
 
-  version 1.7.0.RELEASEでは TERASOLUNA Server Framework for Java 5.6.0.RELEASE の共通ライブラリを使用している。
+  version 1.8.1.RELEASEでは TERASOLUNA Server Framework for Java 5.7.1.RELEASE の共通ライブラリを使用している。
 
 terasoluna-gfw-common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

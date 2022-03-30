@@ -78,4 +78,4 @@ $ ./build-pdf.sh
 
 ## Terms of use
 
-Terms of use refer to [here](https://github.com/Macchinetta/server-guideline-thymeleaf/blob/master/source/Introduction/TermsOfUse.rst).
+Terms of use refer to [here](https://github.com/Macchinetta/server-guideline-thymeleaf/blob/1.8.1.RELEASE/source/Introduction/TermsOfUse.rst).

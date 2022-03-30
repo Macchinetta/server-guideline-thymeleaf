@@ -261,7 +261,7 @@ java.util.Dateとの相互運用性
      - 説明
    * - | (1)
      - | "yyyy-MM-dd HH:mm:ss" 形式で変換された、文字列が取得される。
-       | toStringの引数として指定可能な値については、 `Input and Output <http://www.joda.org/joda-time/userguide.html#Input_and_Output>`_ を参照されたい。
+       | toStringの引数として指定可能な値については、 `Input and Output <https://www.joda.org/joda-time/userguide.html#Input_and_Output>`_ を参照されたい。
 
 .. note::
 
@@ -286,7 +286,7 @@ java.util.Dateとの相互運用性
      - 説明
    * - | (1)
      - | "yyyy-MM-dd" 形式の文字列を、LocalDate型に変換する。
-       | DateTimeFormat#forPatternの引数として指定可能な値は、 `Formatters <http://www.joda.org/joda-time/userguide.html#Input_and_Output>`_ を参照されたい。
+       | DateTimeFormat#forPatternの引数として指定可能な値は、 `Formatters <https://www.joda.org/joda-time/userguide.html#Input_and_Output>`_ を参照されたい。
 
 |
 

@@ -486,7 +486,7 @@ org.terasoluna.gfw.common.date パッケージの利用方法
 | また、 ``ResolverStyle`` （厳密性）は ``ofPattern`` メソッドを使う場合、デフォルトで ``ResolverStyle.SMART`` が設定されるが、本ガイドラインでは予期せぬ挙動が起こらないよう、厳密に日付を解釈する ``ResolverStyle.STRICT`` の設定を推奨している。（ISOパターンのフォーマッタを利用する場合は ``ResolverStyle.STRICT`` が設定されている)
 |
 | なお、Date and Time API では書式 ``yyyy`` は暦に対する年を表すため、暦によって解釈が異なる(西暦なら2015と解釈されるが、和暦なら0027と解釈される）。
-| 西暦を表したい場合は、 ``yyyy`` 形式に変えて ``uuuu`` 形式を利用することを推奨する。定義されている書式一覧は `DateTimeFormatter <http://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns>`_ を参照されたい。
+| 西暦を表したい場合は、 ``yyyy`` 形式に変えて ``uuuu`` 形式を利用することを推奨する。定義されている書式一覧は `DateTimeFormatter <https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns>`_ を参照されたい。
 |
 | 以下に例を示す。
 
@@ -824,7 +824,7 @@ Thymeleafのダイアレクト
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 | Java8 Time Dialectを使用するためには、以下の2点の設定を行う。
-| なお、いずれもMacchinettaのブランクプロジェクトには設定済みであり、新たに設定を加える必要はない。
+| なお、いずれもブランクプロジェクトには設定済みであり、新たに設定を加える必要はない。
 
 1. ``thymeleaf-extras-java8time`` の依存関係の設定
 2. Java8 Time Dialectを使用するためのBean定義
@@ -848,7 +848,7 @@ Thymeleafのダイアレクト
  .. note::
 
     上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
-    上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.4.1/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
+    上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
 
 
 * spring-mvc.xmlの定義
