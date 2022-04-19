@@ -11,6 +11,17 @@
       - 更新箇所
       - 更新内容
 
+    * - 2022-04-20
+      - \-
+      - 1.8.0.SP1 RELEASE版公開
+
+    * -
+      - :doc:`../Overview/FrameworkStack`
+      - CVE-2022-22965への対応のため、利用するOSSのバージョンを更新
+
+        * Spring Frameworkのバージョンを5.3.18に更新
+        * Spring Testのバージョンを5.3.18に更新
+
     * - 2021-03-26
       - \-
       - 1.8.0 RELEASE版公開
@@ -68,10 +79,10 @@
 
         TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの機能改善
 
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリが用意する入力チェックルールの日本語メッセージを提供
+        * 共通ライブラリが用意する入力チェックルールの日本語メッセージを提供
         * \ ``@Compare``\がBean Validation 2.0に準拠
         * Bootstrap v4以降に対応するため、\ ``ResultMessages``\の標準メッセージタイプに\ ``primary``\、\ ``secondary``\、\ ``light``\、\ ``dark``\を追加
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの非推奨APIを削除
+        * 共通ライブラリの非推奨APIを削除
 
     * -
       - :doc:`../ImplementationAtEachLayer/CreateWebApplicationProject`
@@ -103,7 +114,7 @@
       - 記載内容の修正
 
         * Hibernate Validator 6.1.0より日本語メッセージが提供されたことへの対応
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリが用意する入力チェックルールの日本語メッセージを提供
+        * 共通ライブラリが用意する入力チェックルールの日本語メッセージを提供
         * \ ``@Compare``\がBean Validation 2.0に準拠
         * 相関項目チェックルールのコード例において、エラーメッセージを確認用フィールドに表示するように変更
         * Bean Validationを利用した相関項目チェックルールのコード例をBean Validation 2.0に準拠するよう変更
@@ -278,12 +289,12 @@
 
         TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの機能改善
 
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリが用意する入力チェックルールのデフォルトエラーメッセージをTERASOLUNA Server Framework for Java (5.x)の共通ライブラリで提供
-        * \ ``Argon2PasswordEncoder``\のサポートに伴い、\ ``bcprov-jdk15on``\への依存関係をTERASOLUNA Server Framework for Java (5.x)の共通ライブラリで管理
+        * 共通ライブラリが用意する入力チェックルールのデフォルトエラーメッセージを共通ライブラリで提供
+        * \ ``Argon2PasswordEncoder``\のサポートに伴い、\ ``bcprov-jdk15on``\への依存関係を共通ライブラリで管理
 
         記載内容の追加
 
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの構成要素に、TERASOLUNA Server Framework のバージョンについてのNoteを追加
+        * 共通ライブラリの構成要素に、TERASOLUNA Server Framework のバージョンについてのNoteを追加
 
     * -
       - :doc:`../ImplementationAtEachLayer/ApplicationLayer`
@@ -300,7 +311,7 @@
 
         記載内容の修正
 
-        * TERASOLUNA Server Framework for Java (5.x)の共通ライブラリが用意する入力チェックルールのデフォルトエラーメッセージをTERASOLUNA Server Framework for Java (5.x)の共通ライブラリで提供するように変更したことに伴う記載内容の変更
+        * 共通ライブラリが用意する入力チェックルールのデフォルトエラーメッセージを共通ライブラリで提供するように変更したことに伴う記載内容の変更
 
     * -
       - :doc:`../ArchitectureInDetail/WebApplicationDetail/Pagination`
@@ -330,7 +341,7 @@
       - :doc:`../ArchitectureInDetail/DataAccessDetail/DataAccessCommon`
       - 記載内容の削除
 
-        *  TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの変更に伴うlog4jdbcの記載の削除
+        *  共通ライブラリの変更に伴うlog4jdbcの記載の削除
 
     * -
       - :doc:`../ArchitectureInDetail/GeneralFuncDetail/Dozer`
@@ -380,7 +391,7 @@
 
         TERASOLUNA Server Framework for Java (5.x)の共通ライブラリの機能改善
 
-        * \ ``Argon2PasswordEncoder``\のサポートに伴い、\ ``bcprov-jdk15on``\への依存関係をTERASOLUNA Server Framework for Java (5.x)の共通ライブラリで管理
+        * \ ``Argon2PasswordEncoder``\のサポートに伴い、\ ``bcprov-jdk15on``\への依存関係を共通ライブラリで管理
 
         記載内容の追加
 
