@@ -331,7 +331,7 @@ WebアプリケーションにSpring Securityを適用するためのセット�
 
 .. note::
 
-    開発プロジェクトを\ `ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.RELEASE>`_\ から作成すると、ここで説明する各設定はセットアップ済みの状態になっている。
+    開発プロジェクトを\ `ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.SP1.RELEASE>`_\ から作成すると、ここで説明する各設定はセットアップ済みの状態になっている。
 
 |
 
@@ -390,7 +390,7 @@ Spring Securityと共通ライブラリの関連については、:ref:`framewor
 
 bean定義ファイルの作成
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Spring Securityのコンポーネントをbean定義するため、以下のようなXMLファイルを作成する。（`ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.RELEASE>`_\より抜粋）
+Spring Securityのコンポーネントをbean定義するため、以下のようなXMLファイルを作成する。（`ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.SP1.RELEASE>`_\より抜粋）
 
 * xxx-web/src/main/resources/META-INF/spring/spring-security.xmlの定義例
 
