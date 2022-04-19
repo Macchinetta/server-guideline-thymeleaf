@@ -7,6 +7,17 @@
     :widths: 15 25 60
     :class: longtable
 
+    * - 2022-04-20
+      - \-
+      - 1.7.0.SP1 RELEASE版公開
+
+    * -
+      - :doc:`../Overview/FrameworkStack`
+      - CVE-2022-22965への対応のため、利用するOSSのバージョンを更新
+
+        * Spring Frameworkのバージョンを5.2.20.RELEASEに更新
+        * Spring Testのバージョンを5.2.20.RELEASEに更新
+
     * - 更新日付
       - 更新箇所
       - 更新内容
