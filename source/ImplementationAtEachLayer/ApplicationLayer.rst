@@ -160,7 +160,7 @@ Controllerクラスの作成方法
               // ...
           }
 
-    詳細は、`Spring Framework Documentation -Request Mapping- <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-ann-requestmapping>`_ を参照されたい。
+    詳細は、`Spring Framework Documentation -Request Mapping- <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-requestmapping>`_ を参照されたい。
 
 |
 
@@ -221,7 +221,7 @@ Controllerクラスの作成方法
     @RequestMapping(value = {"hello", "bonjour"})
     public String hello() {
 
-指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`Spring Framework Documentation -URI patterns- <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
+指定するリクエストパスは、具体的な値ではなくパターンを指定することも可能である。パターン指定の詳細は、`Spring Framework Documentation -URI patterns- <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_ を参照されたい。
 
 |
 
@@ -230,7 +230,7 @@ Controllerクラスの作成方法
 HTTPメソッドでマッピング
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 下記の定義の場合、 ``sample/hello`` というURLにPOSTメソッドでアクセスすると、helloメソッドが実行される。
-サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.3.18/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
+サポートしているHTTPメソッドの一覧は `RequestMethodのJavadoc <https://docs.spring.io/spring/docs/5.3.13/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html>`_ を参照されたい。
 指定しない場合、サポートしている全てのHTTPメソッドがマッピング対象となる。
 
  .. code-block:: java
@@ -449,7 +449,7 @@ Acceptヘッダでマッピング
 
  .. note::
 
-     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
+     Entity参照、Entity更新、Entity削除処理のURL内に指定している ``{id}`` は、`URI patterns <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-requestmapping-uri-templates>`_\ と呼ばれ、任意の値を指定する事ができる。
      サンプルアプリケーションでは、操作するEntityのIDを指定する。
 
  画面フロー図に各処理に割り振られたURLをマッピングすると以下のようになる。
@@ -1103,7 +1103,7 @@ Backボタン押下時の動作については、 :ref:`controller-mapping-polic
 ハンドラメソッドの引数について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-ann-arguments>`_ が、
+`ハンドラメソッドの引数は様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-arguments>`_ が、
 基本的には次に挙げるものは原則として使用しないこと。
 
 * ServletRequest
@@ -1299,7 +1299,7 @@ URLのパスから値を取得する
 
     なお、リクエストパスの拡張子によるパターンマッチングはブラウザから送信されるAcceptヘッダーを一貫して解釈することが困難だった古い時代の手法であり、
     拡張子ではなくAcceptヘッダーやURLのクエリパラメータでマッピングを切り分けることが、Springでは推奨されている。
-    詳細は \ `Spring Framework Documentation -Suffix Match- <https://docs.spring.io/spring-framework/docs/5.3.0-M2/spring-framework-reference/web.html#mvc-ann-requestmapping-suffix-pattern-match>`_\ を参照されたい。
+    詳細は \ `Spring Framework Documentation -Suffix Match- <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-requestmapping-suffix-pattern-match>`_\ を参照されたい。
 
 
 |
@@ -1804,7 +1804,7 @@ Cookieに値を書き込む
 
 ハンドラメソッドの返り値について
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-ann-return-types>`_ が、
+`ハンドラメソッドの返り値についても様々な値をとることができる <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-ann-return-types>`_ が、
 基本的には次に挙げるもののみを使用すること。
 
 - String(View名)
@@ -2291,9 +2291,9 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
 
     Spring Frameworkは、以下の3つの仕組みを使って型変換を行っており、基本的な型への変換は標準でサポートされている。各変換機能の詳細については、リンク先のページを参照されたい。
 
-    * `Spring Type Conversion <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/core.html#core-convert>`_\
-    * `Spring Field Formatting <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/core.html#format>`_\
-    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/core.html#beans-beans-conversion>`_\
+    * `Spring Type Conversion <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/core.html#core-convert>`_\
+    * `Spring Field Formatting <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/core.html#format>`_\
+    * `java.beans.PropertyEditor implementations <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/core.html#beans-beans-conversion>`_\
 
  .. warning::
 
@@ -2339,7 +2339,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - style
-     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.18/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
+     - 数値のスタイルを指定する。詳細は、`NumberFormat.StyleのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.24/javadoc-api/org/springframework/format/annotation/NumberFormat.Style.html>`_\ を参照されたい。
    * - 2.
      - pattern
      - Javaの数値形式を指定する。詳細は、`DecimalFormatのJavadoc <https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html>`_\ を参照されたい。
@@ -2384,7 +2384,7 @@ Spring Frameworkでは、HTML formから送信されたリクエストパラメ�
      - 説明
    * - 1.
      - iso
-     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.18/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
+     - ISOの日時形式を指定する。詳細は、`DateTimeFormat.ISOのJavadoc <https://docs.spring.io/spring-framework/docs/5.3.24/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html>`_\ を参照。
    * - 2.
      - pattern
      - Javaの日時形式を指定する。詳細は、`SimpleDateFormatのJavadoc <https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html>`_\ を参照されたい。
@@ -2812,7 +2812,7 @@ Thymeleafのネームスペースを設定する
    * - | (2)
      - | View(テンプレートHTML)側では、 ``th:text`` などの属性において${属性名}のような式を記述することできる。
        | ``${}`` は変数式で、\ ``Model``\ オブジェクトに追加したデータを取得することができる。
-       | 例では、取得したデータをHTMLエスケープして出力するために ``th:text`` 属性を利用し、「th:text="${hello}"」としている。
+       | 例では、取得したデータをHTMLエスケープして出力するために ``th:text`` 属性を利用し、「th:text="${helloBean.message}"」としている。
        | XSS対策のため必ずHTMLエスケープを行うことを推奨する。詳細については、 :ref:`xss_how_to_use_ouput_escaping` を参照されたい。
 
 |
@@ -3155,7 +3155,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
         | 上記例では、リクエストURLが静的なURLであるため、\ ``build``\ メソッドのみを呼び出してリクエストURLを生成している。
         | リクエストURLが動的なURL(パス変数やクエリ文字列が存在するURL)の場合は、\ ``arg``\ メソッドや\ ``buildAndExpand``\ メソッドを呼び出す必要がある。
         | \ ``arg``\ メソッドと\ ``buildAndExpand``\ メソッドの具体的な使用例については、
-        | 「\ `Spring Framework Documentation -Links in Views- <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
+        | 「\ `Spring Framework Documentation -Links in Views- <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/web.html#mvc-links-to-controllers-from-views>`_\ 」を参照されたい。
 
  .. note:: **リクエストマッピング名について**
 
@@ -3230,16 +3230,16 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
      - | 変数式で ``#messages.msg`` メソッドにプロパティファイルのキー名を指定するとキー名に一致するプロパティ値が表示される。
 
  .. note::
-      メッセージ式で指定したキーに該当するメッセージが存在しない場合は、 ``??label.orderStatus??`` のようにメッセージキーが返却される。
-      しかし例えば、メッセージが存在しない場合にはデフォルトメッセージを表示したい場合など、メッセージキーが返却されると判定が複雑になってしまう。
-      このような場合は、 ``#messages.msgOrNull`` メソッドと、後述するデフォルト式を利用することで、簡潔に記述することができる。
-      以下にコード例を示す。
+    メッセージ式で指定したキーに該当するメッセージが存在しない場合は、 ``??label.orderStatus??`` のようにメッセージキーが返却される。
+    しかし例えば、メッセージが存在しない場合にはデフォルトメッセージを表示したい場合など、メッセージキーが返却されると判定が複雑になってしまう。
+    このような場合は、 ``#messages.msgOrNull`` メソッドと、後述するデフォルト式を利用することで、簡潔に記述することができる。
+    以下にコード例を示す。
 
      .. code-block:: html
 
         <span th:text="${#messages.msgOrNull(label.orderStatus) ?: '不明なステータス'}"></span>
 
-      デフォルト式については、 :ref:`view_thymeleaf_conditional-label` も参照されたい。
+    デフォルト式については、 :ref:`view_thymeleaf_conditional-label` も参照されたい。
 
 |
 
@@ -3490,7 +3490,7 @@ HTMLの\ ``<form>``\ 要素の\ ``action``\ 属性や\ ``<a>``\ 要素の\ ``hre
     コレクション内のオブジェクトに対してインデックスなどを取りたい場合は、次のようにテンプレートHTMLを実装する。
 
      .. code-block:: html
-        :emphasize-lines: 6-8
+        :emphasize-lines: 7-8
 
         <table>
             <tr>
@@ -3736,7 +3736,7 @@ Thymeleafの ``th:object`` 属性を用いると、オブジェクト名を省�
 以下では、TERASOLUNAのJSPタグである ``<t:messagesPanel>`` のデフォルト設定で出力するHTMLを生成する例として、以下のようにソースコードを記述している。
 
  .. code-block:: html
-    :emphasize-lines: 3-4
+    :emphasize-lines: 3,5,6
 
     <div class="messages">
         <h2>Message pattern</h2>
