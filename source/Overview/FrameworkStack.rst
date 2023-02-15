@@ -3,46 +3,52 @@ Macchinetta Server Framework (1.x)のスタック
 
 .. only:: html
 
- .. contents:: 目次
-    :depth: 3
-    :local:
+.. contents:: 目次
+  :depth: 3
+  :local:
 
 Macchinetta Server Framework (1.x)のSoftware Framework概要
 --------------------------------------------------------------------------------
 
 Macchinetta Server Framework (1.x)で使用するSoftware Frameworkは独自のフレームワークではなく、\ `Spring Framework <https://spring.io/projects/spring-framework>`_\ を中心としたOSSの組み合わせである。
 
-.. figure:: images/introduction-software-framework.png
-   :width: 95%
+.. figure:: images_FrameworkStack/introduction-software-framework.png
+  :width: 95%
 
+|
 
 Software Frameworkの主な構成要素
 --------------------------------------------------------------------------------
 
 Macchinetta Server Framework (1.x)を構成するライブラリを以下に示す。
 
-.. figure:: images/introduction-software-stack.png
-   :width: 95%
+.. figure:: images_FrameworkStack/introduction-software-stack.png
+  :width: 95%
+
+|
 
 DIコンテナ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 DIコンテナとしてSpring Frameworkを利用する。
 
+* \ `Spring Framework 6.0 <https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/core.html#beans>`_\
 
-* `Spring Framework 5.3 <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/core.html#beans>`_
+|
 
 MVCフレームワーク
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Web MVCフレームワークとしてSpring MVCを利用する。
 
-* `Spring MVC 5.3 <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/web.html#mvc>`_
+* \ `Spring MVC 6.0 <https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/web.html#mvc>`_\
+
+|
 
 O/R Mapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 本ガイドラインでは、以下を想定している。
 
-* `MyBatis 3.5 <https://mybatis.org/mybatis-3/>`_
+* \ `MyBatis 3.5 <https://mybatis.org/mybatis-3/>`_\
 
   * Spring Frameworkとの連携ライブラリとして、\ `MyBatis-Spring <https://mybatis.org/spring/>`_\ を使用する。
 
@@ -50,42 +56,45 @@ O/R Mapper
 
   MyBatisは正確には「SQL Mapper」であるが、本ガイドラインでは「O/R Mapper」に分類する。
 
+|
+
 View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Viewには、Thymeleafを利用する。
 
-* `Thymeleaf 3.0 <https://www.thymeleaf.org/>`_ 
+* `Thymeleaf 3.1 <https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html>`_ 
 
 セキュリティ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 認証・認可のフレームワークとしてSpring Securityを利用する。
 
-* `Spring Security 5.6 <https://spring.io/projects/spring-security>`_
+* \ `Spring Security 6.0 <https://spring.io/projects/spring-security>`_\
 
 .. tip::
 
-    Spring Security 3.2 から、認証・認可の仕組みの提供に加えて、
-    悪意のある攻撃者からWebアプリケーションを守るための仕組みが強化されている。
+  Spring Security 3.2 から、認証・認可の仕組みの提供に加えて、悪意のある攻撃者からWebアプリケーションを守るための仕組みが強化されている。
 
-    悪意のある攻撃者からWebアプリケーションを守るための仕組みについては、
+  悪意のある攻撃者からWebアプリケーションを守るための仕組みについては、
 
-    * :doc:`../Security/CSRF`
-    * :doc:`../Security/LinkageWithBrowser`
+  * \ :doc:`../Security/CSRF`\
+  * \ :doc:`../Security/LinkageWithBrowser`\
 
-    を参照されたい。
+  を参照されたい。
+
+|
 
 バリデーション
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* 単項目チェックには\ `BeanValidation 2.0 <https://beanvalidation.org/2.0/spec/>`_\ を利用する。
+* 単項目チェックには\ `Bean Validation 3.0 <https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html>`_\ を利用する。
 
-  * 実装は、\ `Hibernate Validator 6.2 <https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/>`_\ を利用する。
+  * 実装は、\ `Hibernate Validator 8.0 <https://docs.jboss.org/hibernate/validator/8.0/reference/en-US/html_single/>`_\ を利用する。
 
-* 相関チェックには\ `Bean Validation 2.0 <https://beanvalidation.org/2.0/spec/>`_\ 、もしくは\ `Spring Validation <https://docs.spring.io/spring-framework/docs/5.3.18/reference/html/core.html#validator>`_\ を利用する。
+* 相関チェックには\ `Bean Validation 3.0 <https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html>`_\ 、もしくは\ `Spring Validation <https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/core.html#validator>`_\ を利用する。
 
   * 使い分けについては\ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\ を参照されたい。
 
-
+|
 
 ロギング
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -96,537 +105,506 @@ Viewには、Thymeleafを利用する。
 
 .. tip::
 
-    Logback1.2.7には、攻撃者が設定ファイルを変更できる場合、JNDIを用いる機能を利用してリモートコード実行が可能な脆弱性(\ `CVE-2021-42550 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42550>`_\)が存在している。ただし、この脆弱性を利用できる状況は攻撃者が設定ファイルを変更できる状態であり、その状況自体がアプリケーション起因や環境起因の重大な脆弱性となる。
+  \ `CVE-2021-42550 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42550>`_\ に対応するため、Logback1.2.8以降のバージョンではモジュール構成が変更されDBAppenderに関する機能は別モジュールとなった。
 
-    このような重大な脆弱性がアプリケーションや環境にない限り、本脆弱性の影響を受けることはない。(このような環境にある場合、本脆弱性を利用せずとも、RCEが可能である)
+  logback-classicやlogback-accessのDBAppenderを使用した機能を利用するためには、pom.xmlに以下のアーティファクトを追加する必要がある。
 
-    この脆弱性に対応するために、Logback1.2.8ではJNDIに関する機能をすべて削除し、以降のバージョンで脆弱性に対応した機能を復活させているが、削除された機能がすべて復活しているわけではない。
+  * ch.qos.logback.db:logback-classic-db:1.2.11.1
+  * ch.qos.logback.db:logback-access-db:1.2.11.1
 
-    バージョンを上げることによりアプリケーションが動かなくなる可能性を考慮しLogbackのバージョンを1.2.7のままにしているため、必要に応じてLogbackのバージョンアップを検討されたい。
-
+|
 
 共通ライブラリ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.SP1.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.SP1.RELEASE>`_\
+* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE>`_\
 * 詳細は\ :ref:`frameworkstack_common_library`\ を参照されたい。
 
 .. note::
 
   単体テストで利用するOSSライブラリについては、本章とは別に\ :doc:`../UnitTest/UnitTestOverview`\ で解説している。
 
+|
+
 .. _frameworkstack_using_oss_version:
 
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.8.1.SP1.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.9.0.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. note::
 
-    version 1.6.1.RELEASEより、\ `Spring Boot <https://spring.io/projects/spring-boot>`_\ が提供する\ `spring-boot-dependencies <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/#using-boot-dependency-management>`_\ の\ ``<dependencyManagement>``\ をインポートする構成を採用している。
+  version 1.6.1.RELEASEより、\ `Spring Boot <https://spring.io/projects/spring-boot>`_\ が提供する\ `spring-boot-dependencies <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/#using-boot-dependency-management>`_\ の\ ``<dependencyManagement>``\ をインポートする構成を採用している。
+  
+  \ ``spring-boot-dependencies``\ の\ ``<dependencyManagement>``\ をインポートすることで、
 
-    \ ``spring-boot-dependencies``\ の\ ``<dependencyManagement>``\ をインポートすることで、
+  * Spring Frameworkが提供しているライブラリ
+  * Spring Frameworkが依存しているOSSライブラリ
+  * Spring Frameworkと相性のよいOSSライブラリ
 
-    * Spring Frameworkが提供しているライブラリ
-    * Spring Frameworkが依存しているOSSライブラリ
-    * Spring Frameworkと相性のよいOSSライブラリ
+  への依存関係を解決しており、Macchinetta Server Framework (1.x)で使用するOSSのバージョンは、原則として、Spring Bootで管理されているバージョンに準ずる。
 
-    への依存関係を解決しており、
-    Macchinetta Server Framework (1.x)で使用するOSSのバージョンは、原則として、Spring Bootで管理されているバージョンに準ずる。
-
-    なお、version 1.8.1.SP1.RELEASEでは\ `Spring Boot 2.6.1 <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/2.6.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
+  なお、version 1.9.0.RELEASEでは\ `Spring Boot 3.0.1 <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :stub-columns: 1
-    :widths: 15 25 25 15 5 8
+  :header-rows: 1
+  :stub-columns: 1
+  :widths: 15 25 25 15 5 8
 
-    * - Type
-      - GroupId
-      - ArtifactId
-      - Version
-      - Spring Boot
-      - Remarks
-    * - Spring
-      - org.springframework
-      - spring-aop
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-aspects
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-beans
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-context
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-context-support
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-core
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-expression
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-jdbc
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-orm
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-oxm
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-tx
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-web
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-webmvc
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-jms
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework
-      - spring-messaging
-      - 5.3.18
-      -
-      - \*3
-    * - Spring
-      - org.springframework.data
-      - spring-data-commons
-      - 2.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-acl
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-config
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-core
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-web
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-oauth2-client
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-oauth2-resource-server
-      - 5.6.0
-      - \*
-      -
-    * - Spring
-      - org.springframework.security
-      - spring-security-oauth2-jose
-      - 5.6.0
-      - \*
-      -
-    * - MyBatis3
-      - org.mybatis
-      - mybatis
-      - 3.5.7
-      -
-      - \*1
-    * - MyBatis3
-      - org.mybatis
-      - mybatis-spring
-      - 2.0.6
-      -
-      - \*1
-    * - DI
-      - jakarta.inject
-      - jakarta.inject-api
-      - 1.0.5
-      -
-      -
-    * - AOP
-      - org.aspectj
-      - aspectjrt
-      - 1.9.7
-      - \*
-      -
-    * - AOP
-      - org.aspectj
-      - aspectjweaver
-      - 1.9.7
-      - \*
-      -
-    * - ログ出力
-      - ch.qos.logback
-      - logback-classic
-      - 1.2.7
-      - \*
-      -
-    * - ログ出力
-      - org.slf4j
-      - slf4j-api
-      - 1.7.32
-      - \*
-      -
-    * - JSON
-      - com.fasterxml.jackson.core
-      - jackson-databind
-      - 2.13.0
-      - \*
-      -
-    * - JSON
-      - com.fasterxml.jackson.datatype
-      - jackson-datatype-joda
-      - 2.13.0
-      - \*
-      -
-    * - JSON
-      - com.fasterxml.jackson.datatype
-      - jackson-datatype-jsr310
-      - 2.13.0
-      - \*
-      -
-    * - Thymeleaf
-      - org.thymeleaf
-      - thymeleaf
-      - 3.0.12.RELEASE
-      - \*
-      -
-    * - Thymeleaf
-      - org.thymeleaf
-      - thymeleaf-spring5
-      - 3.0.12.RELEASE
-      - \*
-      -
-    * - Thymeleaf
-      - org.thymeleaf.extras
-      - thymeleaf-extras-springsecurity5
-      - 3.0.4.RELEASE
-      - \*
-      -
-    * - Thymeleaf
-      - org.thymeleaf.extras
-      - thymeleaf-extras-java8time
-      - 3.0.4.RELEASE
-      - \*
-      -
-    * - 入力チェック
-      - org.hibernate.validator
-      - hibernate-validator
-      - 6.2.0.Final
-      - \*
-      -
-    * - Bean変換
-      - commons-beanutils
-      - commons-beanutils
-      - 1.9.4
-      -
-      -
-    * - Bean変換
-      - com.github.dozermapper
-      - dozer-core
-      - 6.5.2
-      -
-      -
-    * - Bean変換
-      - com.github.dozermapper
-      - dozer-spring4
-      - 6.5.2
-      -
-      - \*2
-    * - Bean変換
-      - org.apache.commons
-      - commons-lang3
-      - 3.12.0
-      - \*
-      -
-    * - 日付操作
-      - joda-time
-      - joda-time
-      - 2.10.9
-      -
-      -
-    * - コネクションプール
-      - org.apache.commons
-      - commons-dbcp2
-      - 2.9.0
-      - \*
-      -
-    * - ファイルアップロード
-      - commons-fileupload
-      - commons-fileupload
-      - 1.3.3
-      -
-      -
-    * - ファイルダウンロード
-      - com.github.librepdf
-      - openpdf
-      - 1.0.5
-      -
-      -
-    * - ファイルダウンロード
-      - org.apache.poi
-      - poi-ooxml
-      - 4.1.2
-      -
-      -
-    * - E-mail送信(SMTP)
-      - com.sun.mail
-      - jakarta.mail
-      - 1.6.7
-      - \*
-      -
-    * - HTTP通信
-      - org.apache.httpcomponents
-      - httpclient
-      - 4.5.13
-      - \*
-      -
-    * - ユーティリティ
-      - com.google.guava
-      - guava
-      - 30.1.1-jre
-      -
-      -
-    * - ユーティリティ
-      - commons-collections
-      - commons-collections
-      - 3.2.2
-      -
-      -
-    * - ユーティリティ
-      - commons-io
-      - commons-io
-      - 2.11.0
-      -
-      -
-    * - コーディングサポート
-      - org.projectlombok
-      - lombok
-      - 1.18.22
-      - \*
-      -
+  * - Type
+    - GroupId
+    - ArtifactId
+    - Version
+    - Spring Boot
+    - Remarks
+  * - Spring
+    - org.springframework
+    - spring-aop
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-aspects
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-beans
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-context
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-context-support
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-core
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-expression
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-jdbc
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-orm
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-oxm
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-tx
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-web
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-webmvc
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-jms
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework
+    - spring-messaging
+    - 6.0.3
+    - \*
+    -
+  * - Spring
+    - org.springframework.data
+    - spring-data-commons
+    - 3.0.0
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-acl
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-config
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-core
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-web
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-oauth2-client
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-oauth2-resource-server
+    - 6.0.1
+    - \*
+    -
+  * - Spring
+    - org.springframework.security
+    - spring-security-oauth2-jose
+    - 6.0.1
+    - \*
+    -
+  * - MyBatis3
+    - org.mybatis
+    - mybatis
+    - 3.5.11
+    -
+    - \*1
+  * - MyBatis3
+    - org.mybatis
+    - mybatis-spring
+    - 3.0.1
+    -
+    - \*1
+  * - DI
+    - jakarta.inject
+    - jakarta.inject-api
+    - 2.0.1
+    -
+    -
+  * - AOP
+    - org.aspectj
+    - aspectjrt
+    - 1.9.19
+    - \*
+    -
+  * - AOP
+    - org.aspectj
+    - aspectjweaver
+    - 1.9.19
+    - \*
+    -
+  * - ログ出力
+    - ch.qos.logback
+    - logback-classic
+    - 1.4.5
+    - \*
+    -
+  * - ログ出力
+    - org.slf4j
+    - slf4j-api
+    - 2.0.6
+    - \*
+    -
+  * - JSON
+    - com.fasterxml.jackson.core
+    - jackson-databind
+    - 2.14.1
+    - \*
+    -
+  * - JSON
+    - com.fasterxml.jackson.datatype
+    - jackson-datatype-jsr310
+    - 2.14.1
+    - \*
+    -
+  * - Thymeleaf
+    - org.thymeleaf
+    - thymeleaf
+    - 3.1.1.RELEASE
+    - \*
+    -
+  * - Thymeleaf
+    - org.thymeleaf
+    - thymeleaf-spring6
+    - 3.1.1.RELEASE
+    - \*
+    -
+  * - Thymeleaf
+    - org.thymeleaf.extras
+    - thymeleaf-extras-springsecurity6
+    - 3.1.1.RELEASE
+    - \*
+    -
+  * - 入力チェック
+    - org.hibernate.validator
+    - hibernate-validator
+    - 8.0.0.Final
+    - \*
+    -
+  * - Bean変換
+    - commons-beanutils
+    - commons-beanutils
+    - 1.9.4
+    -
+    -
+  * - Bean変換
+    - org.mapstruct
+    - mapstruct
+    - 1.5.3.Final
+    -
+    -
+  * - Bean変換
+    - org.apache.commons
+    - commons-lang3
+    - 3.12.0
+    - \*
+    -
+  * - コネクションプール
+    - org.apache.commons
+    - commons-dbcp2
+    - 2.9.0
+    - \*
+    -
+  * - ファイルダウンロード
+    - com.github.librepdf
+    - openpdf
+    - 1.3.30
+    -
+    -
+  * - ファイルダウンロード
+    - org.apache.poi
+    - poi-ooxml
+    - 5.2.3
+    -
+    -
+  * - E-mail送信(SMTP)
+    - org.eclipse.angus
+    - jakarta.mail
+    - 1.0.0
+    - \*
+    -
+  * - HTTP通信
+    - org.apache.httpcomponents.client5
+    - httpclient5
+    - 5.1.4
+    - \*
+    -
+  * - ユーティリティ
+    - com.google.guava
+    - guava
+    - 31.1-jre
+    -
+    -
+  * - ユーティリティ
+    - org.apache.commons
+    - commons-collections4
+    - 4.4
+    -
+    -
+  * - ユーティリティ
+    - commons-io
+    - commons-io
+    - 2.11.0
+    -
+    -
+  * - コーディングサポート
+    - org.projectlombok
+    - lombok
+    - 1.18.24
+    - \*
+    -
 
 #. | データアクセスに、MyBatis3を使用する場合に依存するライブラリ
-#. | Spring Framework 4.xに依存するが、ガイドラインで記述している内容においては、Spring Framework 5.xで動作する事を確認しているライブラリ
-#. | Spring Bootで管理されているバージョンから、Macchinetta Server Framework (1.x)で使用するバージョンを変更しているライブラリ
+
+|
 
 .. _frameworkstack_common_library:
 
 共通ライブラリの構成要素
 --------------------------------------------------------------------------------
 
-Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.1.SP1.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
-共通ライブラリは、Macchinetta Server Framework (1.x)やTERASOLUNA Server Framework for Java (5.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
-基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
-また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.8.1.SP1.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.8.1.SP1.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
+| Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
+| 共通ライブラリは、Macchinetta Server Framework (1.x)やTERASOLUNA Server Framework for Java (5.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
+| 基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
+| また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.9.0.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.9.0.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
 
 .. tabularcolumns:: |p{0.05\linewidth}|p{0.15\linewidth}|p{0.40\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 5 15 40 20 10 10
-    :class: longtable
+  :header-rows: 1
+  :widths: 5 15 40 20 10 10
+  :class: longtable
 
-    * - 項番
-      - プロジェクト名
-      - 概要
-      - Javaソースコード有無
-      - マルチプロジェクト構成のブランクプロジェクト組込
-      - シングルプロジェクト構成のブランクプロジェクト組込
-    * - \ (1)
-      - terasoluna-gfw-parent
-      - 依存ライブラリの管理とビルド用プラグインの推奨設定を提供する。
-      - 無
-      - 有*1
-      - 有*1
-    * - \ (2)
-      - terasoluna-gfw-common-libraries
-      - 共通ライブラリのうち、Javaソースコードを含むプロジェクトの構成を定義する。依存関係としてpom.xmlに追加する必要はない。(5.2.0から追加)
-      - 無
-      - 無
-      - 無
-    * - \ (3)
-      - terasoluna-gfw-dependencies
-      - 共通ライブラリのうち、依存関係定義のみを提供するプロジェクト(terasoluna-gfw-parent以外)の構成を定義する。依存関係としてpom.xmlに追加する必要はない。(5.2.0から追加)
-      - 無
-      - 無
-      - 無
-    * - \ (4)
-      - terasoluna-gfw-common
-      - Webに依存しない汎用的に使用できる機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-common-dependenciesをpom.xmlに追加する。
-      - 有
-      - 有*2
-      - 有*2
-    * - \ (5)
-      - terasoluna-gfw-common-dependencies
-      - terasoluna-gfw-commonプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有
-      - 有
-    * - \ (6)
-      - terasoluna-gfw-jodatime
-      - Joda Timeに依存する機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-jodatime-dependenciesをpom.xmlに追加する。(5.0.0から追加)
-      - 有
-      - 有*2
-      - 有*2
-    * - \ (7)
-      - terasoluna-gfw-jodatime-dependencies
-      - terasoluna-gfw-jodatimeプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有
-      - 有
-    * - \ (8)
-      - terasoluna-gfw-web
-      - Webアプリケーションを作成する場合に使用する機能を提供する。Viewに依存しない機能を集約している。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-web-dependenciesをpom.xmlに追加する。
-      - 有
-      - 有*2
-      - 有*2
-    * - \ (9)
-      - terasoluna-gfw-web-dependencies
-      - terasoluna-gfw-webプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有
-      - 有
-    * - \ (10)
-      - terasoluna-gfw-web-jsp
-      - ViewにJSPを採用するWebアプリケーションを作成する場合に使用する機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-web-jsp-dependenciesをpom.xmlに追加する。
-      - 有
-      - 無*2*6
-      - 無*2*6
-    * - \ (11)
-      - terasoluna-gfw-web-jsp-dependencies
-      - terasoluna-gfw-web-jspプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 無*6
-      - 無*6
-    * - \ (12)
-      - terasoluna-gfw-security-web
-      - Spring Securityの拡張部品を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-security-web-dependenciesをpom.xmlに追加する。
-      - 有
-      - 有*2
-      - 有*2
-    * - \ (13)
-      - terasoluna-gfw-security-web-dependencies
-      - Spring Securityを使用する場合の依存関係定義(Web関連)と、terasoluna-gfw-security-webプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有
-      - 有
-    * - \ (14)
-      - terasoluna-gfw-string
-      - 文字列処理に関連する機能を提供する。(5.1.0から追加)
-      - 有
-      - 無
-      - 無
-    * - \ (15)
-      - terasoluna-gfw-codepoints
-      - 対象の文字列を構成するコードポイントがコードポイント集合に含まれることをチェックする機能を提供する。(5.1.0から追加)
-      - 有
-      - 無*3
-      - 無*3
-    * - \ (16)
-      - terasoluna-gfw-validator
-      - 汎用的なBean Validationの制約アノテーションを追加して提供する。(5.1.0から追加)
-      - 有
-      - 無
-      - 無
-    * - \ (17)
-      - terasoluna-gfw-security-core-dependencies
-      - Spring Securityを使用する場合の依存関係定義(Web以外)を提供する。(5.2.0から追加)
-      - 無
-      - 有
-      - 有
-    * - \ (18)
-      - terasoluna-gfw-mybatis3-dependencies
-      - MyBatis3を使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有*4
-      - 有*4
-    * - \ (19)
-      - terasoluna-gfw-jpa-dependencies
-      - JPAを使用する場合の依存関係定義を提供する。(5.2.0から追加)
-      - 無
-      - 有*5
-      - 有*5
-    * - \ (20)
-      - terasoluna-gfw-recommended-dependencies
-      - Webに依存しない推奨ライブラリへの依存関係定義を提供する。
-      - 無
-      - 有
-      - 有
-    * - \ (21)
-      - terasoluna-gfw-recommended-web-dependencies
-      - Webに依存する推奨ライブラリへの依存関係定義を提供する。
-      - 無
-      - 有
-      - 有
-
-.. raw:: latex
-
-   \newpage
+  * - 項番
+    - プロジェクト名
+    - 概要
+    - Javaソースコード有無
+    - マルチプロジェクト構成のブランクプロジェクト組込
+    - シングルプロジェクト構成のブランクプロジェクト組込
+  * - \ (1)
+    - terasoluna-gfw-parent
+    - 依存ライブラリの管理とビルド用プラグインの推奨設定を提供する。
+    - 無
+    - 有*1
+    - 有*1
+  * - \ (2)
+    - terasoluna-gfw-common-libraries
+    - 共通ライブラリのうち、Javaソースコードを含むプロジェクトの構成を定義する。依存関係としてpom.xmlに追加する必要はない。
+    - 無
+    - 無
+    - 無
+  * - \ (3)
+    - terasoluna-gfw-dependencies
+    - 共通ライブラリのうち、依存関係定義のみを提供するプロジェクト(terasoluna-gfw-parent以外)の構成を定義する。依存関係としてpom.xmlに追加する必要はない。
+    - 無
+    - 無
+    - 無
+  * - \ (4)
+    - terasoluna-gfw-common
+    - Webに依存しない汎用的に使用できる機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-common-dependenciesをpom.xmlに追加する。
+    - 有
+    - 有*2
+    - 有*2
+  * - \ (5)
+    - terasoluna-gfw-common-dependencies
+    - terasoluna-gfw-commonプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。
+    - 無
+    - 有
+    - 有
+  * - \ (6)
+    - terasoluna-gfw-jodatime
+    - | \ **非推奨**\ \*6
+      | Joda Timeに依存する機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-jodatime-dependenciesをpom.xmlに追加する。
+    - 有
+    - 無
+    - 無
+  * - \ (7)
+    - terasoluna-gfw-jodatime-dependencies
+    - | \ **非推奨**\ \*6
+      | terasoluna-gfw-jodatimeプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。
+    - 無
+    - 無
+    - 無
+  * - \ (8)
+    - terasoluna-gfw-web
+    - Webアプリケーションを作成する場合に使用する機能を提供する。Viewに依存しない機能を集約している。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-web-dependenciesをpom.xmlに追加する。
+    - 有
+    - 有*2
+    - 有*2
+  * - \ (9)
+    - terasoluna-gfw-web-dependencies
+    - terasoluna-gfw-webプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。
+    - 無
+    - 有
+    - 有
+  * - \ (10)
+    - terasoluna-gfw-web-jsp
+    - ViewにJSPを採用するWebアプリケーションを作成する場合に使用する機能を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-web-jsp-dependenciesをpom.xmlに追加する。
+    - 有
+    - 無*2*6
+    - 無*2*6
+  * - \ (11)
+    - terasoluna-gfw-web-jsp-dependencies
+    - terasoluna-gfw-web-jspプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。
+    - 無
+    - 無*6
+    - 無*6
+  * - \ (12)
+    - terasoluna-gfw-security-web
+    - Spring Securityの拡張部品を提供する。本ライブラリを利用する場合は、依存関係としてterasoluna-gfw-security-web-dependenciesをpom.xmlに追加する。
+    - 有
+    - 有*2
+    - 有*2
+  * - \ (13)
+    - terasoluna-gfw-security-web-dependencies
+    - Spring Securityを使用する場合の依存関係定義(Web関連)と、terasoluna-gfw-security-webプロジェクトが提供する機能を使用する場合の依存関係定義を提供する。
+    - 無
+    - 有
+    - 有
+  * - \ (14)
+    - terasoluna-gfw-string
+    - 文字列処理に関連する機能を提供する。
+    - 有
+    - 無
+    - 無
+  * - \ (15)
+    - terasoluna-gfw-codepoints
+    - 対象の文字列を構成するコードポイントがコードポイント集合に含まれることをチェックする機能を提供する。
+    - 有
+    - 無*3
+    - 無*3
+  * - \ (16)
+    - terasoluna-gfw-validator
+    - 汎用的なBean Validationの制約アノテーションを追加して提供する。
+    - 有
+    - 無
+    - 無
+  * - \ (17)
+    - terasoluna-gfw-security-core-dependencies
+    - Spring Securityを使用する場合の依存関係定義(Web以外)を提供する。
+    - 無
+    - 有
+    - 有
+  * - \ (18)
+    - terasoluna-gfw-mybatis3-dependencies
+    - MyBatis3を使用する場合の依存関係定義を提供する。
+    - 無
+    - 有*4
+    - 有*4
+  * - \ (19)
+    - terasoluna-gfw-jpa-dependencies
+    - JPAを使用する場合の依存関係定義を提供する。
+    - 無
+    - 有*5
+    - 有*5
+  * - \ (20)
+    - terasoluna-gfw-recommended-dependencies
+    - Webに依存しない推奨ライブラリへの依存関係定義を提供する。
+    - 無
+    - 有
+    - 有
+  * - \ (21)
+    - terasoluna-gfw-recommended-web-dependencies
+    - Webに依存する推奨ライブラリへの依存関係定義を提供する。
+    - 無
+    - 有
+    - 有
 
 #. | \ ``<dependency>``\ 要素ではないが、各プロジェクトの\ ``<parent>``\ 要素として組み込まれる。
 #. | \ ``<dependency>``\ 要素ではないが、\ ``<dependency>``\ 要素からの推移的依存関係として組み込まれる。
-#. | 使用するコードポイント集合に応じて複数のアーティファクトを提供している。詳細は :ref:`StringProcessingHowToUseCodePointsClasses` を参照されたい。
+#. | 使用するコードポイント集合に応じて複数のアーティファクトを提供している。詳細は\ :ref:`StringProcessingHowToUseCodePointsClasses`\ を参照されたい。
 #. | データアクセスに、MyBatis3を使用する場合に標準で組み込まれる共通ライブラリ
 #. | データアクセスに、JPAを使用する場合に用いる共通ライブラリ。Macchinetta Server Framework (1.x)では使用しない
 #. | Viewに、JSPを使用する場合に用いる共通ライブラリ。Macchinetta Server Framework (1.x) Thymeleaf版では使用しない
@@ -637,19 +615,19 @@ Javaソースコードを含まないものは、ライブラリの依存関係�
 なお、プロジェクトの依存関係は以下の通りである。
 
 .. figure:: images_FrameworkStack/FrameworkStackProjectDependencies.png
-    :width: 75%
+  :width: 75%
 
 .. note::
 
-  一部を除き、共通ライブラリにはプロジェクト名末尾に"dependencies"が付与されたプロジェクトが存在する。
-  (例えば、terasoluna-gfw-commonに対応するterasoluna-gfw-common-dependenciesなどである)
+  一部を除き、共通ライブラリにはプロジェクト名末尾に"dependencies"が付与されたプロジェクトが存在する。(例えば、terasoluna-gfw-commonに対応するterasoluna-gfw-common-dependenciesなどである)
 
-  このようなプロジェクトでは、共通ライブラリへの依存関係定義の他に、利用を推奨するOSSライブラリへの依存関係定義を提供している為、
-  共通ライブラリを利用する際は"dependencies"が付与されたプロジェクトの方を、依存関係としてpom.xmlに追加することを推奨する。
+  このようなプロジェクトでは、共通ライブラリへの依存関係定義の他に、利用を推奨するOSSライブラリへの依存関係定義を提供している為、共通ライブラリを利用する際は"dependencies"が付与されたプロジェクトの方を、依存関係としてpom.xmlに追加することを推奨する。
 
 .. note::
 
-  version 1.8.1.SP1.RELEASEでは TERASOLUNA Server Framework for Java 5.7.1.SP1.RELEASE の共通ライブラリを使用している。
+  version 1.9.0.RELEASEでは TERASOLUNA Server Framework for Java 5.8.0.RELEASE の共通ライブラリを使用している。
+
+|
 
 terasoluna-gfw-common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -658,36 +636,38 @@ terasoluna-gfw-commonは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/ExceptionHandling`
-      - 例外クラス
-      - 汎用的に使用できる例外クラスを提供する。
-    * -
-      - 例外ロガー
-      - アプリケーション内で発生した例外をログに出力するためのロガークラスを提供する。
-    * -
-      - 例外コード
-      - 例外クラスに対応する例外コード(メッセージID)を解決するための仕組み(クラス)を提供する。
-    * -
-      - 例外ログ出力インターセプタ
-      - ドメイン層で発生した例外をログ出力するためのインターセプタクラス(AOP)を提供する。
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/SystemDate`
-      - システム時刻ファクトリ
-      - システム時刻を取得するためのクラスを提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/Codelist`
-      - コードリスト
-      - コードリストを生成するためのクラスを提供する。
-    * - :doc:`../ArchitectureInDetail/DataAccessDetail/DataAccessCommon`
-      - クエリエスケープ
-      - SQL及びJPQLにバインドする値のエスケープ処理を行うクラスを提供する。
-    * -
-      - シーケンサ
-      - シーケンス値を取得するためのクラスを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/ExceptionHandling`\
+    - 例外クラス
+    - 汎用的に使用できる例外クラスを提供する。
+  * -
+    - 例外ロガー
+    - アプリケーション内で発生した例外をログに出力するためのロガークラスを提供する。
+  * -
+    - 例外コード
+    - 例外クラスに対応する例外コード(メッセージID)を解決するための仕組み(クラス)を提供する。
+  * -
+    - 例外ログ出力インターセプタ
+    - ドメイン層で発生した例外をログ出力するためのインターセプタクラス(AOP)を提供する。
+  * - \ :doc:`../ArchitectureInDetail/GeneralFuncDetail/SystemDate`\
+    - システム時刻ファクトリ
+    - JSR-310 Date and Time APIを利用してシステム時刻を取得するためのクラスを提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/Codelist`\
+    - コードリスト
+    - コードリストを生成するためのクラスを提供する。
+  * - \ :doc:`../ArchitectureInDetail/DataAccessDetail/DataAccessCommon`\
+    - クエリエスケープ
+    - SQL及びJPQLにバインドする値のエスケープ処理を行うクラスを提供する。
+  * -
+    - シーケンサ
+    - シーケンス値を取得するためのクラスを提供する。
+
+|
 
 terasoluna-gfw-string
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -696,16 +676,17 @@ terasoluna-gfw-stringは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/StringProcessing`
-      - 半角全角変換
-      - 半角文字列と全角文字列のマッピングテーブルに基づき、入力文字列の半角文字を全角に変換する処理と全角文字を半角に変換する処理を行うクラスを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/GeneralFuncDetail/StringProcessing`\
+    - 半角全角変換
+    - 半角文字列と全角文字列のマッピングテーブルに基づき、入力文字列の半角文字を全角に変換する処理と全角文字を半角に変換する処理を行うクラスを提供する。
 
+|
 
 terasoluna-gfw-codepoints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -714,19 +695,20 @@ terasoluna-gfw-codepointsは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/StringProcessing`
-      - コードポイントチェック
-      - 対象の文字列を構成するコードポイントが、定義されたコードポイント集合に含まれることをチェックするクラスを提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`
-      - コードポイントチェック用Bean Validation制約アノテーション
-      - コードポイントチェックをBean Validationで行うための制約アノテーションを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/GeneralFuncDetail/StringProcessing`\
+    - コードポイントチェック
+    - 対象の文字列を構成するコードポイントが、定義されたコードポイント集合に含まれることをチェックするクラスを提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\
+    - コードポイントチェック用Bean Validation制約アノテーション
+    - コードポイントチェックをBean Validationで行うための制約アノテーションを提供する。
 
+|
 
 terasoluna-gfw-validator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -735,36 +717,46 @@ terasoluna-gfw-validatorは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`
-      - バイト長チェック用Bean Validation制約アノテーション
-      - 入力文字列の文字コードにおけるバイト長が、指定した最大値以下であること、最小値以上であることのチェックをBean Validationで行うための制約アノテーションを提供する。
-    * -
-      - プロパティ値比較チェック用Bean Validation制約アノテーション
-      - 2つのプロパティ値の比較チェックをBean Validationで行うための制約アノテーションを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/Validation`\
+    - バイト長チェック用Bean Validation制約アノテーション
+    - 入力文字列の文字コードにおけるバイト長が、指定した最大値以下であること、最小値以上であることのチェックをBean Validationで行うための制約アノテーションを提供する。
+  * -
+    - プロパティ値比較チェック用Bean Validation制約アノテーション
+    - 2つのプロパティ値の比較チェックをBean Validationで行うための制約アノテーションを提供する。
+
+|
 
 terasoluna-gfw-jodatime
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 terasoluna-gfw-jodatimeは以下の部品を提供している。
 
+.. note:: 
+
+  Joda-Time は、Java SE 8以前の日付計算をサポートするための機能であり、Java SE 8以降はJSR-310 Date and Time APIを使用することが推奨されている。
+
+  詳しくは、\ :doc:`../ArchitectureInDetail/GeneralFuncDetail/DateAndTime`\ および\ :doc:`../ArchitectureInDetail/GeneralFuncDetail/SystemDate`\ を参照されたい。
+
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/SystemDate`
-      - Joda Time用システム時刻ファクトリ
-      - Joda TimeのAPIを利用してシステム時刻を取得するためのクラスを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ `システム日時(1.8.1.SP1.RELEASE) <https://macchinetta.github.io/server-guideline-thymeleaf/1.8.1.SP1.RELEASE/ja/ArchitectureInDetail/GeneralFuncDetail/SystemDate.html>`_\
+    - Joda Time用システム時刻ファクトリ
+    - | Joda TimeのAPIを利用してシステム時刻を取得するためのクラスを提供する。
+      | \ **非推奨の為、現バージョンのガイドラインでは案内していない。**\ 
 
+|
 
 terasoluna-gfw-web
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -773,38 +765,40 @@ terasoluna-gfw-webは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/DoubleSubmitProtection`
-      - トランザクショントークンチェック
-      - リクエストの二重送信からWebアプリケーションを守るための仕組み(クラス)を提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/ExceptionHandling`
-      - 例外ハンドラ
-      - 共通ライブラリが提供する例外ハンドリングの部品と連携するための例外ハンドラクラス(Spring MVC提供のクラスのサブクラス)を提供する。
-    * -
-      - 例外ログ出力インターセプタ
-      - Spring MVCの例外ハンドラがハンドリングした例外をログ出力するためのインターセプタクラス(AOP)を提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/Codelist`
-      - コードリスト埋込インターセプタ
-      - Viewからコードリストを取得できるようにするために、コードリストの情報をリクエストスコープに格納するためのインターセプタクラス(Spring MVC Interceptor)を提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/FileDownload`
-      - 汎用ダウンロードView
-      - ストリームから取得したデータを、ダウンロード用のストリームに出力するための抽象クラスを提供する。
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/Logging`
-      - トラッキングID格納用サーブレットフィルタ
-      - トレーサビリティを向上させるために、
-        クライアントから指定されたトラッキングIDを、ロガーのMDC(Mapped Diagnostic Context)、リクエストスコープ、レスポンスヘッダに設定するためのサーブレットフィルタクラスを提供する。
-        (クライアントからトラッキングIDの指定がない場合は、本クラスでトラッキングIDを生成する)
-    * -
-      - 汎用MDC格納用サーブレットフィルタ
-      - ロガーのMDCに任意の値を設定するための抽象クラスを提供する。
-    * -
-      - MDCクリア用サーブレットフィルタ
-      - ロガーのMDCに格納されている情報をクリアするためのサーブレットフィルタクラスを提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/DoubleSubmitProtection`\
+    - トランザクショントークンチェック
+    - リクエストの二重送信からWebアプリケーションを守るための仕組み(クラス)を提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/ExceptionHandling`\
+    - 例外ハンドラ
+    - 共通ライブラリが提供する例外ハンドリングの部品と連携するための例外ハンドラクラス(Spring MVC提供のクラスのサブクラス)を提供する。
+  * -
+    - 例外ログ出力インターセプタ
+    - Spring MVCの例外ハンドラがハンドリングした例外をログ出力するためのインターセプタクラス(AOP)を提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/Codelist`\
+    - コードリスト埋込インターセプタ
+    - Viewからコードリストを取得できるようにするために、コードリストの情報をリクエストスコープに格納するためのインターセプタクラス(Spring MVC Interceptor)を提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/FileDownload`\
+    - 汎用ダウンロードView
+    - ストリームから取得したデータを、ダウンロード用のストリームに出力するための抽象クラスを提供する。
+  * - \ :doc:`../ArchitectureInDetail/GeneralFuncDetail/Logging`\
+    - トラッキングID格納用サーブレットフィルタ
+    - トレーサビリティを向上させるために、
+      クライアントから指定されたトラッキングIDを、ロガーのMDC(Mapped Diagnostic Context)、リクエストスコープ、レスポンスヘッダに設定するためのサーブレットフィルタクラスを提供する。
+      (クライアントからトラッキングIDの指定がない場合は、本クラスでトラッキングIDを生成する)
+  * -
+    - 汎用MDC格納用サーブレットフィルタ
+    - ロガーのMDCに任意の値を設定するための抽象クラスを提供する。
+  * -
+    - MDCクリア用サーブレットフィルタ
+    - ロガーのMDCに格納されている情報をクリアするためのサーブレットフィルタクラスを提供する。
+
+|
 
 terasoluna-gfw-web-jsp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -813,33 +807,35 @@ terasoluna-gfw-web-jspは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/DoubleSubmitProtection`
-      - トランザクショントークン出力用のJSPタグ
-      - トランザクショントークンをhidden項目として出力するためのJSPタグライブラリを提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/Pagination`
-      - ページネーションリンク表示用のJSPタグ
-      - Spring Data Commons提供のクラスと連携してページネーションリンクを表示するためのJSPタグライブラリを提供する。
-    * - :doc:`../ArchitectureInDetail/WebApplicationDetail/MessageManagement`
-      - 結果メッセージ表示用のJSPタグ
-      - 処理結果を表示するためのJSPタグライブラリを提供する。
-    * - EL Functions
-      - XSS対策用EL関数
-      - XSS対策用のEL関数を提供する。
-    * -
-      - URL用EL関数
-      - URLエンコーディングなどのURL用のEL関数を提供する。
-    * -
-      - DOM変換用EL関数
-      - DOM文字列に変換するためのEL関数を提供する。
-    * -
-      - ユーティリティEL関数
-      - 汎用的なユーティリティ処理を行うためのEL関数を提供する。
+  * - 分類
+    - 部品名
+    - 説明
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/DoubleSubmitProtection`\
+    - トランザクショントークン出力用のJSPタグ
+    - トランザクショントークンをhidden項目として出力するためのJSPタグライブラリを提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/Pagination`\
+    - ページネーションリンク表示用のJSPタグ
+    - Spring Data Commons提供のクラスと連携してページネーションリンクを表示するためのJSPタグライブラリを提供する。
+  * - \ :doc:`../ArchitectureInDetail/WebApplicationDetail/MessageManagement`\
+    - 結果メッセージ表示用のJSPタグ
+    - 処理結果を表示するためのJSPタグライブラリを提供する。
+  * - EL Functions
+    - XSS対策用EL関数
+    - XSS対策用のEL関数を提供する。
+  * -
+    - URL用EL関数
+    - URLエンコーディングなどのURL用のEL関数を提供する。
+  * -
+    - DOM変換用EL関数
+    - DOM文字列に変換するためのEL関数を提供する。
+  * -
+    - ユーティリティEL関数
+    - 汎用的なユーティリティ処理を行うためのEL関数を提供する。
+
+|
 
 terasoluna-gfw-security-web
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -848,18 +844,17 @@ terasoluna-gfw-security-webは以下の部品を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.30\linewidth}|p{0.50\linewidth}|
 .. list-table::
-    :header-rows: 1
-    :widths: 20 30 50
+  :header-rows: 1
+  :widths: 20 30 50
 
-    * - 分類
-      - 部品名
-      - 説明
-    * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/Logging`
-      - 認証ユーザ名格納用サーブレットフィルタ
-      - トレーサビリティを向上させるために、
-        認証ユーザ名をロガーのMDCに設定するためのサーブレットフィルタクラスを提供する。
-
+  * - 分類
+    - 部品名
+    - 説明
+  * - :doc:`../ArchitectureInDetail/GeneralFuncDetail/Logging`
+    - 認証ユーザ名格納用サーブレットフィルタ
+    - トレーサビリティを向上させるために、
+      認証ユーザ名をロガーのMDCに設定するためのサーブレットフィルタクラスを提供する。
 
 .. raw:: latex
 
-   \newpage
+  \newpage

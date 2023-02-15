@@ -237,10 +237,6 @@ Spring Dataより提供されているページ検索用の機能は、以下の
    :width: 80%
    :align: center
 
- .. raw:: latex
-
-    \newpage
-
  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
  .. list-table::
     :header-rows: 1
@@ -258,10 +254,6 @@ Spring Dataより提供されているページ検索用の機能は、以下の
       - | ページ移動するためのURLを指定するための属性。
     * - | (5)
       - | ページ移動するためのリンクの表示テキストを指定する。
-
- .. raw:: latex
-
-    \newpage
 
 |
 
@@ -317,10 +309,6 @@ Spring Dataより提供されているページネーション機能を利用し
       - | 生成したHTMLを、クライアント(ブラウザ)に返却する。
     * - | (9)
       - | ページネーションリンクを押下すると、該当ページを表示するためリクエストが送信される。
-
- .. raw:: latex
-
-    \newpage
 
  .. note:: **Repositoryの実装について**
 
@@ -385,18 +373,17 @@ Spring Dataのページネーション機能を有効化するための設定
 
  .. code-block:: java
 
-    @RequestMapping("list")
+    @GetMapping("list")
     public String list(@Validated ArticleSearchCriteriaForm form,
             BindingResult result,
             Pageable pageable, // (1)
             Model model) {
 
-        ArticleSearchCriteria criteria = beanMapper.map(form,
-                ArticleSearchCriteria.class);
+        ArticleSearchCriteria criteria = beanMapper.map(form); // (2)
 
-        Page<Article> page = articleService.searchArticle(criteria, pageable); // (2)
+        Page<Article> page = articleService.searchArticle(criteria, pageable); // (3)
 
-        model.addAttribute("page", page); // (3)
+        model.addAttribute("page", page); // (4)
 
         return "article/list";
     }
@@ -412,8 +399,11 @@ Spring Dataのページネーション機能を有効化するための設定
       - | ハンドラメソッドの引数として ``Pageable`` を指定する。
         | ``Pageable`` オブジェクトには、ページ検索に必要な情報(検索対象のページ位置、取得件数、ソート条件)が格納されている。
     * - | (2)
-      - | Serviceのメソッドの引数に ``Pageable`` オブジェクトを指定して呼び出す。
+      - | BeanのマッピングにはMapStructを用いて作成したマッパーインタフェースを使用する。
+        | Mapperインタフェースの定義方法については\ :doc:`../GeneralFuncDetail/BeanMapping`\を参照されたい。
     * - | (3)
+      - | Serviceのメソッドの引数に ``Pageable`` オブジェクトを指定して呼び出す。
+    * - | (4)
       - | Serviceから返却された検索結果( ``Page`` オブジェクト )を ``Model`` に追加する。 ``Model`` に追加することで、View(テンプレートHTML)から参照できるようになる。
 
  .. note:: **リクエストパラメータにページ検索に必要な情報の指定がない場合の動作について**
@@ -437,7 +427,7 @@ Spring Dataのページネーション機能を有効化するための設定
 
  .. code-block:: java
 
-    @RequestMapping("list")
+    @GetMapping("list")
     public String list(@Validated ArticleSearchCriteriaForm form,
             BindingResult result,
             @PageableDefault( // (1)
@@ -851,7 +841,7 @@ Spring Dataのページネーション機能を有効化するための設定
 
 .. code-block:: xml
 
-    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+    <bean id="templateEngine" class="org.thymeleaf.spring6.SpringTemplateEngine">
 
         <!-- omitted -->
 
@@ -886,6 +876,10 @@ Spring Dataのページネーション機能を有効化するための設定
 
 | 以降で説明する実装例は、 ``th:fragment`` 属性を利用してページネーションリンクのHTMLを部品化している。
 | ページネーションリンクは、アプリケーション内で共通的に使用されるため部品化することを推奨する。HTMLの部品化については、「:ref:`Thymeleafのテンプレートレイアウト機能を使用したHTMLの部品化 <templatelayout_overview_fragment>` 」を参照されたい。
+| また、実装例のhtmlに記述している\ ``${requestURI}``\は、Thymeleafから\ ``Model``\を介して\ ``HttpServletRequest``\内の\ ``requestURI``\を利用する実装の例である。
+  ページネーションにおける\ ``requestURI``\の利用は、アプリケーション全体で共通的に必要になるケースが多いと考えられるため、
+  ここでは各ハンドラメソッドで個別に\ ``Model``\に配置するのではなく、\ ``@ControllerAdvice``\を利用してController全体の共通処理として実装する例を示す。
+  Thymeleafから\ ``HttpServletRequest``\の内容を利用する際の注意点については、「:ref:`Web オブジェクト（HttpServletRequest、 HttpSession等）の利用<thymeleaf_how_to_extend_add_web_object>` 」を参照されたい。
 
 以降、以下のファイル構成を前提に実装例を示す。
 
@@ -900,6 +894,29 @@ Spring Dataのページネーション機能を有効化するための設定
                 serchResult.html  (ページネーションを行う画面を実装するテンプレートHTML)
 
 
+- ControllerAdvice
+
+ .. code-block:: java
+
+    @ControllerAdvice
+    public class ThymeleafCommonControllerAdvice {
+        @ModelAttribute("requestURI") // (1)
+        public String requestURI(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+    }
+
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+    :header-rows: 1
+    :widths: 10 90
+    :class: longtable
+  
+    * - 項番
+      - 説明
+    * - | (1)
+      - | テンプレートHTML(フラグメント)の\ ``${requestURI}``\がアクセスするための\ ``@ModelAttribute``\。
+
 - テンプレートHTML(フラグメント)
 
  .. code-block:: html
@@ -911,7 +928,7 @@ Spring Dataのページネーション機能を有効化するための設定
        
       <!--/* (3), (4) */-->
       <ul th:if="*{totalElements} != 0" class="pagination"
-        th:with="pageLinkMaxDispNum = 10, disabledHref = 'javascript:void(0)', currentUrl = ${#request.requestURI}">
+        th:with="pageLinkMaxDispNum = 10, disabledHref = 'javascript:void(0)', currentUrl = ${requestURI}">
         
         <!--/* (5) */-->
         <li th:class="*{isFirst()} ? 'disabled'">
@@ -1410,10 +1427,6 @@ Appendix
         | この設定を変更する場合は、 ``SortHandlerMethodArgumentResolver`` の ``qualifierDelimiter`` 設定も合わせて変更する必要がある。
       - | "``_``"
 
- .. raw:: latex
-
-    \newpage
-
  .. note:: **maxPageSizeの設定値について**
 
     デフォルト値は ``2000`` であるが、アプリケーションが許容する最大値に設定を変更することを推奨する。
@@ -1515,10 +1528,6 @@ Appendix
     * - | (10)
       - | ``Order`` のコンストラクタの第2引数に、ソート項目を指定する。
 
- .. raw:: latex
-
-    \newpage
-
 |
 
 .. _paginatin_appendix_sortHandlerMethodArgumentResolver:
@@ -1561,4 +1570,3 @@ Appendix
 .. raw:: latex
 
    \newpage
-
