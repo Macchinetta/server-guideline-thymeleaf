@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4.1. テンプレートエンジン(Thymeleaf) &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</title>
+    <title>4.1. テンプレートエンジン(Thymeleaf) &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</title>
     
     <link rel="stylesheet" href="../../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -12,7 +12,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0.RELEASE',
+        VERSION:     '1.8.2.RELEASE',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="index.html" title="4. Webアプリ開発機能"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">4. Webアプリ開発機能</a> &#187;</li> 
       </ul>
     </div>
@@ -59,7 +59,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#id5">4.1.1.2. Thymeleafが提供する基本的な機能</a><ul>
-<li><a class="reference internal" href="#thymeleafstandarddialect">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a></li>
+<li><a class="reference internal" href="#id6">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#thymeleaf-spring">4.1.1.3. Thymeleaf + Spring</a><ul>
@@ -91,17 +91,12 @@
 <li><a class="reference internal" href="#custom-dialect-how-to-use">4.1.3.1.4. カスタムダイアレクトの使用方法</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#web-httpservletrequest-httpsession">4.1.3.2. Web オブジェクト（HttpServletRequest、 HttpSession等）の利用</a><ul>
-<li><a class="reference internal" href="#controller">4.1.3.2.1. Controllerの実装</a></li>
-<li><a class="reference internal" href="#id22">4.1.3.2.2. Thymeleafテンプレートの実装</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#appendix">4.1.4. Appendix</a><ul>
 <li><a class="reference internal" href="#thymeleafappendixtemplatecache">4.1.4.1. テンプレートキャッシュの適用</a><ul>
-<li><a class="reference internal" href="#id24">4.1.4.1.1. テンプレートキャッシュ機能の説明</a></li>
-<li><a class="reference internal" href="#id25">4.1.4.1.2. アプリケーションの設定</a></li>
+<li><a class="reference internal" href="#id23">4.1.4.1.1. テンプレートキャッシュ機能の説明</a></li>
+<li><a class="reference internal" href="#id24">4.1.4.1.2. アプリケーションの設定</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#decoupled-template-logic">4.1.4.2. Decoupled Template Logicの適用</a><ul>
@@ -112,7 +107,7 @@
 <li><a class="reference internal" href="#javascript">4.1.4.3. JavaScriptのテンプレート化</a><ul>
 <li><a class="reference internal" href="#thymeleaf-javascript-template-overview">4.1.4.3.1. JavaScriptテンプレートの適用</a></li>
 <li><a class="reference internal" href="#htmljavascript">4.1.4.3.2. HTMLファイル内のJavaScriptのテンプレート化</a></li>
-<li><a class="reference internal" href="#id29">4.1.4.3.3. JavaScriptファイルのテンプレート化</a></li>
+<li><a class="reference internal" href="#id28">4.1.4.3.3. JavaScriptファイルのテンプレート化</a></li>
 </ul>
 </li>
 </ul>
@@ -158,66 +153,61 @@
 <div class="contents local topic" id="id1">
 <p class="topic-title first">目次</p>
 <ul class="simple">
-<li><a class="reference internal" href="#overview" id="id30">Overview</a><ul>
-<li><a class="reference internal" href="#id2" id="id31">Thymeleafとは</a><ul>
-<li><a class="reference internal" href="#id4" id="id32">Thymeleafの特性</a></li>
+<li><a class="reference internal" href="#overview" id="id29">Overview</a><ul>
+<li><a class="reference internal" href="#id2" id="id30">Thymeleafとは</a><ul>
+<li><a class="reference internal" href="#id4" id="id31">Thymeleafの特性</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id5" id="id33">Thymeleafが提供する基本的な機能</a><ul>
-<li><a class="reference internal" href="#thymeleafstandarddialect" id="id34">Thymeleafスタンダードダイアレクト</a></li>
+<li><a class="reference internal" href="#id5" id="id32">Thymeleafが提供する基本的な機能</a><ul>
+<li><a class="reference internal" href="#id6" id="id33">Thymeleafスタンダードダイアレクト</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#thymeleaf-spring" id="id35">Thymeleaf + Spring</a><ul>
-<li><a class="reference internal" href="#id13" id="id36">Thymeleaf + Springを適用した処理フロー</a></li>
-<li><a class="reference internal" href="#id14" id="id37">Thymeleaf + Springの機能</a></li>
+<li><a class="reference internal" href="#thymeleaf-spring" id="id34">Thymeleaf + Spring</a><ul>
+<li><a class="reference internal" href="#id13" id="id35">Thymeleaf + Springを適用した処理フロー</a></li>
+<li><a class="reference internal" href="#id14" id="id36">Thymeleaf + Springの機能</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15" id="id38">Thymeleafテンプレートの実装</a><ul>
-<li><a class="reference internal" href="#html" id="id39">テンプレートHTMLの実装</a></li>
-<li><a class="reference internal" href="#comment-blocks" id="id40">コメント文</a></li>
-<li><a class="reference internal" href="#thymeleafoverviewdecoupledtemplatelogic" id="id41">テンプレートHTMLからのテンプレートロジックの分離</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#how-to-use" id="id42">How to use</a><ul>
-<li><a class="reference internal" href="#id18" id="id43">アプリケーションの設定</a><ul>
-<li><a class="reference internal" href="#configuration-of-blank-project-label" id="id44">ブランクプロジェクトの設定</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#view" id="id45">Viewの実装</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#how-to-extend" id="id46">How to extend</a><ul>
-<li><a class="reference internal" href="#thymeleaf-how-to-extend-add-custom-dialect" id="id47">カスタムダイアレクトの追加</a><ul>
-<li><a class="reference internal" href="#processor" id="id48">Processorの実装</a></li>
-<li><a class="reference internal" href="#expressionobject" id="id49">ExpressionObjectの実装</a></li>
-<li><a class="reference internal" href="#dialect" id="id50">Dialectの実装</a></li>
-<li><a class="reference internal" href="#custom-dialect-how-to-use" id="id51">カスタムダイアレクトの使用方法</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#web-httpservletrequest-httpsession" id="id52">Web オブジェクト（HttpServletRequest、 HttpSession等）の利用</a><ul>
-<li><a class="reference internal" href="#controller" id="id53">Controllerの実装</a></li>
-<li><a class="reference internal" href="#id22" id="id54">Thymeleafテンプレートの実装</a></li>
+<li><a class="reference internal" href="#id15" id="id37">Thymeleafテンプレートの実装</a><ul>
+<li><a class="reference internal" href="#html" id="id38">テンプレートHTMLの実装</a></li>
+<li><a class="reference internal" href="#comment-blocks" id="id39">コメント文</a></li>
+<li><a class="reference internal" href="#thymeleafoverviewdecoupledtemplatelogic" id="id40">テンプレートHTMLからのテンプレートロジックの分離</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#appendix" id="id55">Appendix</a><ul>
-<li><a class="reference internal" href="#thymeleafappendixtemplatecache" id="id56">テンプレートキャッシュの適用</a><ul>
-<li><a class="reference internal" href="#id24" id="id57">テンプレートキャッシュ機能の説明</a></li>
-<li><a class="reference internal" href="#id25" id="id58">アプリケーションの設定</a></li>
+<li><a class="reference internal" href="#how-to-use" id="id41">How to use</a><ul>
+<li><a class="reference internal" href="#id18" id="id42">アプリケーションの設定</a><ul>
+<li><a class="reference internal" href="#configuration-of-blank-project-label" id="id43">ブランクプロジェクトの設定</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#decoupled-template-logic" id="id59">Decoupled Template Logicの適用</a><ul>
-<li><a class="reference internal" href="#thymeleafapplydecoupledtemplatelogic" id="id60">アプリケーションの設定</a></li>
-<li><a class="reference internal" href="#html-xml" id="id61">HTML（プロトタイプ）とロジックXMLの実装</a></li>
+<li><a class="reference internal" href="#view" id="id44">Viewの実装</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#javascript" id="id62">JavaScriptのテンプレート化</a><ul>
-<li><a class="reference internal" href="#thymeleaf-javascript-template-overview" id="id63">JavaScriptテンプレートの適用</a></li>
-<li><a class="reference internal" href="#htmljavascript" id="id64">HTMLファイル内のJavaScriptのテンプレート化</a></li>
-<li><a class="reference internal" href="#id29" id="id65">JavaScriptファイルのテンプレート化</a></li>
+<li><a class="reference internal" href="#how-to-extend" id="id45">How to extend</a><ul>
+<li><a class="reference internal" href="#thymeleaf-how-to-extend-add-custom-dialect" id="id46">カスタムダイアレクトの追加</a><ul>
+<li><a class="reference internal" href="#processor" id="id47">Processorの実装</a></li>
+<li><a class="reference internal" href="#expressionobject" id="id48">ExpressionObjectの実装</a></li>
+<li><a class="reference internal" href="#dialect" id="id49">Dialectの実装</a></li>
+<li><a class="reference internal" href="#custom-dialect-how-to-use" id="id50">カスタムダイアレクトの使用方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix" id="id51">Appendix</a><ul>
+<li><a class="reference internal" href="#thymeleafappendixtemplatecache" id="id52">テンプレートキャッシュの適用</a><ul>
+<li><a class="reference internal" href="#id23" id="id53">テンプレートキャッシュ機能の説明</a></li>
+<li><a class="reference internal" href="#id24" id="id54">アプリケーションの設定</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#decoupled-template-logic" id="id55">Decoupled Template Logicの適用</a><ul>
+<li><a class="reference internal" href="#thymeleafapplydecoupledtemplatelogic" id="id56">アプリケーションの設定</a></li>
+<li><a class="reference internal" href="#html-xml" id="id57">HTML（プロトタイプ）とロジックXMLの実装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#javascript" id="id58">JavaScriptのテンプレート化</a><ul>
+<li><a class="reference internal" href="#thymeleaf-javascript-template-overview" id="id59">JavaScriptテンプレートの適用</a></li>
+<li><a class="reference internal" href="#htmljavascript" id="id60">HTMLファイル内のJavaScriptのテンプレート化</a></li>
+<li><a class="reference internal" href="#id28" id="id61">JavaScriptファイルのテンプレート化</a></li>
 </ul>
 </li>
 </ul>
@@ -225,16 +215,16 @@
 </ul>
 </div>
 <div class="section" id="overview">
-<h2><a class="toc-backref" href="#id30">4.1.1. Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id29">4.1.1. Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id31">4.1.1.1. Thymeleafとは</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">4.1.1.1. Thymeleafとは</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://www.thymeleaf.org/">Thymeleaf</a>は、Javaで実装されたテンプレートエンジンである。
 Thymeleafは、その特性により主にHTML生成用のテンプレートエンジンに分類される。</p>
 <p>Spring MVCでViewに採用可能なテンプレートエンジンには、他にもApache Velocity、Apache FreeMarker等が存在する。
 また以前から利用されている類似の技術としては、Jakarta EE（Java EE）標準で規定されているJSPがある。</p>
 <p>本節では、これらの既存のテンプレートエンジンと異なるThymeleafの特性を説明し、ThymeleafをSpring MVCと連携してWebアプリケーションのView（画面）に適用する方法について説明する。</p>
 <div class="section" id="id4">
-<h4><a class="toc-backref" href="#id32">4.1.1.1.1. Thymeleafの特性</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id31">4.1.1.1.1. Thymeleafの特性</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li>Thymeleafのテンプレートは、ブラウザでの静的描画が可能</li>
 </ol>
@@ -343,17 +333,17 @@ ThymeleafのテンプレートHTMLに記述できるHTMLの書式は、HTML5に�
 <p class="first admonition-title">Note</p>
 <p><strong>Thymeleafで選択可能なテンプレートモード</strong></p>
 <p class="last">本ガイドラインでは、ThymeleafでHTMLを生成する為のテンプレートモードである”HTML”モードについて記述するが、他にも出力するテンプレートに応じたモードが定義されている。
-Thymeleafのテンプレートとして選択可能なテンプレートモードについては、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#what-kind-of-templates-can-thymeleaf-process">Tutorial: Using Thymeleaf -What kind of templates can Thymeleaf process?-</a> を参照されたい。</p>
+Thymeleafのテンプレートとして選択可能なテンプレートモードについては、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#what-kind-of-templates-can-thymeleaf-process">Tutorial: Using Thymeleaf -What kind of templates can Thymeleaf process?-</a> を参照されたい。</p>
 </div>
 </div></blockquote>
 </div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id33">4.1.1.2. Thymeleafが提供する基本的な機能</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">4.1.1.2. Thymeleafが提供する基本的な機能</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>Thymeleafのテンプレートファイルを記述する為の基本機能である、Thymeleafスタンダードダイアレクトについて説明する。</p>
-<div class="section" id="thymeleafstandarddialect">
-<span id="id6"></span><h4><a class="toc-backref" href="#id34">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a><a class="headerlink" href="#thymeleafstandarddialect" title="Permalink to this headline">¶</a></h4>
-<p>Thymeleafは、テンプレートファイルを記述する為に <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#dialects-the-standard-dialect">スタンダードダイアレクト</a> を提供している。
+<div class="section" id="id6">
+<h4><a class="toc-backref" href="#id33">4.1.1.2.1. Thymeleafスタンダードダイアレクト</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>Thymeleafは、テンプレートファイルを記述する為に <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#dialects-the-standard-dialect">スタンダードダイアレクト</a> を提供している。
 スタンダードダイアレクトとは、テンプレートファイルに記述して動的に出力を生成する為の各種プロセッサや、式、式オブジェクトを包含した機能群である。</p>
 <p>スタンダードダイアレクトは複数の要素により構成されているため、構成要素とその概要について下表に示す。
 なお、各要素の機能詳細についてはThymeleaf公式リファレンスを参照されたい。</p>
@@ -399,7 +389,7 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 </td>
 </tr>
 <tr class="row-even"><td><div class="first last line-block">
-<div class="line"><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#standard-expression-syntax">式（エクスプレッション）</a></div>
+<div class="line"><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#standard-expression-syntax">式（エクスプレッション）</a></div>
 </div>
 </td>
 <td><div class="first last line-block">
@@ -418,14 +408,15 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 </div>
 </td>
 <td><div class="first last line-block">
-<div class="line">* <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#appendix-a-expression-basic-objects">基本オブジェクト</a></div>
+<div class="line">* <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-a-expression-basic-objects">基本オブジェクト</a></div>
 <div class="line-block">
-<div class="line">1. 基本機能群</div>
+<div class="line">1. Web コンテキスト ネームスペース : Webオブジェクトにアクセスする為の別名</div>
 <div class="line">2. Web コンテキスト ネームスペース : Webオブジェクトにアクセスする為の別名</div>
+<div class="line">3. Web オブジェクト : HttpServletRequest、 HttpSession等のServlet API</div>
 </div>
-<div class="line">* <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#appendix-b-expression-utility-objects">ユーティリティオブジェクト</a></div>
+<div class="line">* <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-b-expression-utility-objects">ユーティリティオブジェクト</a></div>
 <div class="line-block">
-<div class="line">3. Thymeleafが提供するユーティリティ機能群</div>
+<div class="line">4. Thymeleafが提供するユーティリティ機能群</div>
 </div>
 </div>
 </td>
@@ -433,8 +424,9 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 <div class="line"><br /></div>
 <div class="line">1. <code class="docutils literal"><span class="pre">#ctx</span></code>, <code class="docutils literal"><span class="pre">#local</span></code></div>
 <div class="line">2. <code class="docutils literal"><span class="pre">param</span></code>, <code class="docutils literal"><span class="pre">session</span></code>, <code class="docutils literal"><span class="pre">application</span></code></div>
+<div class="line">3. <code class="docutils literal"><span class="pre">#request</span></code>, <code class="docutils literal"><span class="pre">#session</span></code>, <code class="docutils literal"><span class="pre">#servletContext</span></code></div>
 <div class="line"><br /></div>
-<div class="line">3. <code class="docutils literal"><span class="pre">#arrays</span></code>, <code class="docutils literal"><span class="pre">#strings</span></code>等</div>
+<div class="line">4. <code class="docutils literal"><span class="pre">#arrays</span></code>, <code class="docutils literal"><span class="pre">#strings</span></code>等</div>
 </div>
 </td>
 </tr>
@@ -444,7 +436,7 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 <p class="first admonition-title">Note</p>
 <p><strong>インライン処理について</strong></p>
 <p class="last">テンプレートHTMLでは、多くの場合属性プロセッサに式を記述してHTML生成処理を実装する。
-その一方で、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#inlining">インライン処理機能</a> が用意されており、
+その一方で、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining">インライン処理機能</a> が用意されており、
 属性プロセッサを介さずに要素内のコンテンツを動的に変更する事が可能である。
 ただし、静的表示した場合にインライン処理の記述がブラウザに表示される為、ブラウザで静的表示が可能であるThymeleafの利点を損なう事となる。
 そのため、本ガイドラインではHTMLにおけるインライン処理機能の利用を推奨しない。
@@ -458,18 +450,18 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 またプロトタイプにおいてダミーデータを表示する為の記述についても、Thymeleafによるテンプレート解釈時に削除したいケースがある。
 これらのような場合に<code class="docutils literal"><span class="pre">th:remove</span></code>属性を用いて、不要なHTML要素やコンテンツを削除する事ができる。
 <code class="docutils literal"><span class="pre">th:remove</span></code>属性は、属性値に削除する範囲を設定でき動的処理時に柔軟に削除範囲を決める事が可能である。</p>
-<p class="last"><code class="docutils literal"><span class="pre">th:remove</span></code>属性の詳細については、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#removing-template-fragments">Tutorial: Using Thymeleaf -Removing template fragments-</a> を参照されたい。</p>
+<p class="last"><code class="docutils literal"><span class="pre">th:remove</span></code>属性の詳細については、 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#removing-template-fragments">Tutorial: Using Thymeleaf -Removing template fragments-</a> を参照されたい。</p>
 </div>
 </div>
 </div>
 <div class="section" id="thymeleaf-spring">
-<h3><a class="toc-backref" href="#id35">4.1.1.3. Thymeleaf + Spring</a><a class="headerlink" href="#thymeleaf-spring" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html">Thymeleaf + Spring</a> は、Thymeleafチームが提供するSpring MVCとの連携機能である。
+<h3><a class="toc-backref" href="#id34">4.1.1.3. Thymeleaf + Spring</a><a class="headerlink" href="#thymeleaf-spring" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html">Thymeleaf + Spring</a> は、Thymeleafチームが提供するSpring MVCとの連携機能である。
 ブランクプロジェクトを利用した場合、Thymeleaf + Springを適用した状態で開発を進める事が出来るようになっている。
 設定の詳細は <a class="reference internal" href="#configuration-of-blank-project-label"><span class="std std-ref">ブランクプロジェクトの設定</span></a> を参照されたい。</p>
 <p>ここでは、Thymeleaf + Springを適用した場合の処理フローやThymeleaf + Springが提供する機能について説明する。</p>
 <div class="section" id="id13">
-<h4><a class="toc-backref" href="#id36">4.1.1.3.1. Thymeleaf + Springを適用した処理フロー</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id35">4.1.1.3.1. Thymeleaf + Springを適用した処理フロー</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
 <p>Thymeleaf + Springを利用し、ThymeleafとSpring MVCを連携させた場合のリクエストを受けてからレスポンスを返すまでの処理フローを以下の図に示す。
 なお、 <a class="reference internal" href="../../Overview/SpringMVCOverview.html"><span class="doc">Spring MVCアーキテクチャ概要</span></a> にて解説済みのController周りの処理については省略する。</p>
 <div class="figure">
@@ -571,19 +563,19 @@ Thymeleafのテンプレートとして選択可能なテンプレートモー�
 </table>
 </div>
 <div class="section" id="id14">
-<h4><a class="toc-backref" href="#id37">4.1.1.3.2. Thymeleaf + Springの機能</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id36">4.1.1.3.2. Thymeleaf + Springの機能</a><a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li>Springスタンダードダイアレクト</li>
 </ol>
 <blockquote>
-<div><p>Thymeleaf + Springを利用する場合、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html#the-springstandard-dialect">Springスタンダードダイアレクト</a> を用いてテンプレートを記述できる。
+<div><p>Thymeleaf + Springを利用する場合、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-springstandard-dialect">Springスタンダードダイアレクト</a> を用いてテンプレートを記述できる。
 Springスタンダードダイアレクトは、Thymeleafスタンダードダイアレクトを拡張した機能群であり、
 Spring MVCと連携する為の属性プロセッサの拡張と新規追加、及び新たな式オブジェクトを提供している。
 追加された機能はHTMLモードに特化しており、Spring MVCのタグライブラリで実現する機能やEL関数を補完する機能を提供している。</p>
 <p>追加された属性プロセッサの内、最も特徴的なのは<code class="docutils literal"><span class="pre">th:field</span></code>属性でinput要素のtype属性値毎に出力結果を変える。
 これにより、Spring Framework JSP Form Tag Libraryが提供する<code class="docutils literal"><span class="pre">&lt;form:input&gt;</span></code>や<code class="docutils literal"><span class="pre">&lt;form:select&gt;</span></code>、 <code class="docutils literal"><span class="pre">&lt;form:checkbox&gt;</span></code>等の機能をカバーしている。
 また<code class="docutils literal"><span class="pre">&lt;form:errors&gt;</span></code>の代替機能を実現する<code class="docutils literal"><span class="pre">th:errors</span></code>属性、 <code class="docutils literal"><span class="pre">th:errorClass</span></code>属性も提供されており、Spring MVCの利点を享受できるように設計されている。</p>
-<p>機能の詳細については、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html#creating-a-form">Tutorial: Thymeleaf + Spring -Creating a Form-</a> 及び <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html#validation-and-error-messages">Tutorial: Thymeleaf + Spring -Validation and Error Messages-</a> を参照されたい。</p>
+<p>機能の詳細については、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form">Tutorial: Thymeleaf + Spring -Creating a Form-</a> 及び <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages">Tutorial: Thymeleaf + Spring -Validation and Error Messages-</a> を参照されたい。</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
 <li>その他機能</li>
@@ -591,16 +583,16 @@ Spring MVCと連携する為の属性プロセッサの拡張と新規追加、�
 <blockquote>
 <div>Thymeleaf + Springを適用する場合、Thymeleaf単体で利用する場合とは以下の点で異なる。</div></blockquote>
 <ul class="simple">
-<li>式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(<a class="reference external" href="https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/core.html#expressions">Spring Expression Language</a>)を利用する。</li>
+<li>式言語として、OGNL(Object Graph Navigation Language)の代わりにSpEL(<a class="reference external" href="https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#expressions">Spring Expression Language</a>)を利用する。</li>
 <li>メッセージリソースとして、SpringのMessageSourceを利用する。</li>
-<li>Thymeleafが提供するフォーマット機能の代わりに、SpringのConversionサービスを利用する。 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html#the-conversion-service">Tutorial: Thymeleaf + Spring -The Conversion Service-</a> を参照されたい。</li>
+<li>Thymeleafが提供するフォーマット機能の代わりに、SpringのConversionサービスを利用する。 <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#the-conversion-service">Tutorial: Thymeleaf + Spring -The Conversion Service-</a> を参照されたい。</li>
 </ul>
 </div>
 </div>
 <div class="section" id="id15">
-<h3><a class="toc-backref" href="#id38">4.1.1.4. Thymeleafテンプレートの実装</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id37">4.1.1.4. Thymeleafテンプレートの実装</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="html">
-<span id="thymeleafoverviewimplementationoftemplatehtml"></span><h4><a class="toc-backref" href="#id39">4.1.1.4.1. テンプレートHTMLの実装</a><a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h4>
+<span id="thymeleafoverviewimplementationoftemplatehtml"></span><h4><a class="toc-backref" href="#id38">4.1.1.4.1. テンプレートHTMLの実装</a><a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h4>
 <p>これよりThymeleafのテンプレートHTMLの実装例を説明する。
 ここでは、設計時に画面のデザインが決定している前提とし、作成済みのHTMLファイルにThymeleaf及びThymeleaf + Springのスタンダードダイアレクトを適用してテンプレートHTMLを作成する。</p>
 <p>単純な検索画面と検索結果画面を例とする。以下が対象の画面である。（なお、以下の画面は作成後のテンプレートHTMLを静的表示したものである。）</p>
@@ -922,7 +914,7 @@ Spring MVCと連携する為の属性プロセッサの拡張と新規追加、�
 <p class="first admonition-title">Warning</p>
 <p><strong>SpEL評価時におけるnull-safetyの影響について</strong></p>
 <p>前述のとおり、Thymeleaf + Springでは式言語としてSpELを利用する。
-Spring 5から、SpringのコアAPIに<a class="reference external" href="https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/core.html#null-safety">null-safety</a>の機能が取り入れられており、SpELが解釈される際の<code class="docutils literal"><span class="pre">null</span></code>に対する動作も変更(<a class="reference external" href="https://jira.spring.io/browse/SPR-15540?redirect=false">SPR-15540</a>)されている。
+Spring 5から、SpringのコアAPIに<a class="reference external" href="https://docs.spring.io/spring-framework/docs/5.3.13/reference/html/core.html#null-safety">null-safety</a>の機能が取り入れられており、SpELが解釈される際の<code class="docutils literal"><span class="pre">null</span></code>に対する動作も変更(<a class="reference external" href="https://jira.spring.io/browse/SPR-15540?redirect=false">SPR-15540</a>)されている。
 例えば<code class="docutils literal"><span class="pre">Map</span></code>型プロパティのキーとして記述したSpELが<code class="docutils literal"><span class="pre">null</span></code>として評価された場合、Spring 4以前ではそのまま<code class="docutils literal"><span class="pre">Map</span></code>に<code class="docutils literal"><span class="pre">null</span></code>が渡され該当する値がないため<code class="docutils literal"><span class="pre">null</span></code>が返却されていたが、Spring 5以降ではキーとなるSpELを評価した結果に対するnullチェックが追加されており、<code class="docutils literal"><span class="pre">null</span></code>の場合は<code class="docutils literal"><span class="pre">IllegalStateException</span></code>が発生する。
 このため、キーとする値に対して事前に<code class="docutils literal"><span class="pre">null</span></code>チェックを行うなど、<code class="docutils literal"><span class="pre">null</span></code>を考慮した実装が必要となる。</p>
 <p>以下に<code class="docutils literal"><span class="pre">Map</span></code>の値を画面に表示する実装例を示す。</p>
@@ -1039,7 +1031,7 @@ Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E:
 </div></blockquote>
 </div>
 <div class="section" id="comment-blocks">
-<span id="id16"></span><h4><a class="toc-backref" href="#id40">4.1.1.4.2. コメント文</a><a class="headerlink" href="#comment-blocks" title="Permalink to this headline">¶</a></h4>
+<span id="id16"></span><h4><a class="toc-backref" href="#id39">4.1.1.4.2. コメント文</a><a class="headerlink" href="#comment-blocks" title="Permalink to this headline">¶</a></h4>
 <p>Thymeleafのテンプレートでは、プロトタイプとの両立をサポートするため3種類のコメント文が記述可能である。
 ここでは、各々のコメント文の特性及び利用場面を紹介する。</p>
 <ol class="arabic simple">
@@ -1251,7 +1243,7 @@ Caused by: org.springframework.expression.spel.SpelEvaluationException: EL1008E:
 </div></blockquote>
 </div>
 <div class="section" id="thymeleafoverviewdecoupledtemplatelogic">
-<span id="id17"></span><h4><a class="toc-backref" href="#id41">4.1.1.4.3. テンプレートHTMLからのテンプレートロジックの分離</a><a class="headerlink" href="#thymeleafoverviewdecoupledtemplatelogic" title="Permalink to this headline">¶</a></h4>
+<span id="id17"></span><h4><a class="toc-backref" href="#id40">4.1.1.4.3. テンプレートHTMLからのテンプレートロジックの分離</a><a class="headerlink" href="#thymeleafoverviewdecoupledtemplatelogic" title="Permalink to this headline">¶</a></h4>
 <p>ThymeleafのDecoupled Template Logicを利用すると、テンプレートHTMLからテンプレートロジックを完全に分離することができる。
 ここでは、Decoupled Template Logicの概要や適用する場合の考慮事項について説明する。</p>
 <p>Decoupled Template Logicは、HTML（プロトタイプ）とテンプレートロジックを別々のファイルとして作成しておき、実行時にそれら2つのファイルを組み合わせて1つのテンプレートHTMLとして処理する機能である。
@@ -1280,7 +1272,7 @@ Decoupled Template Logicを有効にする方法の詳細については <a clas
 ただし、<code class="docutils literal"><span class="pre">th:ref</span></code>属性を使用した場合、HTML（プロトタイプ）にもThymeleafの属性を記述することになるという点に留意する必要がある。
 ロジックXMLにセレクタを記述しHTML（プロトタイプ）の要素を特定するか、HTML（プロトタイプ）に<code class="docutils literal"><span class="pre">th:ref</span></code>属性を記述し要素を特定するかは、アーキテクトがプロジェクトの開発プロセスを考慮して選択されたい。</p>
 <p class="last">なお、本ガイドラインでは<code class="docutils literal"><span class="pre">th:ref</span></code>属性を使用せず、ロジックXMLにセレクタを記述しHTML（プロトタイプ）の要素を特定する実装例を紹介する。
-<code class="docutils literal"><span class="pre">th:ref</span></code>属性の詳細については <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#the-thref-attribute">Tutorial: Using Thymeleaf -The th:ref attribute-</a> を参照されたい。</p>
+<code class="docutils literal"><span class="pre">th:ref</span></code>属性の詳細については <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#the-thref-attribute">Tutorial: Using Thymeleaf -The th:ref attribute-</a> を参照されたい。</p>
 </div>
 </div></blockquote>
 <p>Decoupled Template Logic適用のメリットとデメリットは、以下の通りである。</p>
@@ -1329,12 +1321,12 @@ Decoupled Template Logicを有効にする方法の詳細については <a clas
 </div>
 </div>
 <div class="section" id="how-to-use">
-<h2><a class="toc-backref" href="#id42">4.1.2. How to use</a><a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id41">4.1.2. How to use</a><a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id18">
-<h3><a class="toc-backref" href="#id43">4.1.2.1. アプリケーションの設定</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id42">4.1.2.1. アプリケーションの設定</a><a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <p>本節では、ThymeleafをSpring MVCと連携して使用する為の設定の説明をする。</p>
 <div class="section" id="configuration-of-blank-project-label">
-<span id="id19"></span><h4><a class="toc-backref" href="#id44">4.1.2.1.1. ブランクプロジェクトの設定</a><a class="headerlink" href="#configuration-of-blank-project-label" title="Permalink to this headline">¶</a></h4>
+<span id="id19"></span><h4><a class="toc-backref" href="#id43">4.1.2.1.1. ブランクプロジェクトの設定</a><a class="headerlink" href="#configuration-of-blank-project-label" title="Permalink to this headline">¶</a></h4>
 <p>Thymeleafを利用する為の初期設定をブランクプロジェクトで提供している。
 ここでは、Spring MVCと組み合わせてThymeleafを使用する為のブランクプロジェクトの設定の説明をする。
 Thymeleafに係るブランクプロジェクトの設定は、以下の4点である。</p>
@@ -1447,7 +1439,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 <div class="highlight-xml"><div class="highlight"><pre><span></span><span class="c">&lt;!-- (1) --&gt;</span>
 <span class="nt">&lt;mvc:view-resolvers&gt;</span>
     <span class="nt">&lt;mvc:bean-name</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.view.ThymeleafViewResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.view.ThymeleafViewResolver&quot;</span><span class="nt">&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">ref=</span><span class="s">&quot;templateEngine&quot;</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;characterEncoding&quot;</span> <span class="na">value=</span><span class="s">&quot;UTF-8&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (2) --&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;forceContentType&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (3) --&gt;</span>
@@ -1457,7 +1449,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 
 <span class="c">&lt;!-- (4) --&gt;</span>
 <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span>
-    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;prefix&quot;</span> <span class="na">value=</span><span class="s">&quot;/WEB-INF/views/&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (5) --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;suffix&quot;</span> <span class="na">value=</span><span class="s">&quot;.html&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (6) --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateMode&quot;</span> <span class="na">value=</span><span class="s">&quot;HTML&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (7) --&gt;</span>
@@ -1465,7 +1457,7 @@ Thymeleafに係るブランクプロジェクトの設定は、以下の4点で�
 <span class="nt">&lt;/bean&gt;</span>
 
 <span class="c">&lt;!-- (9) --&gt;</span>
-<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">ref=</span><span class="s">&quot;templateResolver&quot;</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;enableSpringELCompiler&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (10) --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;additionalDialects&quot;</span><span class="nt">&gt;</span>
@@ -1786,14 +1778,14 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </div>
 </div>
 <div class="section" id="view">
-<h3><a class="toc-backref" href="#id45">4.1.2.2. Viewの実装</a><a class="headerlink" href="#view" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id44">4.1.2.2. Viewの実装</a><a class="headerlink" href="#view" title="Permalink to this headline">¶</a></h3>
 <p>ThymeleafのテンプレートHTMLの実装については、<a class="reference internal" href="../../ImplementationAtEachLayer/ApplicationLayer.html"><span class="doc">アプリケーション層の実装</span></a> の<a class="reference internal" href="../../ImplementationAtEachLayer/ApplicationLayer.html#id49"><span class="std std-ref">Viewの実装</span></a>を参照されたい。</p>
 </div>
 </div>
 <div class="section" id="how-to-extend">
-<h2><a class="toc-backref" href="#id46">4.1.3. How to extend</a><a class="headerlink" href="#how-to-extend" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id45">4.1.3. How to extend</a><a class="headerlink" href="#how-to-extend" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="thymeleaf-how-to-extend-add-custom-dialect">
-<span id="id20"></span><h3><a class="toc-backref" href="#id47">4.1.3.1. カスタムダイアレクトの追加</a><a class="headerlink" href="#thymeleaf-how-to-extend-add-custom-dialect" title="Permalink to this headline">¶</a></h3>
+<span id="id20"></span><h3><a class="toc-backref" href="#id46">4.1.3.1. カスタムダイアレクトの追加</a><a class="headerlink" href="#thymeleaf-how-to-extend-add-custom-dialect" title="Permalink to this headline">¶</a></h3>
 <p>Thymeleafでは開発者がカスタムダイアレクトを追加することで、独自に開発したタグや属性、式オブジェクトを使用することができる。</p>
 <p>カスタムダイアレクトを追加するにはProcessorやExpressionObjectとDialectを実装する必要がある。</p>
 <table border="1" class="colwidths-given longtable docutils">
@@ -1840,7 +1832,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </tbody>
 </table>
 <div class="section" id="processor">
-<h4><a class="toc-backref" href="#id48">4.1.3.1.1. Processorの実装</a><a class="headerlink" href="#processor" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id47">4.1.3.1.1. Processorの実装</a><a class="headerlink" href="#processor" title="Permalink to this headline">¶</a></h4>
 <p>Processorはテンプレート内のイベントに対して実行する処理を定義するオブジェクトである。</p>
 <p>Processorを実装するためには、Thymeleafから提供されているインタフェースを実装すればよい。</p>
 <p>Thymeleafから提供されている代表的なProcessorのインタフェースを以下に示す。</p>
@@ -1879,7 +1871,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">上記のインタフェース以外にもイベントごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/extendingthymeleaf.html#processors">Tutorial: Extending Thymeleaf -Processors-</a>を参照されたい。</p>
+<p class="last">上記のインタフェース以外にもイベントごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/extendingthymeleaf.html#processors">Tutorial: Extending Thymeleaf -Processors-</a>を参照されたい。</p>
 </div>
 <p>Processorでの処理に用いる代表的なインタフェースを以下に示す。</p>
 <table border="1" class="colwidths-given longtable docutils">
@@ -2161,11 +2153,11 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal"><span class="pre">AbstractAttributeTagProcessor</span></code>を継承した抽象クラスがいくつか提供されており、より簡単にProcessorを実装することができる場合がある。詳しくは<a class="reference external" href="https://www.thymeleaf.org/apidocs/thymeleaf/3.1.1.RELEASE/org/thymeleaf/processor/element/AbstractAttributeTagProcessor.html">AbstractAttributeTagProcessor</a>を参照されたい。</p>
+<p class="last"><code class="docutils literal"><span class="pre">AbstractAttributeTagProcessor</span></code>を継承した抽象クラスがいくつか提供されており、より簡単にProcessorを実装することができる場合がある。詳しくは<a class="reference external" href="https://www.thymeleaf.org/apidocs/thymeleaf/3.0.15.RELEASE/org/thymeleaf/processor/element/AbstractAttributeTagProcessor.html">AbstractAttributeTagProcessor</a>を参照されたい。</p>
 </div>
 </div>
 <div class="section" id="expressionobject">
-<h4><a class="toc-backref" href="#id49">4.1.3.1.2. ExpressionObjectの実装</a><a class="headerlink" href="#expressionobject" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id48">4.1.3.1.2. ExpressionObjectの実装</a><a class="headerlink" href="#expressionobject" title="Permalink to this headline">¶</a></h4>
 <p>ExpressionObjectはテンプレート内の式から呼び出すメソッドなどを定義するオブジェクトである。</p>
 <p>ExpressionObjectはインタフェース等を実装する必要がなく、POJOで定義できる。</p>
 <p>日付(<code class="docutils literal"><span class="pre">java.util.Date</span></code>)をyyyy/MM/dd形式でフォーマットして出力するメソッドを持つ式オブジェクトの実装例を以下に示す。</p>
@@ -2219,7 +2211,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </table>
 </div>
 <div class="section" id="dialect">
-<h4><a class="toc-backref" href="#id50">4.1.3.1.3. Dialectの実装</a><a class="headerlink" href="#dialect" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id49">4.1.3.1.3. Dialectの実装</a><a class="headerlink" href="#dialect" title="Permalink to this headline">¶</a></h4>
 <p>ProcessorやExpressionObjectで実装した処理をテンプレートに適用するためにはDialectを実装してテンプレートエンジンに追加する必要がある。</p>
 <p>Dialectを実装するためにThymeleafから提供されている代表的なインタフェースを以下に示す。</p>
 <table border="1" class="colwidths-given longtable docutils">
@@ -2256,7 +2248,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">上記のインタフェース以外にも登録内容ごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/extendingthymeleaf.html#dialects">Tutorial: Extending Thymeleaf -Dialects-</a>を参照されたい。</p>
+<p class="last">上記のインタフェース以外にも登録内容ごとに対応するインタフェースが提供されている。詳しくは<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/extendingthymeleaf.html#dialects">Tutorial: Extending Thymeleaf -Dialects-</a>を参照されたい。</p>
 </div>
 <p>ProcessorとExpressionObjectを登録するDialectの実装例を以下に示す。</p>
 <p><strong>実装例（Processorの登録）</strong></p>
@@ -2439,10 +2431,10 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </div>
 </div>
 <div class="section" id="custom-dialect-how-to-use">
-<span id="id21"></span><h4><a class="toc-backref" href="#id51">4.1.3.1.4. カスタムダイアレクトの使用方法</a><a class="headerlink" href="#custom-dialect-how-to-use" title="Permalink to this headline">¶</a></h4>
+<span id="id21"></span><h4><a class="toc-backref" href="#id50">4.1.3.1.4. カスタムダイアレクトの使用方法</a><a class="headerlink" href="#custom-dialect-how-to-use" title="Permalink to this headline">¶</a></h4>
 <p>作成したカスタムダイアレクトを使用するために必要なアプリケーション設定と出力画面の実装を以下に示す。</p>
 <p><strong>spring-mvc.xml</strong></p>
-<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
 
     <span class="c">&lt;!-- omitted --&gt;</span>
 
@@ -2602,119 +2594,14 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 </table>
 </div>
 </div>
-<div class="section" id="web-httpservletrequest-httpsession">
-<span id="thymeleaf-how-to-extend-add-web-object"></span><h3><a class="toc-backref" href="#id52">4.1.3.2. Web オブジェクト（HttpServletRequest、 HttpSession等）の利用</a><a class="headerlink" href="#web-httpservletrequest-httpsession" title="Permalink to this headline">¶</a></h3>
-<p>Thymeleaf 3.1以降では、セキュリティ向上の観点から、
-<a class="reference internal" href="#thymeleafstandarddialect"><span class="std std-ref">Thymeleafスタンダードダイアレクト</span></a> のうち下記「Web オブジェクト : HttpServletRequest、 HttpSession等のServlet API」のダイアレクトが使用できなくなった。
-そのため、これらのオブジェクトの内容を、Thymeleaf側で利用するには<code class="docutils literal"><span class="pre">Model</span></code>を経由してThymeleaf側にデータを渡す必要がある。</p>
-<ul class="simple">
-<li>#request</li>
-<li>#response</li>
-<li>#session</li>
-<li>#servletContext</li>
-</ul>
-<p>また、データを引き渡す際には、Thymeleaf側での実装に必要なもののみに引き渡す対象を絞りこむように注意すること。
-<code class="docutils literal"><span class="pre">request</span></code>や<code class="docutils literal"><span class="pre">session</span></code>など、利用できなくなったダイアレクトで参照していたWeb オブジェクトを<code class="docutils literal"><span class="pre">Model</span></code>に入れてしまうと、Thymeleaf側の対策が無効になってしまう。</p>
-<div class="section" id="controller">
-<h4><a class="toc-backref" href="#id53">4.1.3.2.1. Controllerの実装</a><a class="headerlink" href="#controller" title="Permalink to this headline">¶</a></h4>
-<div class="line-block">
-<div class="line">Web オブジェクトのアクセスをアプリケーション内で共通的に使用するケースを想定し、<code class="docutils literal"><span class="pre">Model</span></code>への追加処理を<code class="docutils literal"><span class="pre">&#64;ControllerAdvice</span></code>で実装する実装例を以下に示す。</div>
-<div class="line">特定の画面のみで使用する場合は、当該<code class="docutils literal"><span class="pre">&#64;Controller</span></code> クラスやハンドラメソッドに同様の処理を実装すると良い。</div>
-<div class="line">サンプルコードは、<code class="docutils literal"><span class="pre">HttpServletRequest.getRequestURI()</span></code>の値を画面に表示する場合の例である。</div>
-</div>
-<p><strong>実装例</strong></p>
-<div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@ControllerAdvice</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThymeleafCommonControllerAdvice</span> <span class="o">{</span>
-    <span class="nd">@ModelAttribute</span><span class="o">(</span><span class="s">&quot;requestURI&quot;</span><span class="o">)</span> <span class="c1">// (1)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">requestURI</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">();</span> <span class="c1">// (2)</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-<table border="1" class="colwidths-given longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">項番</th>
-<th class="head">説明</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><div class="first last line-block">
-<div class="line">(1)</div>
-</div>
-</td>
-<td><div class="first last line-block">
-<div class="line"><code class="docutils literal"><span class="pre">&#64;ModelAttribute</span></code>にテンプレートHTMLからアクセスする属性名を指定する。</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td><div class="first last line-block">
-<div class="line">(2)</div>
-</div>
-</td>
-<td><div class="first last line-block">
-<div class="line">Web オブジェクトから画面に表示させたい値を取得する。</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last"><code class="docutils literal"><span class="pre">HttpServletRequest</span></code>や<code class="docutils literal"><span class="pre">HttpSession</span></code>オブジェクトを丸ごと<code class="docutils literal"><span class="pre">Model</span></code>に追加することも可能であるが、
-「<a class="reference internal" href="#thymeleaf-how-to-extend-add-web-object"><span class="std std-ref">Web オブジェクト（HttpServletRequest、 HttpSession等）の利用</span></a> 」で述べたように、<code class="docutils literal"><span class="pre">Model</span></code>には必要情報のみを追加するようにすること。</p>
-</div>
-</div>
-<div class="section" id="id22">
-<h4><a class="toc-backref" href="#id54">4.1.3.2.2. Thymeleafテンプレートの実装</a><a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h4>
-<div class="line-block">
-<div class="line"><code class="docutils literal"><span class="pre">Model</span></code>に追加されたWeb オブジェクトの情報をThymeleafで取得する実装例を以下に示す。</div>
-<div class="line">実装例は<strong>th:text</strong>による画面表示の例であるが、その他の取得方法も使用可能である。</div>
-</div>
-<p><strong>実装例</strong></p>
-<div class="highlight-html"><div class="highlight"><pre><span></span><span class="c">&lt;!-- ommited --&gt;</span>
-
-    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${requestURI}&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
-
-<span class="c">&lt;!-- ommited --&gt;</span>
-</pre></div>
-</div>
-<table border="1" class="colwidths-given longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">項番</th>
-<th class="head">説明</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><div class="first last line-block">
-<div class="line">(1)</div>
-</div>
-</td>
-<td><div class="first last line-block">
-<div class="line"><code class="docutils literal"><span class="pre">Model</span></code>に追加されたWeb オブジェクトの情報を取得する。</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div class="section" id="appendix">
-<h2><a class="toc-backref" href="#id55">4.1.4. Appendix</a><a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id51">4.1.4. Appendix</a><a class="headerlink" href="#appendix" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="thymeleafappendixtemplatecache">
-<span id="id23"></span><h3><a class="toc-backref" href="#id56">4.1.4.1. テンプレートキャッシュの適用</a><a class="headerlink" href="#thymeleafappendixtemplatecache" title="Permalink to this headline">¶</a></h3>
+<span id="id22"></span><h3><a class="toc-backref" href="#id52">4.1.4.1. テンプレートキャッシュの適用</a><a class="headerlink" href="#thymeleafappendixtemplatecache" title="Permalink to this headline">¶</a></h3>
 <p>テンプレートキャッシュの機能および設定方法について説明する。</p>
-<div class="section" id="id24">
-<h4><a class="toc-backref" href="#id57">4.1.4.1.1. テンプレートキャッシュ機能の説明</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id23">
+<h4><a class="toc-backref" href="#id53">4.1.4.1.1. テンプレートキャッシュ機能の説明</a><a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h4>
 <p>テンプレートキャッシュとは、パースしたテンプレート(HTML)をキャッシュする機能である。
 テンプレートが呼び出される度にパースを行わないため、処理時間を削減することができる。</p>
 <p>Controllerから渡されたView名をキーとしてキャッシュの判定が行われる。キャッシュにヒットした場合は、キャッシュからパースされたテンプレートが読み込まれる。
@@ -2722,13 +2609,13 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 <blockquote>
 <div><div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal"><span class="pre">org.thymeleaf.spring6.view.ThymeleafViewResolver</span></code>にはViewオブジェクトをキャッシュする機能が備わっているが、本機能と直接関係はないので、ここでの説明は省略する。</p>
+<p class="last"><code class="docutils literal"><span class="pre">org.thymeleaf.spring5.view.ThymeleafViewResolver</span></code>にはViewオブジェクトをキャッシュする機能が備わっているが、本機能と直接関係はないので、ここでの説明は省略する。</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="id25">
-<h4><a class="toc-backref" href="#id58">4.1.4.1.2. アプリケーションの設定</a><a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h4>
-<p>キャッシュの有効化、対象および期間の設定は、<code class="docutils literal"><span class="pre">org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver</span></code>で実施する。
+<div class="section" id="id24">
+<h4><a class="toc-backref" href="#id54">4.1.4.1.2. アプリケーションの設定</a><a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h4>
+<p>キャッシュの有効化、対象および期間の設定は、<code class="docutils literal"><span class="pre">org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver</span></code>で実施する。
 主要な設定項目の一覧を以下に示す。</p>
 <blockquote>
 <div><table border="1" class="colwidths-given longtable docutils">
@@ -2826,7 +2713,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 <li>spring-mvc.xml</li>
 </ul>
 <blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
     <span class="c">&lt;!-- omitted --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;nonCacheablePatterns&quot;</span><span class="nt">&gt;</span>
         <span class="nt">&lt;set&gt;</span>
@@ -2933,7 +2820,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 <li>spring-mvc.xml</li>
 </ul>
 <blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
     <span class="c">&lt;!-- omitted --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;cacheManager&quot;</span> <span class="na">ref=</span><span class="s">&quot;cacheManager&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/bean&gt;</span>
@@ -2956,7 +2843,7 @@ Content-Typeの指定は、<code class="docutils literal"><span class="pre">Thym
 <div><div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>キャッシュされたテンプレート数がキャッシュの最大サイズを超過する場合は、キャッシュ上でテンプレートの入れ替えが行われる。</p>
-<p class="last"><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#template-resolvers">Tutorial: Using Thymeleaf -Template Resolvers-</a>には、
+<p class="last"><a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#template-resolvers">Tutorial: Using Thymeleaf -Template Resolvers-</a>には、
 「キャッシュの生存時間を指定しない場合にはLRU(Least Recently Used)方式でのみキャッシュの削除が行われる」と記述されているが、実際にはFIFO(First-In First-Out)方式で実装されている。</p>
 </div>
 <div class="admonition note">
@@ -3013,16 +2900,16 @@ date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf84
 </div>
 </div>
 <div class="section" id="decoupled-template-logic">
-<span id="thymeleafappendixdecoupledtemplatelogic"></span><h3><a class="toc-backref" href="#id59">4.1.4.2. Decoupled Template Logicの適用</a><a class="headerlink" href="#decoupled-template-logic" title="Permalink to this headline">¶</a></h3>
+<span id="thymeleafappendixdecoupledtemplatelogic"></span><h3><a class="toc-backref" href="#id55">4.1.4.2. Decoupled Template Logicの適用</a><a class="headerlink" href="#decoupled-template-logic" title="Permalink to this headline">¶</a></h3>
 <p>Decoupled Template Logicを有効化するための設定方法や、実装方法について説明する。</p>
 <div class="section" id="thymeleafapplydecoupledtemplatelogic">
-<span id="id26"></span><h4><a class="toc-backref" href="#id60">4.1.4.2.1. アプリケーションの設定</a><a class="headerlink" href="#thymeleafapplydecoupledtemplatelogic" title="Permalink to this headline">¶</a></h4>
+<span id="id25"></span><h4><a class="toc-backref" href="#id56">4.1.4.2.1. アプリケーションの設定</a><a class="headerlink" href="#thymeleafapplydecoupledtemplatelogic" title="Permalink to this headline">¶</a></h4>
 <p>Decoupled Template Logicを有効化するために、以下の設定を行う。</p>
 <ul class="simple">
 <li>spring-mvc.xml</li>
 </ul>
 <blockquote>
-<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+<div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
     <span class="c">&lt;!-- omitted --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;useDecoupledLogic&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
 <span class="nt">&lt;/bean&gt;</span>
@@ -3075,11 +2962,11 @@ date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf84
 <li><p class="first">spring-mvc.xml</p>
 <blockquote>
 <div><div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span>
-    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
     <span class="c">&lt;!-- omitted --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;useDecoupledLogic&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/bean&gt;</span>
-<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
     <span class="c">&lt;!-- omitted --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;decoupledTemplateLogicResolver&quot;</span> <span class="na">ref=</span><span class="s">&quot;decoupledResolver&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
 <span class="nt">&lt;/bean&gt;</span>
@@ -3156,7 +3043,7 @@ date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf84
 </div></blockquote>
 </div>
 <div class="section" id="html-xml">
-<span id="thymeleafimplementationbydecoupledtemplatelogic"></span><h4><a class="toc-backref" href="#id61">4.1.4.2.2. HTML（プロトタイプ）とロジックXMLの実装</a><a class="headerlink" href="#html-xml" title="Permalink to this headline">¶</a></h4>
+<span id="thymeleafimplementationbydecoupledtemplatelogic"></span><h4><a class="toc-backref" href="#id57">4.1.4.2.2. HTML（プロトタイプ）とロジックXMLの実装</a><a class="headerlink" href="#html-xml" title="Permalink to this headline">¶</a></h4>
 <p>1つの画面に対しHTML（プロトタイプ）とロジックXMLの2ファイルを作成する。</p>
 <p><strong>HTML（プロトタイプ）作成のポイント</strong></p>
 <ul class="simple">
@@ -3169,7 +3056,7 @@ date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf84
 <li><code class="docutils literal"><span class="pre">&lt;attr&gt;</span></code>タグには、1つの<code class="docutils literal"><span class="pre">sel</span></code>属性と1つ以上のThymeleafの属性を記述する。</li>
 <li><code class="docutils literal"><span class="pre">sel</span></code>属性にはHTML（プロトタイプ）のどのタグを対象にThymeleafの属性を適用するかを指定するセレクタを記述する。
 セレクタの書式はThymeleaf標準のセレクタと同じである。
-詳細については <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#appendix-c-markup-selector-syntax">Tutorial: Using Thymeleaf -Appendix C: Markup Selector Syntax-</a> を参照されたい。</li>
+詳細については <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appendix-c-markup-selector-syntax">Tutorial: Using Thymeleaf -Appendix C: Markup Selector Syntax-</a> を参照されたい。</li>
 <li><code class="docutils literal"><span class="pre">&lt;attr&gt;</span></code>タグはネストすることが可能であり、子要素は親要素のセレクタを含めて解釈される。</li>
 </ul>
 <div class="line-block">
@@ -3350,10 +3237,10 @@ date:2017-10-30 11:07:12    thread:http-nio-8080-exec-2    X-Track:f5e0a41eecf84
 </div>
 </div>
 <div class="section" id="javascript">
-<span id="thymeleaf-javascript-template"></span><h3><a class="toc-backref" href="#id62">4.1.4.3. JavaScriptのテンプレート化</a><a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h3>
+<span id="thymeleaf-javascript-template"></span><h3><a class="toc-backref" href="#id58">4.1.4.3. JavaScriptのテンプレート化</a><a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h3>
 <p>ThymeleafによるJavaScriptのテンプレート化について説明する。</p>
 <div class="section" id="thymeleaf-javascript-template-overview">
-<span id="id27"></span><h4><a class="toc-backref" href="#id63">4.1.4.3.1. JavaScriptテンプレートの適用</a><a class="headerlink" href="#thymeleaf-javascript-template-overview" title="Permalink to this headline">¶</a></h4>
+<span id="id26"></span><h4><a class="toc-backref" href="#id59">4.1.4.3.1. JavaScriptテンプレートの適用</a><a class="headerlink" href="#thymeleaf-javascript-template-overview" title="Permalink to this headline">¶</a></h4>
 <p>ThymeleafはJavaScriptをテンプレートとする機能を提供しており、この機能を用いる事でJavaScriptのソースコードをサーバ上で動的に生成可能となる。
 JavaScriptをテンプレート化する方法には以下の2種類が有る。</p>
 <ol class="arabic simple">
@@ -3449,7 +3336,7 @@ var itemName = [[${item.name}]]; // (1)
 </tbody>
 </table>
 </div></blockquote>
-<p>これらの実装イメージを見ると分かるが、いずれの場合においてもThymeleafの <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#inlining">インライン処理機能</a> を用いて実装している。その為、まずインライン処理の記法について簡単に説明する。
+<p>これらの実装イメージを見ると分かるが、いずれの場合においてもThymeleafの <a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining">インライン処理機能</a> を用いて実装している。その為、まずインライン処理の記法について簡単に説明する。
 （以降、インライン処理用の記法をインライン記法と呼ぶこととする。）</p>
 <ul class="simple">
 <li>インライン記法</li>
@@ -3560,11 +3447,11 @@ var itemName = [[${item.name}]]; // (1)
 </table>
 </div></blockquote>
 <p>なお、ブロックの開始要素<code class="docutils literal"><span class="pre">[#th:block]</span></code>とブロックの終了要素<code class="docutils literal"><span class="pre">[/th:block]</span></code>は、<code class="docutils literal"><span class="pre">th:block</span></code>を省略してそれぞれ<code class="docutils literal"><span class="pre">[#</span> <span class="pre">]</span></code>、 <code class="docutils literal"><span class="pre">[/]</span></code>のように記述可能である。
-インライン記法の詳細については、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#inlining">Tutorial: Using Thymeleaf -Inlining-</a> を参照されたい。</p>
+インライン記法の詳細については、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining">Tutorial: Using Thymeleaf -Inlining-</a> を参照されたい。</p>
 </div></blockquote>
 </div>
 <div class="section" id="htmljavascript">
-<span id="thymeleaf-javascript-template-in-html"></span><h4><a class="toc-backref" href="#id64">4.1.4.3.2. HTMLファイル内のJavaScriptのテンプレート化</a><a class="headerlink" href="#htmljavascript" title="Permalink to this headline">¶</a></h4>
+<span id="thymeleaf-javascript-template-in-html"></span><h4><a class="toc-backref" href="#id60">4.1.4.3.2. HTMLファイル内のJavaScriptのテンプレート化</a><a class="headerlink" href="#htmljavascript" title="Permalink to this headline">¶</a></h4>
 <p>テンプレートHTML内にJavaScriptのテンプレートを記述する方法を説明する。
 テンプレートHTMLにJavaScriptのテンプレートを記述するには、テンプレートHTMLの<code class="docutils literal"><span class="pre">&lt;script&gt;</span></code>要素に<code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>を付与すればよい。</p>
 <p><code class="docutils literal"><span class="pre">&lt;script&gt;</span></code>要素に<code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>を記述する事でJavaScriptをテンプレート化する為の機能が有効となる。
@@ -3630,8 +3517,8 @@ var itemName = [[${item.name}]]; // (1)
 </table>
 <p>テンプレートHTMLの <a class="reference internal" href="#comment-blocks"><span class="std std-ref">コメント文</span></a> に対応する機能として、インライン記法におけるコメントブロックが存在する。
 詳細については、
-<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#textual-prototype-only-comment-blocks-adding-code">Tutorial: Using Thymeleaf -Textual prototype-only comment blocks: adding code-</a> と、
-<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#textual-parser-level-comment-blocks-removing-code">Tutorial: Using Thymeleaf -Textual parser-level comment blocks: removing code-</a> を参照されたい。</p>
+<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#textual-prototype-only-comment-blocks-adding-code">Tutorial: Using Thymeleaf -Textual prototype-only comment blocks: adding code-</a> と、
+<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#textual-parser-level-comment-blocks-removing-code">Tutorial: Using Thymeleaf -Textual parser-level comment blocks: removing code-</a> を参照されたい。</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p><strong>JavaScriptのテンプレートの静的表示について</strong></p>
@@ -3809,8 +3696,8 @@ var itemName = [[${item.name}]]; // (1)
 </div></blockquote>
 </div></blockquote>
 </div>
-<div class="section" id="id29">
-<h4><a class="toc-backref" href="#id65">4.1.4.3.3. JavaScriptファイルのテンプレート化</a><a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id28">
+<h4><a class="toc-backref" href="#id61">4.1.4.3.3. JavaScriptファイルのテンプレート化</a><a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h4>
 <p>JavaScriptファイルをThymeleafのテンプレートとする方法について説明する。
 なおJavaScriptファイルのテンプレートを実装する上でThymeleafより提供される機能は、 <a class="reference internal" href="#thymeleaf-javascript-template-in-html"><span class="std std-ref">HTMLファイル内のJavaScriptのテンプレート化</span></a> に記載した内容と同等であるため、そちらを参照されたい。</p>
 <p>テンプレート化したJavaScriptファイルをThymeleafで解釈させるには、テンプレートモードを<code class="docutils literal"><span class="pre">JAVASCRIPT</span></code>に設定した<code class="docutils literal"><span class="pre">TemplateResolver</span></code>が必要である。
@@ -3826,7 +3713,7 @@ var itemName = [[${item.name}]]; // (1)
 <li><p class="first">spring-mvc.xmlの定義</p>
 <div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;mvc:view-resolvers&gt;</span>
     <span class="nt">&lt;mvc:bean-name</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.view.ThymeleafViewResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.view.ThymeleafViewResolver&quot;</span><span class="nt">&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">ref=</span><span class="s">&quot;templateEngine&quot;</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;characterEncoding&quot;</span> <span class="na">value=</span><span class="s">&quot;UTF-8&quot;</span> <span class="nt">/&gt;</span>
         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;forceContentType&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (1) --&gt;</span>
@@ -3835,7 +3722,7 @@ var itemName = [[${item.name}]]; // (1)
 <span class="nt">&lt;/mvc:view-resolvers&gt;</span>
 
 <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateResolver&quot;</span>
-    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
+    <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver&quot;</span><span class="nt">&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;prefix&quot;</span> <span class="na">value=</span><span class="s">&quot;/WEB-INF/js/&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (2) --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;suffix&quot;</span> <span class="na">value=</span><span class="s">&quot;.js&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (3) --&gt;</span>
     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;templateMode&quot;</span> <span class="na">value=</span><span class="s">&quot;JAVASCRIPT&quot;</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- (4) --&gt;</span>
@@ -4029,7 +3916,7 @@ var itemName = [[${item.name}]]; // (1)
         <li class="right" >
           <a href="index.html" title="4. Webアプリ開発機能"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >4. Webアプリ開発機能</a> &#187;</li> 
       </ul>
     </div>

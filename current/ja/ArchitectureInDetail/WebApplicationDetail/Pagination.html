@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4.5. ページネーション &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</title>
+    <title>4.5. ページネーション &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</title>
     
     <link rel="stylesheet" href="../../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -12,7 +12,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '1.9.0.RELEASE',
+        VERSION:     '1.8.2.RELEASE',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="SessionManagement.html" title="4.4. セッション管理"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">4. Webアプリ開発機能</a> &#187;</li> 
       </ul>
     </div>
@@ -820,17 +820,18 @@
 <li>Controller</li>
 </ul>
 <blockquote>
-<div><div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&quot;list&quot;</span><span class="o">)</span>
+<div><div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;list&quot;</span><span class="o">)</span>
 <span class="kd">public</span> <span class="n">String</span> <span class="nf">list</span><span class="o">(</span><span class="nd">@Validated</span> <span class="n">ArticleSearchCriteriaForm</span> <span class="n">form</span><span class="o">,</span>
         <span class="n">BindingResult</span> <span class="n">result</span><span class="o">,</span>
         <span class="n">Pageable</span> <span class="n">pageable</span><span class="o">,</span> <span class="c1">// (1)</span>
         <span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
 
-    <span class="n">ArticleSearchCriteria</span> <span class="n">criteria</span> <span class="o">=</span> <span class="n">beanMapper</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">form</span><span class="o">);</span> <span class="c1">// (2)</span>
+    <span class="n">ArticleSearchCriteria</span> <span class="n">criteria</span> <span class="o">=</span> <span class="n">beanMapper</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">form</span><span class="o">,</span>
+            <span class="n">ArticleSearchCriteria</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-    <span class="n">Page</span><span class="o">&lt;</span><span class="n">Article</span><span class="o">&gt;</span> <span class="n">page</span> <span class="o">=</span> <span class="n">articleService</span><span class="o">.</span><span class="na">searchArticle</span><span class="o">(</span><span class="n">criteria</span><span class="o">,</span> <span class="n">pageable</span><span class="o">);</span> <span class="c1">// (3)</span>
+    <span class="n">Page</span><span class="o">&lt;</span><span class="n">Article</span><span class="o">&gt;</span> <span class="n">page</span> <span class="o">=</span> <span class="n">articleService</span><span class="o">.</span><span class="na">searchArticle</span><span class="o">(</span><span class="n">criteria</span><span class="o">,</span> <span class="n">pageable</span><span class="o">);</span> <span class="c1">// (2)</span>
 
-    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&quot;page&quot;</span><span class="o">,</span> <span class="n">page</span><span class="o">);</span> <span class="c1">// (4)</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&quot;page&quot;</span><span class="o">,</span> <span class="n">page</span><span class="o">);</span> <span class="c1">// (3)</span>
 
     <span class="k">return</span> <span class="s">&quot;article/list&quot;</span><span class="o">;</span>
 <span class="o">}</span>
@@ -862,22 +863,12 @@
 </div>
 </td>
 <td><div class="first last line-block">
-<div class="line">BeanのマッピングにはMapStructを用いて作成したマッパーインタフェースを使用する。</div>
-<div class="line">Mapperインタフェースの定義方法については<a class="reference internal" href="../GeneralFuncDetail/BeanMapping.html"><span class="doc">Beanマッピング(MapStruct)</span></a>を参照されたい。</div>
+<div class="line">Serviceのメソッドの引数に <code class="docutils literal"><span class="pre">Pageable</span></code> オブジェクトを指定して呼び出す。</div>
 </div>
 </td>
 </tr>
 <tr class="row-even"><td><div class="first last line-block">
 <div class="line">(3)</div>
-</div>
-</td>
-<td><div class="first last line-block">
-<div class="line">Serviceのメソッドの引数に <code class="docutils literal"><span class="pre">Pageable</span></code> オブジェクトを指定して呼び出す。</div>
-</div>
-</td>
-</tr>
-<tr class="row-odd"><td><div class="first last line-block">
-<div class="line">(4)</div>
 </div>
 </td>
 <td><div class="first last line-block">
@@ -912,7 +903,7 @@
 <div class="line">ページ検索処理毎にデフォルト値を変更する必要がある場合は、<code class="docutils literal"><span class="pre">&#64;PageableDefault</span></code> アノテーションを使ってデフォルト値を指定する。</div>
 </div>
 <blockquote>
-<div><div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&quot;list&quot;</span><span class="o">)</span>
+<div><div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;list&quot;</span><span class="o">)</span>
 <span class="kd">public</span> <span class="n">String</span> <span class="nf">list</span><span class="o">(</span><span class="nd">@Validated</span> <span class="n">ArticleSearchCriteriaForm</span> <span class="n">form</span><span class="o">,</span>
         <span class="n">BindingResult</span> <span class="n">result</span><span class="o">,</span>
         <span class="nd">@PageableDefault</span><span class="o">(</span> <span class="c1">// (1)</span>
@@ -1528,7 +1519,7 @@
 </table>
 <p>最後に、作成したカスタムダイアレクトの設定を行う。設定例を以下に示す。</p>
 <p><strong>spring-mvc.xml</strong></p>
-<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring6.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;templateEngine&quot;</span> <span class="na">class=</span><span class="s">&quot;org.thymeleaf.spring5.SpringTemplateEngine&quot;</span><span class="nt">&gt;</span>
 
     <span class="c">&lt;!-- omitted --&gt;</span>
 
@@ -1572,10 +1563,6 @@
 <div class="line-block">
 <div class="line">以降で説明する実装例は、 <code class="docutils literal"><span class="pre">th:fragment</span></code> 属性を利用してページネーションリンクのHTMLを部品化している。</div>
 <div class="line">ページネーションリンクは、アプリケーション内で共通的に使用されるため部品化することを推奨する。HTMLの部品化については、「<a class="reference internal" href="TemplateLayout.html#templatelayout-overview-fragment"><span class="std std-ref">Thymeleafのテンプレートレイアウト機能を使用したHTMLの部品化</span></a> 」を参照されたい。</div>
-<div class="line">また、実装例のhtmlに記述している<code class="docutils literal"><span class="pre">${requestURI}</span></code>は、Thymeleafから<code class="docutils literal"><span class="pre">Model</span></code>を介して<code class="docutils literal"><span class="pre">HttpServletRequest</span></code>内の<code class="docutils literal"><span class="pre">requestURI</span></code>を利用する実装の例である。
-ページネーションにおける<code class="docutils literal"><span class="pre">requestURI</span></code>の利用は、アプリケーション全体で共通的に必要になるケースが多いと考えられるため、
-ここでは各ハンドラメソッドで個別に<code class="docutils literal"><span class="pre">Model</span></code>に配置するのではなく、<code class="docutils literal"><span class="pre">&#64;ControllerAdvice</span></code>を利用してController全体の共通処理として実装する例を示す。
-Thymeleafから<code class="docutils literal"><span class="pre">HttpServletRequest</span></code>の内容を利用する際の注意点については、「<a class="reference internal" href="Thymeleaf.html#thymeleaf-how-to-extend-add-web-object"><span class="std std-ref">Web オブジェクト（HttpServletRequest、 HttpSession等）の利用</span></a> 」を参照されたい。</div>
 </div>
 <p>以降、以下のファイル構成を前提に実装例を示す。</p>
 <ul class="simple">
@@ -1591,42 +1578,6 @@ Thymeleafから<code class="docutils literal"><span class="pre">HttpServletReque
 </div>
 </div></blockquote>
 <ul class="simple">
-<li>ControllerAdvice</li>
-</ul>
-<blockquote>
-<div><div class="highlight-java"><div class="highlight"><pre><span></span><span class="nd">@ControllerAdvice</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThymeleafCommonControllerAdvice</span> <span class="o">{</span>
-    <span class="nd">@ModelAttribute</span><span class="o">(</span><span class="s">&quot;requestURI&quot;</span><span class="o">)</span> <span class="c1">// (1)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">requestURI</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-<table border="1" class="colwidths-given longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">項番</th>
-<th class="head">説明</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><div class="first last line-block">
-<div class="line">(1)</div>
-</div>
-</td>
-<td><div class="first last line-block">
-<div class="line">テンプレートHTML(フラグメント)の<code class="docutils literal"><span class="pre">${requestURI}</span></code>がアクセスするための<code class="docutils literal"><span class="pre">&#64;ModelAttribute</span></code>。</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-<ul class="simple">
 <li>テンプレートHTML(フラグメント)</li>
 </ul>
 <blockquote>
@@ -1637,7 +1588,7 @@ Thymeleafから<code class="docutils literal"><span class="pre">HttpServletReque
 
   <span class="c">&lt;!--/* (3), (4) */--&gt;</span>
   <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">th:if</span><span class="o">=</span><span class="s">&quot;*{totalElements} != 0&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;pagination&quot;</span>
-    <span class="na">th:with</span><span class="o">=</span><span class="s">&quot;pageLinkMaxDispNum = 10, disabledHref = &#39;javascript:void(0)&#39;, currentUrl = ${requestURI}&quot;</span><span class="p">&gt;</span>
+    <span class="na">th:with</span><span class="o">=</span><span class="s">&quot;pageLinkMaxDispNum = 10, disabledHref = &#39;javascript:void(0)&#39;, currentUrl = ${#request.requestURI}&quot;</span><span class="p">&gt;</span>
 
     <span class="c">&lt;!--/* (5) */--&gt;</span>
     <span class="p">&lt;</span><span class="nt">li</span> <span class="na">th:class</span><span class="o">=</span><span class="s">&quot;*{isFirst()} ? &#39;disabled&#39;&quot;</span><span class="p">&gt;</span>
@@ -2668,7 +2619,7 @@ Thymeleafから<code class="docutils literal"><span class="pre">HttpServletReque
         <li class="right" >
           <a href="SessionManagement.html" title="4.4. セッション管理"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >4. Webアプリ開発機能</a> &#187;</li> 
       </ul>
     </div>

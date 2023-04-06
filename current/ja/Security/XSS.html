@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>9.7. XSS対策 &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</title>
+    <title>9.7. XSS対策 &#8212; Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</title>
     
     <link rel="stylesheet" href="../_static/solar.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -12,7 +12,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.9.0.RELEASE',
+        VERSION:     '1.8.2.RELEASE',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="LinkageWithBrowser.html" title="9.6. ブラウザのセキュリティ対策機能との連携"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">9. セキュリティ対策</a> &#187;</li> 
       </ul>
     </div>
@@ -140,59 +140,42 @@
 </li>
 </ul>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="section" id="overview">
 <span id="springsecurityxss"></span><h2><a class="toc-backref" href="#id16">9.7.1. Overview</a><a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<div class="line-block">
-<div class="line">クロスサイトスクリプティング(以下、XSSと略す)について説明する。</div>
-<div class="line">クロスサイトスクリプティングとは、アプリケーションのセキュリティ上の不備を意図的に利用し、サイト間を横断して悪意のあるスクリプトを混入させることである。</div>
-<div class="line">例えば、ウェブアプリケーションが入力したデータ（フォーム入力など）を、適切にエスケープしないまま、HTML上に出力することにより、入力値に存在するタグなどの文字が、そのままHTMLとして解釈される。</div>
-<div class="line">悪意のある値が入力された状態で、スクリプトを起動させることにより、クッキーの改ざんや、クッキーの値を取得することによる、セッションハイジャックなどの攻撃が行えてしまう。</div>
-<div class="line"><br /></div>
-</div>
+<p>クロスサイトスクリプティング(以下、XSSと略す)について説明する。
+クロスサイトスクリプティングとは、アプリケーションのセキュリティ上の不備を意図的に利用し、サイト間を横断して悪意のあるスクリプトを混入させることである。
+例えば、ウェブアプリケーションが入力したデータ（フォーム入力など）を、適切にエスケープしないまま、HTML上に出力することにより、入力値に存在するタグなどの文字が、そのままHTMLとして解釈される。
+悪意のある値が入力された状態で、スクリプトを起動させることにより、クッキーの改ざんや、クッキーの値を取得することによる、セッションハイジャックなどの攻撃が行えてしまう。</p>
 <div class="section" id="stored-reflected-xss-attacks">
 <h3><a class="toc-backref" href="#id17">9.7.1.1. Stored, Reflected XSS Attacks</a><a class="headerlink" href="#stored-reflected-xss-attacks" title="Permalink to this headline">¶</a></h3>
 <p>XSS攻撃は、大きく二つのカテゴリに分けられる。</p>
 <p><strong>Stored XSS Attacks</strong></p>
-<div class="line-block">
-<div class="line">Stored XSS Attacksとは、悪意のあるコードが、永久的にターゲットサーバ上(データベース等)に格納されていることである。</div>
-<div class="line">ユーザーは、格納されている情報を要求するときに、サーバから悪意のあるスクリプトを取得し、実行してしまう。</div>
-</div>
+<p>Stored XSS Attacksとは、悪意のあるコードが、永久的にターゲットサーバ上(データベース等)に格納されていることである。
+ユーザーは、格納されている情報を要求するときに、サーバから悪意のあるスクリプトを取得し、実行してしまう。</p>
 <p><strong>Reflected XSS Attacks</strong></p>
-<div class="line-block">
-<div class="line">Reflected attacksとは、リクエストの一部としてサーバに送信された悪意のあるコードが、エラーメッセージ、検索結果、その他いろいろなレスポンスからリフレクションされることである。</div>
-<div class="line">ユーザーが、悪意のあるリンクをクリックするか、特別に細工されたフォームを送信すると、挿入されたコードは、ユーザーのブラウザに、攻撃を反映した結果を返却する。</div>
-<div class="line">その結果、信頼できるサーバからきた値のため、ブラウザは悪意のあるコードを実行してしまう。</div>
-<div class="line"><br /></div>
-<div class="line">Stored XSS Attacks、Reflected XSS Attacksともに、出力値をエスケープすることで防ぐことができる。</div>
-<div class="line"><br /></div>
-</div>
+<p>Reflected attacksとは、リクエストの一部としてサーバに送信された悪意のあるコードが、エラーメッセージ、検索結果、その他いろいろなレスポンスからリフレクションされることである。
+ユーザーが、悪意のあるリンクをクリックするか、特別に細工されたフォームを送信すると、挿入されたコードは、ユーザーのブラウザに、攻撃を反映した結果を返却する。
+その結果、信頼できるサーバからきた値のため、ブラウザは悪意のあるコードを実行してしまう。</p>
+<p>Stored XSS Attacks、Reflected XSS Attacksともに、出力値をエスケープすることで防ぐことができる。</p>
 <div class="section" id="how-to-use">
 <h4><a class="toc-backref" href="#id18">9.7.1.1.1. How to use</a><a class="headerlink" href="#how-to-use" title="Permalink to this headline">¶</a></h4>
-<div class="line-block">
-<div class="line">ユーザーの入力を、そのまま出力している場合、XSSの脆弱性にさらされている。</div>
-<div class="line">したがって、XSSの脆弱性に対する対抗措置として、HTMLのマークアップ言語で、特定の意味を持つ文字をエスケープする必要がある。</div>
-</div>
+<p>ユーザーの入力を、そのまま出力している場合、XSSの脆弱性にさらされている。
+したがって、XSSの脆弱性に対する対抗措置として、HTMLのマークアップ言語で、特定の意味を持つ文字をエスケープする必要がある。</p>
 <p>必要に応じて、3種類のエスケープを使い分けること。</p>
 <p>エスケープの種類:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li>Output Escaping</li>
 <li>JavaScript Escaping</li>
 <li>Event handler Escaping</li>
 </ul>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="output-escaping">
 <span id="xss-how-to-use-ouput-escaping"></span><h3><a class="toc-backref" href="#id19">9.7.1.2. Output Escaping</a><a class="headerlink" href="#output-escaping" title="Permalink to this headline">¶</a></h3>
-<div class="line-block">
-<div class="line">XSSの脆弱性への対応としては、HTML特殊文字をエスケープすることが基本である。</div>
-<div class="line">HTMLにおいてエスケープが必要な特殊文字の例と、エスケープ後の例は、以下の通りである。</div>
-</div>
+<p>XSSの脆弱性への対応としては、HTML特殊文字をエスケープすることが基本である。
+HTMLにおいてエスケープが必要な特殊文字の例と、エスケープ後の例は、以下の通りである。</p>
 <table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="50%" />
@@ -257,10 +240,8 @@
 </tr>
 </tbody>
 </table>
-<div class="line-block">
-<div class="line">Thymeleafでテキストを出力する方法には<code class="docutils literal"><span class="pre">th:text</span></code>属性、<code class="docutils literal"><span class="pre">th:utext</span></code>属性の二種類が存在する。</div>
-<div class="line">詳細は、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text">Tutorial: Using Thymeleaf -Unescaped Text-</a>を参照されたい。</div>
-</div>
+<p>Thymeleafでテキストを出力する方法には<code class="docutils literal"><span class="pre">th:text</span></code>属性、<code class="docutils literal"><span class="pre">th:utext</span></code>属性の二種類が存在する。
+詳細は、<a class="reference external" href="https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text">Tutorial: Using Thymeleaf -Unescaped Text-</a>を参照されたい。</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">th:text</span></code>属性を使用すると値をエスケープして出力する</li>
@@ -269,9 +250,6 @@
 </div></blockquote>
 <p>XSSを防ぐために、<code class="docutils literal"><span class="pre">th:text</span></code>属性を使用すること。</p>
 <p>入力値を、別画面に再出力するアプリケーションを例に、説明する。</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="section" id="id2">
 <h4><a class="toc-backref" href="#id20">9.7.1.2.1. 出力値をエスケープしない脆弱性のある例</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>本例は、あくまで参考例として載せているだけなので、以下のような実装は、決して行わないこと。</p>
@@ -318,9 +296,6 @@
 <a class="reference internal image-reference" href="../_images/xss_screen_no_escape_result.png"><img alt="no_escape_result" src="../_images/xss_screen_no_escape_result.png" style="width: 60%;" /></a>
 <p class="caption"><span class="caption-text"><strong>Picture - No Escape Result</strong></span></p>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </div>
 <div class="section" id="xss-how-to-use-h-function-example">
 <span id="id3"></span><h4><a class="toc-backref" href="#id21">9.7.1.2.2. 出力値をエスケープする例</a><a class="headerlink" href="#xss-how-to-use-h-function-example" title="Permalink to this headline">¶</a></h4>
@@ -330,7 +305,7 @@
     <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Job<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">td</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${customerForm.job}&quot;</span><span class="p">&gt;</span>Job<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>  <span class="c">&lt;!-- (1) --&gt;</span>
 <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
-<span class="c">&lt;!-- omitted --&gt;</span>
+.<span class="c">&lt;!-- omitted --&gt;</span>
 </pre></div>
 </div>
 <table border="1" class="colwidths-given docutils">
@@ -379,20 +354,15 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p><strong>インライン記法を使用する場合</strong></p>
-<p>Thymeleafでテキストを出力する方法には<code class="docutils literal"><span class="pre">th:text</span></code>、<code class="docutils literal"><span class="pre">th:utext</span></code>の他にインライン記法が存在する。</p>
-<p class="last">インライン記法については、<a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a>のインライン記法の項を参照されたい。</p>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
+<p class="last">Thymeleafでテキストを出力する方法には<code class="docutils literal"><span class="pre">th:text</span></code>、<code class="docutils literal"><span class="pre">th:utext</span></code>の他にインライン記法が存在する。
+インライン記法については、 <a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a> のインライン記法の項を参照されたい。</p>
 </div>
 </div>
 </div>
 <div class="section" id="javascript-escaping">
 <span id="xss-how-to-use-javascript-escaping"></span><h3><a class="toc-backref" href="#id22">9.7.1.3. JavaScript Escaping</a><a class="headerlink" href="#javascript-escaping" title="Permalink to this headline">¶</a></h3>
-<div class="line-block">
-<div class="line">XSSの脆弱性への対応としては、JavaScript特殊文字をエスケープすることが基本である。</div>
-<div class="line">ユーザーからの入力をもとに、JavaScriptの文字列リテラルを動的に生成する場合に、エスケープが必要となる。</div>
-</div>
+<p>XSSの脆弱性への対応としては、JavaScript特殊文字をエスケープすることが基本である。
+ユーザーからの入力をもとに、JavaScriptの文字列リテラルを動的に生成する場合に、エスケープが必要となる。</p>
 <p>JavaScriptにおいてエスケープが必要な特殊文字の例と、エスケープ後の例は、以下のとおりである。</p>
 <table border="1" class="colwidths-given docutils">
 <colgroup>
@@ -485,9 +455,6 @@
 </tr>
 </tbody>
 </table>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="section" id="id4">
 <h4><a class="toc-backref" href="#id23">9.7.1.3.1. 出力値をエスケープしない脆弱性のある例</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>XSS問題が発生する例を、以下に示す。</p>
@@ -560,9 +527,6 @@
 <p class="first admonition-title">Tip</p>
 <p class="last">業務要件上必要でない限り、JavaScriptの要素をユーザーからの入力値に依存して動的に生成する仕様は、任意のスクリプトが埋め込まれてしまう可能性があるため、別の方式を検討する、または、極力避けるべきである。</p>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </div>
 <div class="section" id="xss-how-to-use-js-function-example">
 <span id="id5"></span><h4><a class="toc-backref" href="#id24">9.7.1.3.2. 出力値をエスケープする例</a><a class="headerlink" href="#xss-how-to-use-js-function-example" title="Permalink to this headline">¶</a></h4>
@@ -610,19 +574,20 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p><code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>と<code class="docutils literal"><span class="pre">[[xxx]]</span></code>の形式を用いたインライン記法を併用すると、文字列が”<code class="docutils literal"><span class="pre">&quot;</span></code>”に挟まれた状態で出力されるので、”<code class="docutils literal"><span class="pre">'</span></code>”はエスケープ不要となる。</p>
-<p>また、&lt;script&gt;タグがブラウザに認識されると、&lt;/script&gt;のようにタグを閉じるまで他のタグは認識されない。そのため、”<code class="docutils literal"><span class="pre">/</span></code>”がエスケープされていれば、”<code class="docutils literal"><span class="pre">&lt;</span></code>”、”<code class="docutils literal"><span class="pre">&gt;</span></code>” のエスケープは不要となる。</p>
+<p>また、&lt;script&gt;タグがブラウザに認識されると、&lt;/script&gt;のようにタグを閉じるまで他のタグは認識されない。
+そのため、”<code class="docutils literal"><span class="pre">/</span></code>”がエスケープされていれば、”<code class="docutils literal"><span class="pre">&lt;</span></code>”、”<code class="docutils literal"><span class="pre">&gt;</span></code>”のエスケープは不要となる。</p>
 <p>以上のことから、以下の特殊文字は<code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>のエスケープ対象に入っていない。</p>
 <ul class="simple">
 <li>“<code class="docutils literal"><span class="pre">'</span></code>”</li>
 <li>“<code class="docutils literal"><span class="pre">&lt;</span></code>”</li>
 <li>“<code class="docutils literal"><span class="pre">&gt;</span></code>”</li>
 </ul>
-<p class="last">インライン記法については、<a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a>のインライン記法の項を参照されたい。</p>
+<p class="last">インライン記法については、 <a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a> のインライン記法の項を参照されたい。</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p>スクリプトタグが含まれる値を、HTMLエスケープせず<code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>でエスケープさせて出力する場合、document.write()を使用すると、</p>
-<p>ブラウザにHTMLソースとして解釈させるよう出力するので、XSSの脆弱性が生じる。以下に例を示すが、<strong>このような実装は決して行わないこと。</strong></p>
+<p>スクリプトタグが含まれる値を、HTMLエスケープせず<code class="docutils literal"><span class="pre">th:inline=&quot;javascript&quot;</span></code>でエスケープさせて出力する場合、document.write()を使用すると、
+ブラウザにHTMLソースとして解釈させるよう出力するので、XSSの脆弱性が生じる。以下に例を示すが、 <strong>このような実装は決して行わないこと。</strong></p>
 <p><strong>HTML</strong></p>
 <blockquote>
 <div><div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">th:inline</span><span class="o">=</span><span class="s">&quot;javascript&quot;</span><span class="p">&gt;</span>
@@ -663,14 +628,23 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>出力結果をソースだけ確認するとエスケープできているように見える。しかし、これは<code class="docutils literal"><span class="pre">&lt;script&gt;alert('XSS</span> <span class="pre">Attack!');&lt;/script&gt;</span></code>という内容の文字列を変数aaaに格納するコードとなるため、<code class="docutils literal"><span class="pre">document.write(aaa);</span></code>と実装してしまうと、HTMLのソースとして<code class="docutils literal"><span class="pre">&lt;script&gt;alert('XSS</span> <span class="pre">Attack!');&lt;/script&gt;</span></code>を出力することになる。その結果、スクリプトが実行される。</p>
+<p>出力結果をソースだけ確認するとエスケープできているように見える。
+しかし、これは<code class="docutils literal"><span class="pre">&lt;script&gt;alert('XSS</span> <span class="pre">Attack!');&lt;/script&gt;</span></code> という内容の文字列を変数aaaに格納するコードとなるため、
+<code class="docutils literal"><span class="pre">document.write(aaa);</span></code> と実装してしまうと、HTMLのソースとして<code class="docutils literal"><span class="pre">&lt;script&gt;alert('XSS</span> <span class="pre">Attack!');&lt;/script&gt;</span></code> を出力することになる。
+その結果、スクリプトが実行される。</p>
 <p>ブラウザに値を出力させたい場合は、JavaScriptを使用せず、HTML特殊文字をエスケープする<code class="docutils literal"><span class="pre">th:text</span></code>属性を使用することが望ましい。</p>
 <p><strong>HTML</strong></p>
 <blockquote>
-<div>&lt;div th:text=”${warnCode}”&gt;warn code&lt;/div&gt;</div></blockquote>
+<div><div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">th:text</span><span class="o">=</span><span class="s">&quot;${warnCode}&quot;</span><span class="p">&gt;</span>warn code<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
 <p><strong>出力結果</strong></p>
 <blockquote>
-<div>&lt;div&gt;&amp;lt;script&amp;gt;alert('XSS Attack!');&amp;lt;/script&amp;gt;&lt;/div&gt;</div></blockquote>
+<div><div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="ni">&amp;lt;</span>script<span class="ni">&amp;gt;</span>alert(<span class="ni">&amp;#39;</span>XSS Attack!<span class="ni">&amp;#39;</span>);<span class="ni">&amp;lt;</span>/script<span class="ni">&amp;gt;</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
 <p>あえてdocument.write()で出力したい場合は、以下のいずれかのような、追加のXSS対策が必要である。</p>
 <ul class="last simple">
 <li>HTMLエスケープ用のJavaScript関数を用意し、document.write()の引数をエスケープする。</li>
@@ -681,24 +655,19 @@
 </div>
 <div class="section" id="event-handler-escaping">
 <span id="xss-how-to-use-event-handler-escaping"></span><h3><a class="toc-backref" href="#id25">9.7.1.4. Event handler Escaping</a><a class="headerlink" href="#event-handler-escaping" title="Permalink to this headline">¶</a></h3>
-<div class="line-block">
-<div class="line">javascript のイベントハンドラの値は、<a class="reference internal" href="#xss-how-to-use-javascript-escaping"><span class="std std-ref">JavaScript Escaping</span></a>と同様にインライン記法で記述する。</div>
-<div class="line">出力結果をエスケープする場合、Thymeleafの<code class="docutils literal"><span class="pre">[[xxx]]</span></code>の形式を用いたインライン記法を使用する。</div>
-</div>
+<p>javascript のイベントハンドラの値は、 <a class="reference internal" href="#xss-how-to-use-javascript-escaping"><span class="std std-ref">JavaScript Escaping</span></a> と同様にインライン記法で記述する。
+出力結果をエスケープする場合、Thymeleafの<code class="docutils literal"><span class="pre">[[xxx]]</span></code>の形式を用いたインライン記法を使用する。</p>
 <p>理由としては、 <code class="docutils literal"><span class="pre">&lt;input</span> <span class="pre">type=&quot;submit&quot;</span> <span class="pre">onclick=&quot;callback('xxxx');&quot;&gt;</span></code>のようなイベントハンドラの値に<code class="docutils literal"><span class="pre">');alert(&quot;XSS</span> <span class="pre">Attack&quot;);//</span></code>を指定された場合、別のスクリプトを挿入できてしまうため、文字参照形式にエスケープ後、HTMLエスケープを行う必要がある。</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Thymeleaf 3.0.10より、イベントハンドラの値をインライン記法で記述できるように変更された。インライン記法は自動的にJavaScriptテンプレートモードで解釈される。</p>
-<p class="last">インライン記法については、<a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a>のインライン記法の項を参照されたい。</p>
+<p class="last">インライン記法については、 <a class="reference internal" href="../ArchitectureInDetail/WebApplicationDetail/Thymeleaf.html#thymeleaf-javascript-template-overview"><span class="std std-ref">JavaScriptテンプレートの適用</span></a> のインライン記法の項を参照されたい。</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p>Thymeleaf 3.0.10より、イベントハンドラの値を従来のインライン記法以外で記述する場合、Booleanと数値以外を出力する式がエラーとなるように変更された。</p>
-<p>これは、従来の記法では式により出力される文字列が区切り文字（シングルクォートやダブルクォート）で囲まれないため、JavaScript構文の出力により脆弱性を埋め込むことが容易だったためである。</p>
+<p>Thymeleaf 3.0.10より、イベントハンドラの値を従来のインライン記法以外で記述する場合、Booleanと数値以外を出力する式がエラーとなるように変更された。
+これは、従来の記法では式により出力される文字列が区切り文字（シングルクォートやダブルクォート）で囲まれないため、JavaScript構文の出力により脆弱性を埋め込むことが容易だったためである。</p>
 <p class="last">従来の記法では大幅に機能が制限されるため、イベントハンドラの値はインライン記法で記述することを推奨する。</p>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
 </div>
 <div class="section" id="id6">
 <h4><a class="toc-backref" href="#id26">9.7.1.4.1. 出力値をエスケープしない脆弱性のある例</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
@@ -742,11 +711,8 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p><code class="docutils literal"><span class="pre">[[xxx]]</span></code>の形式を用いたインライン記法を使用すると、エスケープされた文字列がダブルクォート（”<code class="docutils literal"><span class="pre">&quot;</span></code>”）で囲まれて出力される。</p>
-<p class="last">これに合わせて、本ガイドラインではエスケープしない場合でも文字列をダブルクォート（<code class="docutils literal"><span class="pre">&amp;quot;</span></code>）で囲んでいる。もちろんシングルクォートで囲んでも問題ない。</p>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
+<p class="last"><code class="docutils literal"><span class="pre">[[xxx]]</span></code>の形式を用いたインライン記法を使用すると、エスケープされた文字列がダブルクォート（”<code class="docutils literal"><span class="pre">&quot;</span></code>”）で囲まれて出力される。
+これに合わせて、本ガイドラインではエスケープしない場合でも文字列をダブルクォート（<code class="docutils literal"><span class="pre">&amp;quot;</span></code>）で囲んでいる。もちろんシングルクォートで囲んでも問題ない。</p>
 </div>
 </div>
 <div class="section" id="xss-how-to-use-hjs-function-example">
@@ -811,7 +777,7 @@
         <li class="right" >
           <a href="LinkageWithBrowser.html" title="9.6. ブラウザのセキュリティ対策機能との連携"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.9.0.RELEASE documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Macchinetta Server Framework (1.x) Development Guideline 1.8.2.RELEASE documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >9. セキュリティ対策</a> &#187;</li> 
       </ul>
     </div>
