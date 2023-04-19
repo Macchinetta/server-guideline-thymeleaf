@@ -116,7 +116,7 @@ Viewには、Thymeleafを利用する。
 
 共通ライブラリ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE>`_\
+* \ `https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.1.RELEASE <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.1.RELEASE>`_\
 * 詳細は\ :ref:`frameworkstack_common_library`\ を参照されたい。
 
 .. note::
@@ -130,7 +130,7 @@ Viewには、Thymeleafを利用する。
 利用するOSSのバージョン
 --------------------------------------------------------------------------------
 
-version 1.9.0.RELEASEで利用するOSSの一覧を以下に示す。
+version 1.9.1.RELEASEで利用するOSSの一覧を以下に示す。
 
 .. note::
 
@@ -144,7 +144,7 @@ version 1.9.0.RELEASEで利用するOSSの一覧を以下に示す。
 
   への依存関係を解決しており、Macchinetta Server Framework (1.x)で使用するOSSのバージョンは、原則として、Spring Bootで管理されているバージョンに準ずる。
 
-  なお、version 1.9.0.RELEASEでは\ `Spring Boot 3.0.1 <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
+  なお、version 1.9.1.RELEASEでは\ `Spring Boot 3.0.1 <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/>`_\ に依存しており、管理されるライブラリは\ `Spring Boot Reference Guide - Appendix F. Dependency versions <https://docs.spring.io/spring-boot/docs/3.0.1/reference/htmlsingle/#dependency-versions>`_\ の通りとなる。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.27\linewidth}|p{0.25\linewidth}|p{0.15\linewidth}|p{0.05\linewidth}|p{0.08\linewidth}|
 .. list-table::
@@ -456,10 +456,10 @@ version 1.9.0.RELEASEで利用するOSSの一覧を以下に示す。
 共通ライブラリの構成要素
 --------------------------------------------------------------------------------
 
-| Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.0.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
+| Macchinetta Server Framework (1.x)では、\ `TERASOLUNA Server Framework for Java (5.x) <https://github.com/terasolunaorg>`_\ が提供する\ `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.8.1.RELEASE>`_\ を使用する。（以降「共通ライブラリ」と記載する。）
 | 共通ライブラリは、Macchinetta Server Framework (1.x)やTERASOLUNA Server Framework for Java (5.x)が含むSpring Ecosystem や、その他依存ライブラリでは足りない+αな機能を提供するライブラリである。
 | 基本的には、このライブラリがなくてもMacchinetta Server Framework (1.x)によるアプリケーション開発は可能であるが、"あると便利"な存在である。
-| また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.9.0.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.9.0.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
+| また、提供している2種類の \ `マルチプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.9.1.RELEASE>`_\ および \ `シングルプロジェクト構成のブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-blank-thymeleaf/tree/1.9.1.RELEASE>`_\ の共通ライブラリの標準の組込状況は以下の通りである。
 
 .. tabularcolumns:: |p{0.05\linewidth}|p{0.15\linewidth}|p{0.40\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|p{0.10\linewidth}|
 .. list-table::
@@ -625,7 +625,7 @@ Javaソースコードを含まないものは、ライブラリの依存関係�
 
 .. note::
 
-  version 1.9.0.RELEASEでは TERASOLUNA Server Framework for Java 5.8.0.RELEASE の共通ライブラリを使用している。
+  version 1.9.1.RELEASEでは TERASOLUNA Server Framework for Java 5.8.1.RELEASE の共通ライブラリを使用している。
 
 |
 

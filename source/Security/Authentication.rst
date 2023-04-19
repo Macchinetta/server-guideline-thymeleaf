@@ -177,7 +177,7 @@ Spring Securityは、以下のような流れでフォーム認証を行う。
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login />    <!-- (1) -->
       <!-- omitted -->
   </sec:http>
@@ -301,7 +301,7 @@ Spring Securityのデフォルトの動作では、\ ``/login``\ に対してGET
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login
           login-page="/login/loginForm"
           login-processing-url="/login"  /> <!-- (1)(2) -->
@@ -1334,7 +1334,7 @@ Spring Securityは、以下のような流れでログアウト処理を行う�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <!-- omitted -->
       <sec:logout /> <!-- (1) -->
       <!-- omitted -->
@@ -1634,7 +1634,7 @@ Thymeleafからのアクセス
 
 | 認証情報(\ ``UserDetails``\ )をコントローラーの引数として受け取るためには、まず\ ``AuthenticationPrincipalArgumentResolver``\ をSpring MVCに適用する必要がある。
 | \ ``AuthenticationPrincipalArgumentResolver``\ を適用するためのbean定義は以下の通りである。
-| \ なお、\ `ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.9.0.RELEASE>`_\ には\ ``AuthenticationPrincipalArgumentResolver``\ が設定済みである。
+| \ なお、\ `ブランクプロジェクト <https://github.com/Macchinetta/macchinetta-web-multi-blank-thymeleaf/tree/1.9.1.RELEASE>`_\ には\ ``AuthenticationPrincipalArgumentResolver``\ が設定済みである。
 
 * spring-mvc.xmlの定義例
 
@@ -1722,7 +1722,7 @@ Spring Securityのデフォルトでは、認証処理を実行するための�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login login-processing-url="/authentication" /> <!-- (1) -->
       <!-- omitted -->
   </sec:http>
@@ -1752,7 +1752,7 @@ Spring Securityのデフォルトでは、資格情報(ユーザー名とパス�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login
           username-parameter="uid"
           password-parameter="pwd" /> <!-- (1) (2) -->
@@ -1793,7 +1793,7 @@ Spring Securityのデフォルトでは、資格情報(ユーザー名とパス�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login default-target-url="/menu" /> <!-- (1) -->
   </sec:http>
 
@@ -1818,7 +1818,7 @@ Spring Securityのデフォルトでは、資格情報(ユーザー名とパス�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login
           default-target-url="/menu"
           always-use-default-target="true" /> <!-- (1) -->
@@ -1847,7 +1847,7 @@ Spring Securityが提供しているデフォルトの動作をカスタマイ�
 
   <bean id="authenticationSuccessHandler" class="com.example.app.security.handler.MyAuthenticationSuccessHandler"> <!-- (1) -->
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login authentication-success-handler-ref="authenticationSuccessHandler" /> <!-- (2) -->
   </sec:http>
 
@@ -1891,7 +1891,7 @@ Spring Securityのデフォルトの動作では、ログインフォームを�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login authentication-failure-url="/loginFailure" /> <!-- (1) -->
   </sec:http>
 
@@ -1936,7 +1936,7 @@ Spring Securityが提供しているデフォルトの動作をカスタマイ�
       </property>
   </bean>
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login authentication-failure-handler-ref="authenticationFailureHandler" /> <!-- (7) -->
   </sec:http>
 
@@ -1999,7 +1999,7 @@ Spring Securityのデフォルトでは、ログアウト処理を実行する�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <!-- omitted -->
       <sec:logout logout-url="/auth/logout" /> <!-- (1) -->
       <!-- omitted -->
@@ -2087,7 +2087,7 @@ Spring Securityのデフォルトでは、ログアウト処理を実行する�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <!-- omitted -->
       <sec:logout logout-success-url="/logoutSuccess" /> <!-- (1) -->
       <!-- omitted -->
@@ -2115,7 +2115,7 @@ LogoutSuccessHandlerの適用
   <!-- (1) -->
   <bean id="logoutSuccessHandler" class="com.example.app.security.handler.MyLogoutSuccessHandler" />
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <!-- omitted -->
       <sec:logout success-handler-ref="logoutSuccessHandler" /> <!-- (2) -->
       <!-- omitted -->
@@ -2172,7 +2172,7 @@ LogoutSuccessHandlerの適用
       </property>
   </bean>
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <sec:form-login authentication-failure-handler-ref="authenticationFailureHandler" />
   </sec:http>
 
@@ -2593,7 +2593,7 @@ Authentication Filterの作成
   <!-- omitted -->
 
   <!-- (1) -->
-  <sec:http
+  <sec:http request-matcher="ant"
       entry-point-ref="loginUrlAuthenticationEntryPoint">
 
       <!-- omitted -->
@@ -3023,7 +3023,7 @@ Remember Me認証を利用する場合は、\ ``<sec:remember-me>``\ タグを�
 
 .. code-block:: xml
 
-  <sec:http>
+  <sec:http request-matcher="ant">
       <!-- omitted -->
       <sec:remember-me key="terasoluna-tourreservation-km/ylnHv"
           token-validity-seconds="#{30 * 24 * 60 * 60}" />  <!-- (1) (2) -->
