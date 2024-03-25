@@ -47,9 +47,9 @@
     * - Build Tool
       - `Apache Maven <https://maven.apache.org/download.cgi>`_ 3.8.6 (以降「Maven」と呼ぶ)
     * - Application Server
-      - `Apache Tomcat <https://tomcat.apache.org/tomcat-9.0-doc/index.html>`_ 9.0.73
+      - `Apache Tomcat <https://tomcat.apache.org/tomcat-9.0-doc/index.html>`_ 9.0.82
     * - Web Browser
-      - `Google Chrome <https://www.google.co.jp/chrome/>`_ 109.0.5414.120
+      - `Google Chrome <https://www.google.co.jp/chrome/>`_ 117
 
 |
 
@@ -223,7 +223,7 @@ Delete TODO
         mvn archetype:generate -B\
          -DarchetypeGroupId=com.github.macchinetta.blank\
          -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype\
-         -DarchetypeVersion=1.8.2.RELEASE\
+         -DarchetypeVersion=1.8.3.RELEASE\
          -DgroupId=com.example.todo\
          -DartifactId=todo\
          -Dversion=1.0.0-SNAPSHOT
@@ -243,7 +243,7 @@ O/R Mapperに依存しないブランクプロジェクトの作成
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-noorm-thymeleaf-archetype^
-     -DarchetypeVersion=1.8.2.RELEASE^
+     -DarchetypeVersion=1.8.3.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
@@ -261,7 +261,7 @@ MyBatis3を使用してデータベースにアクセスするRepositoryImpl用�
     mvn archetype:generate -B^
      -DarchetypeGroupId=com.github.macchinetta.blank^
      -DarchetypeArtifactId=macchinetta-web-blank-thymeleaf-archetype^
-     -DarchetypeVersion=1.8.2.RELEASE^
+     -DarchetypeVersion=1.8.3.RELEASE^
      -DgroupId=com.example.todo^
      -DartifactId=todo^
      -Dversion=1.0.0-SNAPSHOT
@@ -333,7 +333,7 @@ Root Directoryに \ ``C:\work\todo``\ を設定し、Projectsにtodoのpom.xml�
 .. note::
  
    上記設定例は、依存ライブラリのバージョンを親プロジェクトである terasoluna-gfw-parent で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
-   上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.7.7/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
+   上記の依存ライブラリはterasoluna-gfw-parentが依存している\ `Spring Boot <https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#dependency-versions>`_\ で管理されている。
 
 |
 
@@ -581,7 +581,7 @@ Todoアプリケーションの開発を始める前に、プロジェクトの�
     </head>
     <body>
         <div id="wrapper">
-            <h1>Hello world!</h1>
+            <h1 id="title">Hello world!</h1>
             <!-- (7) -->
             <p th:text="|The time on the server is ${serverTime}.|">The time on the server is 2018/01/01 00:00:00 JST.</p>
         </div>
@@ -3162,7 +3162,7 @@ web.xml
 作成したブランクプロジェクトの\ :file:`src/main/webapp/WEB-INF/web.xml`\ は、以下のような設定となっている。
 
 .. code-block:: xml
-    :emphasize-lines: 2, 8, 25, 79, 95, 111
+    :emphasize-lines: 2, 17, 34, 88, 104, 120
 
 
     <?xml version="1.0" encoding="UTF-8"?>
@@ -3171,6 +3171,15 @@ web.xml
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
         version="3.0">
+
+        <context-param>
+            <param-name>logbackDisableServletContainerInitializer</param-name>
+            <param-value>true</param-value>
+        </context-param>
+
+        <listener>
+            <listener-class>ch.qos.logback.classic.servlet.LogbackServletContextListener</listener-class>
+        </listener>
 
         <!-- (2) -->
         <listener>
@@ -3381,15 +3390,17 @@ applicationContext.xml
 | なお、チュートリアルで使用しないコンポーネントについての説明は割愛する。
 
 .. code-block:: xml
-    :emphasize-lines: 10-11, 35-37, 39-40
+    :emphasize-lines: 12-13, 37-39, 41-42
 
     <?xml version="1.0" encoding="UTF-8"?>
     <beans xmlns="http://www.springframework.org/schema/beans"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:aop="http://www.springframework.org/schema/aop"
         xsi:schemaLocation="
             http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd
         ">
 
         <!-- (1) -->
@@ -3463,6 +3474,8 @@ applicationContext.xml
             class="org.terasoluna.gfw.web.exception.ExceptionLoggingFilter" >
             <property name="exceptionLogger" ref="exceptionLogger" />
         </bean>
+
+        <aop:aspectj-autoproxy />
 
     </beans>
 
@@ -3980,6 +3993,7 @@ spring-mvc.xml
             <property name="defaultStatusCode" value="500" />
         </bean>
         <!-- Setting AOP. -->
+        <aop:aspectj-autoproxy />
         <bean id="handlerExceptionResolverLoggingInterceptor"
             class="org.terasoluna.gfw.web.exception.HandlerExceptionResolverLoggingInterceptor">
             <property name="exceptionLogger" ref="exceptionLogger" />
@@ -4017,7 +4031,7 @@ spring-mvc.xml
        | どこにも\ ``styles.css``\ が格納されていない場合は、404エラーを返す。
 
        | ここでは\ ``cache-period``\ 属性で静的リソースのキャッシュ時間(3600秒=60分)も設定している。
-       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <https://docs.spring.io/spring-framework/docs/5.3.24/reference/html/core.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
+       | \ ``cache-period="3600"``\ と設定しても良いが、60分であることを明示するために `SpEL <https://docs.spring.io/spring-framework/docs/5.3.31/reference/html/core.html#expressions-beandef-xml-based>`_ を使用して \ ``cache-period="#{60 * 60}"``\  と書く方が分かりやすい。
    * - | (5)
      - | コントローラ処理のTraceログを出力するインターセプタを設定する。
        | \ ``/resources``\ 配下を除く任意のパスに適用されるように設定する。
