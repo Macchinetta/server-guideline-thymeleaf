@@ -497,8 +497,8 @@ ER図
 ================================================================================
 
 | セキュリティ要件の分類ごとに、本アプリケーションにおける実装の方法とコードの説明を行う。
-| ここでは分類ごとで要件の実現のために必要最小限なコード片のみを掲載している。コード全体を確認したい場合は `GitHub <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.8.3.RELEASE/secure-login-demo>`_ を参照すること。
-| 本アプリケーションを動作させるための初期データ登録用SQLは `ここ <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.8.3.RELEASE/secure-login-demo/secure-login/secure-login-env/src/main/resources/database>`_ に配置されている。
+| ここでは分類ごとで要件の実現のために必要最小限なコード片のみを掲載している。コード全体を確認したい場合は `GitHub <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.8.4.RELEASE/secure-login-demo>`_ を参照すること。
+| 本アプリケーションを動作させるための初期データ登録用SQLは `ここ <https://github.com/Macchinetta/tutorial-apps-thymeleaf/tree/1.8.4.RELEASE/secure-login-demo/secure-login/secure-login-env/src/main/resources/database>`_ に配置されている。
 
 .. note::
 
@@ -508,6 +508,15 @@ ER図
 
 パスワード変更の強制・促進
 --------------------------------------------------------------------------------
+
+.. tip::
+
+  本アプリケーションではパスワードに有効期限を設定し、期限が過ぎた場合にパスワードを変更するように促しているが、現在はパスワードを頻繁に変更することは推奨していないため、要件に応じ適切に実装すること。詳しくは以下を参照されたい。
+
+  * \ `安全なパスワードの設定・管理 <https://www.soumu.go.jp/main_sosiki/cybersecurity/kokumin/security/business/staff/06/>`_\
+  * \ `NIST Special Publication 800-63B <https://pages.nist.gov/800-63-3/sp800-63b.html>`_\
+
+|
 
 実装する要件一覧
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -579,20 +588,20 @@ ER図
 
     .. code-block:: java
 
-       package com.example.securelogin.domain.model;
+      package com.example.securelogin.domain.model;
 
-       // omitted
+      // omitted
 
-       @Data
-       public class PasswordHistory {
+      @Data
+      public class PasswordHistory {
 
-           private String username; // (1)
+          private String username; // (1)
 
-           private String password; // (2)
+          private String password; // (2)
 
-           private LocalDateTime useFrom; // (3)
+          private LocalDateTime useFrom; // (3)
 
-       }
+      }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
     .. list-table::
@@ -618,17 +627,14 @@ ER図
 
        // omitted
 
-       public interface PasswordHistoryRepository {
+        public interface PasswordHistoryRepository {
+            int create(PasswordHistory history); // (1)
 
-           int create(PasswordHistory history); // (1)
+            List<PasswordHistory> findByUseFrom(@Param("username") String username,
+                    @Param("useFrom") LocalDateTime useFrom); // (2)
 
-           List<PasswordHistory> findByUseFrom(@Param("username") String username,
-                   @Param("useFrom") LocalDateTime useFrom); // (2)
-
-           List<PasswordHistory> findLatest(@Param("username") String username,
-                   @Param("limit") int limit); // (3)
-
-       }
+            List<PasswordHistory> findLatest(@Param("username") String username, @Param("limit") int limit); // (3)
+        }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
     .. list-table::
@@ -649,8 +655,7 @@ ER図
     .. code-block:: xml
 
        <?xml version="1.0" encoding="UTF-8"?>
-       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
            namespace="com.example.securelogin.domain.repository.passwordhistory.PasswordHistoryRepository">
@@ -720,8 +725,7 @@ ER図
 
        @Service
        @Transactional
-       public class PasswordHistorySharedServiceImpl implements
-               PasswordHistorySharedService {
+       public class PasswordHistorySharedServiceImpl implements PasswordHistorySharedService {
 
            @Inject
            PasswordHistoryRepository passwordHistoryRepository;
@@ -732,8 +736,7 @@ ER図
            }
 
            @Transactional(readOnly = true)
-           public List<PasswordHistory> findHistoriesByUseFrom(String username,
-                   LocalDateTime useFrom) {
+           public List<PasswordHistory> findHistoriesByUseFrom(String username, LocalDateTime useFrom) {
                return passwordHistoryRepository.findByUseFrom(username, useFrom);
            }
 
@@ -757,17 +760,23 @@ ER図
        @Transactional
        public class AccountSharedServiceImpl implements AccountSharedService {
 
-           @Inject
-           ClassicDateFactory dateFactory;
+           // omitted
 
            @Inject
            PasswordHistorySharedService passwordHistorySharedService;
 
+           // omitted
+
            @Inject
            AccountRepository accountRepository;
 
+           // omitted
+
            @Inject
            PasswordEncoder passwordEncoder;
+
+           @Inject
+           ClassicDateFactory dateFactory;
 
            // omitted
 
@@ -820,49 +829,52 @@ ER図
      @Transactional
      public class AccountSharedServiceImpl implements AccountSharedService {
 
-         @Inject
-         ClassicDateFactory dateFactory;
+         // omitted
 
          @Inject
          PasswordHistorySharedService passwordHistorySharedService;
+
+         // omitted
+
+         @Inject
+         ClassicDateFactory dateFactory;
+
+         // omitted
 
          @Value("${security.passwordLifeTimeSeconds}") // (1)
          int passwordLifeTimeSeconds;
 
          // omitted
 
-        @Transactional(readOnly = true)
-        @Override
-        @Cacheable("isInitialPassword")
-        public boolean isInitialPassword(String username) { // (2)
-            List<PasswordHistory> passwordHistories = passwordHistorySharedService
-                    .findLatest(username, 1); // (3)
-            return passwordHistories.isEmpty(); // (4)
-        }
+         @Transactional(readOnly = true)
+         @Override
+         @Cacheable("isInitialPassword")
+         public boolean isInitialPassword(String username) { // (2)
+             List<PasswordHistory> passwordHistories =
+                     passwordHistorySharedService.findLatest(username, 1); // (3)
+             return passwordHistories.isEmpty(); // (4)
+         }
 
-        @Transactional(readOnly = true)
-        @Override
-        @Cacheable("isCurrentPasswordExpired")
-        public boolean isCurrentPasswordExpired(String username) { // (5)
-            List<PasswordHistory> passwordHistories = passwordHistorySharedService
-                    .findLatest(username, 1); // (6)
+         @Transactional(readOnly = true)
+         @Override
+         @Cacheable("isCurrentPasswordExpired")
+         public boolean isCurrentPasswordExpired(String username) { // (5)
+             List<PasswordHistory> passwordHistories =
+                     passwordHistorySharedService.findLatest(username, 1); // (6)
 
-            if (passwordHistories.isEmpty()) { // (7)
-                return true;
-            }
+             if (passwordHistories.isEmpty()) { // (7)
+                 return true;
+             }
 
-            if (passwordHistories
-                    .get(0)
-                    .getUseFrom()
-                    .isBefore(
-                            dateFactory.newTimestamp().toLocalDateTime()
-                                    .minusSeconds(passwordLifeTimeSeconds))) { // (8)
-                return true;
-            }
+             if (passwordHistories.get(0).getUseFrom().isBefore(dateFactory.newTimestamp()
+                     .toLocalDateTime().minusSeconds(passwordLifeTimeSeconds))) { // (8)
+                 return true;
+             }
 
-            return false;
-        }
+             return false; // (9)
+         }
 
+         // omitted
      }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -896,7 +908,7 @@ ER図
      isInitialPassword および isCurrentPasswordExpired に付与されている \ ``@Cacheable``\ は Spring の Cache Abstraction 機能を使用するためのアノテーションである。
      \ ``@Cacheable`` \ アノテーションを付与することで、メソッドの引数に対する結果をキャッシュすることができる。
      ここでは、キャッシュの使用により初期パスワード判定、パスワード期限切れ判定のたびにデータベースへのアクセスが発生することを防止し、パフォーマンスの低下を防いでいる。
-     Cache Abstraction については `Spring Framework Documentation -Cache Abstraction- <https://docs.spring.io/spring-framework/docs/5.3.31/reference/html/integration.html#cache>`_ を参照すること。
+     Cache Abstraction については `Spring Framework Documentation -Cache Abstraction- <https://docs.spring.io/spring-framework/docs/5.3.39/reference/html/integration.html#cache>`_ を参照すること。
 
      尚、キャッシュを使用する際には、必要なタイミングでキャッシュをクリアする必要があることに注意すること。
      本アプリケーションではパスワード変更時や、ログアウト時には再度初期パスワード判定、パスワード期限切れ判定を行うためにキャッシュをクリアする。
@@ -914,28 +926,24 @@ ER図
 
      // omitted
 
-     public class PasswordExpirationCheckInterceptor implements
-             HandlerInterceptor { // (1)
+     public class PasswordExpirationCheckInterceptor implements HandlerInterceptor { // (1)
 
          @Inject
          AccountSharedService accountSharedService;
 
          @Override
-         public boolean preHandle(HttpServletRequest request,
-                 HttpServletResponse response, Object handler) throws IOException { // (2)
-             Authentication authentication = (Authentication) request
-                     .getUserPrincipal();
+         public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                 Object handler) throws IOException { // (2)
+             Authentication authentication = (Authentication) request.getUserPrincipal();
 
              if (authentication != null) {
                  Object principal = authentication.getPrincipal();
-                 if (principal instanceof UserDetails) { // (3)
+                 if (principal instanceof LoggedInUser) { // (3)
                      LoggedInUser userDetails = (LoggedInUser) principal; // (4)
-                     if ((userDetails.getAccount().getRoles().contains(Role.ADMIN) && accountSharedService
-                             .isCurrentPasswordExpired(userDetails.getUsername())) // (5)
-                             || accountSharedService.isInitialPassword(userDetails
-                                     .getUsername())) { // (6)
-                         response.sendRedirect(request.getContextPath()
-                                 + "/password?form"); // (7)
+                     if ((userDetails.getAccount().getRoles().contains(Role.ADMIN)
+                             && accountSharedService.isCurrentPasswordExpired(userDetails.getUsername())) // (5)
+                             || accountSharedService.isInitialPassword(userDetails.getUsername())) { // (6)
+                         response.sendRedirect(request.getContextPath() + "/password?form"); // (7)
                          return false; // (8)
                      }
                  }
@@ -953,19 +961,20 @@ ER図
      * - 項番
        - 説明
      * - | (1)
-       - | Controllerのハンドラメソッド実行前に処理を挟み込むために、\ ``org.springframework.web.servlet.HandlerInterceptor`` \を実装する。
+       - | Controllerのハンドラメソッド実行前に処理を挟み込むために、\ ``org.springframework.web.servlet.HandlerInterceptor``\ を実装する。
      * - | (2)
        - | Controllerのハンドラメソッド実行前に実行されるメソッド
      * - | (3)
-       - | 取得したユーザ情報が\ ``org.springframework.security.core.userdetails.UserDetails`` \のオブジェクトであるかどうかを確認する。
+       - | 取得したユーザ情報が\ ``org.springframework.security.core.userdetails.UserDetails``\ の実装オブジェクトであるかどうかを確認する。
+         | 本アプリケーションでは、\ ``UserDetails``\ の実装として\ ``LoggedInUser``\ というクラスを作成して用いている。
      * - | (4)
-       - | \ ``UserDetails`` \のオブジェクトを取得する。本アプリケーションでは、\ ``UserDetails`` \の実装として\ ``LoggedInUser`` \というクラスを作成して用いている。
+       - | \ ``LoggedInUser``\ のオブジェクトを取得する。
      * - | (5)
-       - | \ ``UserDetails`` \オブジェクトからロールを取得してユーザが管理ユーザであるかどうかを判定する。その後、パスワード有効期限が切れているかどうかを判定する処理を呼び出す。二つの判定結果の論理積(And)をとる。
+       - | \ ``LoggedInUser``\ オブジェクトからロールを取得してユーザが管理ユーザであるかどうかを判定する。その後、パスワード有効期限が切れているかどうかを判定する処理を呼び出す。二つの判定結果の論理積(And)をとる。
      * - | (6)
        - | 初回パスワードを使用しているかどうかを判定する処理を呼び出す。
      * - | (7)
-       - | (5)または(6)のいずれかが真である場合、\ ``javax.servlet.http.HttpServletResponse`` \の\ ``sendRedirect`` \ メソッドを使用して、パスワード変更画面へリダイレクトさせる。
+       - | (5)または(6)のいずれかが真である場合、\ ``javax.servlet.http.HttpServletResponse``\ の\ ``sendRedirect``\ メソッドを使用して、パスワード変更画面へリダイレクトさせる。
      * - | (8)
        - | 続けてControllerのハンドラメソッドが実行されることを防ぐために、falseを返す。
 
@@ -986,6 +995,7 @@ ER図
             <mvc:exclude-mapping path="/password/**" /> <!-- (2) -->
             <mvc:exclude-mapping path="/reissue/**" /> <!-- (3) -->
             <mvc:exclude-mapping path="/resources/**" />
+            <mvc:exclude-mapping path="/*/*.html" />
             <bean
                 class="com.example.securelogin.app.common.interceptor.PasswordExpirationCheckInterceptor" /> <!-- (4) -->
         </mvc:interceptor>
@@ -1028,23 +1038,25 @@ ER図
          @Inject
          AccountSharedService accountSharedService;
 
-         @RequestMapping(value = "/", method = { RequestMethod.GET,
-                 RequestMethod.POST })
-         public String home(@AuthenticationPrincipal LoggedInUser userDetails, // (1)
-                 Model model) {
+         /**
+          * Simply selects the home view to render by returning its name.
+          */
+         @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.POST})
+         public String home(@AuthenticationPrincipal LoggedInUser userDetails, Model model) { // (1)
 
              Account account = userDetails.getAccount(); // (2)
 
              model.addAttribute("account", account);
 
-             if (accountSharedService
-                    .isCurrentPasswordExpired(account.getUsername())) { // (3)
-                 ResultMessages messages = ResultMessages.warning().add(
-                         "w.sl.pe.0001");
+             if (accountSharedService.isCurrentPasswordExpired(account.getUsername())) { // (3)
+                 ResultMessages messages = ResultMessages.warning().add("w.sl.pe.0001");
                  model.addAttribute(messages);
              }
 
-             // omitted
+             LocalDateTime lastLoginDate = userDetails.getLastLoginDate();
+             if (lastLoginDate != null) {
+                 model.addAttribute("lastLoginDate", lastLoginDate);
+             }
 
              return "welcome/home";
 
@@ -1075,14 +1087,13 @@ ER図
     <!--/* omitted */-->
 
     <body>
-      <div id="wrapper">
-           <div th:if="${resultMessages} != null" id="expiredMessage"
-               th:class="|alert alert-${resultMessages.type}|"> <!--/* (1) */-->
-               <ul>
-                   <li th::each="message : ${resultMessages}"
-                       th:text="${#messages.msgWithParams(message.code, message.args)}"></li>
-               </ul>
-           </div>
+        <div id="wrapper">
+            <div th:if="${resultMessages} != null" id="expiredMessage" th:class="|alert alert-${resultMessages.type}|"> <!--/* (1) */-->
+                <ul>
+                    <li th:each="message : ${resultMessages}" th:text="${#messages.msgWithParams(message.code, message.args)}"></li>
+                </ul>
+            </div>
+
            <!--/* omitted */-->
        </div>
     </body>
@@ -1186,8 +1197,7 @@ ER図
          }
 
          @Override
-         protected boolean matches(final String clearText,
-                 final PasswordData.Reference reference) { // (3)
+         protected boolean matches(final String clearText, final PasswordData.Reference reference) { // (3)
              return passwordEncoder.matches(clearText, reference.getPassword()); // (4)
          }
      }
@@ -1217,30 +1227,35 @@ ER図
      <bean id="lengthRule" class="org.passay.LengthRule"> <!-- (1) -->
          <property name="minimumLength" value="${security.passwordMinimumLength}" />
      </bean>
+
      <bean id="upperCaseRule" class="org.passay.CharacterRule"> <!-- (2) -->
          <constructor-arg name="data">
              <util:constant static-field="org.passay.EnglishCharacterData.UpperCase" />
          </constructor-arg>
          <constructor-arg name="num" value="1" />
      </bean>
+
      <bean id="lowerCaseRule" class="org.passay.CharacterRule"> <!-- (3) -->
          <constructor-arg name="data">
              <util:constant static-field="org.passay.EnglishCharacterData.LowerCase" />
          </constructor-arg>
          <constructor-arg name="num" value="1" />
      </bean>
+
      <bean id="digitRule" class="org.passay.CharacterRule"> <!-- (4) -->
          <constructor-arg name="data">
              <util:constant static-field="org.passay.EnglishCharacterData.Digit" />
          </constructor-arg>
          <constructor-arg name="num" value="1" />
      </bean>
+
      <bean id="specialCharacterRule" class="org.passay.CharacterRule"> <!-- (5) -->
          <constructor-arg name="data">
              <util:constant static-field="org.passay.EnglishCharacterData.Special" />
          </constructor-arg>
          <constructor-arg name="num" value="1" />
      </bean>
+
      <bean id="characterCharacteristicsRule" class="org.passay.CharacterCharacteristicsRule"> <!-- (6) -->
          <property name="rules">
              <list>
@@ -1252,7 +1267,9 @@ ER図
          </property>
          <property name="numberOfCharacteristics" value="3" />
      </bean>
+
      <bean id="usernameRule" class="org.passay.UsernameRule" /> <!-- (7) -->
+
      <bean id="encodedPasswordHistoryRule"
          class="com.example.securelogin.app.common.validation.rule.EncodedPasswordHistoryRule"> <!-- (8) -->
          <constructor-arg name="passwordEncoder" ref="passwordEncoder" />
@@ -1299,6 +1316,7 @@ ER図
              </list>
          </constructor-arg>
      </bean>
+
      <bean id="encodedPasswordHistoryValidator" class="org.passay.PasswordValidator"> <!-- (2) -->
          <constructor-arg name="rules">
              <list>
@@ -1350,7 +1368,7 @@ ER図
            @Target({ TYPE, ANNOTATION_TYPE })
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                StrongPassword[] value();
            }
 
@@ -1377,8 +1395,7 @@ ER図
 
        // omitted
 
-       public class StrongPasswordValidator implements
-               ConstraintValidator<StrongPassword, Object> {
+       public class StrongPasswordValidator implements ConstraintValidator<StrongPassword, Object> {
 
            @Inject
            @Named("characteristicPasswordValidator") // (1)
@@ -1398,21 +1415,19 @@ ER図
            public boolean isValid(Object value, ConstraintValidatorContext context) {
                BeanWrapper beanWrapper = new BeanWrapperImpl(value);
                String username = (String) beanWrapper.getPropertyValue(usernamePropertyName);
-               String newPassword = (String) beanWrapper
-                       .getPropertyValue(newPasswordPropertyName);
+               String newPassword = (String) beanWrapper.getPropertyValue(newPasswordPropertyName);
 
-               RuleResult result = characteristicPasswordValidator
-                       .validate(new PasswordData(username, newPassword)); // (2)
+               RuleResult result =
+                       characteristicPasswordValidator.validate(new PasswordData(username, newPassword)); // (2)
 
                if (result.isValid()) { // (3)
                    return true;
                } else {
                    context.disableDefaultConstraintViolation();
-                   for (String message : characteristicPasswordValidator
-                           .getMessages(result)) { // (4)
+
+                   for (String message : characteristicPasswordValidator.getMessages(result)) { // (4)
                        context.buildConstraintViolationWithTemplate(message)
-                               .addPropertyNode(newPasswordPropertyName)
-                               .addConstraintViolation();
+                               .addPropertyNode(newPasswordPropertyName).addConstraintViolation();
                    }
                    return false;
                }
@@ -1466,7 +1481,7 @@ ER図
            @Target({ TYPE, ANNOTATION_TYPE })
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                NotReusedPassword[] value();
            }
 
@@ -1493,8 +1508,7 @@ ER図
 
        // omitted
 
-       public class NotReusedPasswordValidator implements
-               ConstraintValidator<NotReusedPassword, Object> {
+       public class NotReusedPasswordValidator implements ConstraintValidator<NotReusedPassword, Object> {
 
            @Inject
            ClassicDateFactory dateFactory;
@@ -1535,14 +1549,13 @@ ER図
            public boolean isValid(Object value, ConstraintValidatorContext context) {
                BeanWrapper beanWrapper = new BeanWrapperImpl(value);
                String username = (String) beanWrapper.getPropertyValue(usernamePropertyName);
-               String newPassword = (String) beanWrapper
-                       .getPropertyValue(newPasswordPropertyName);
+               String newPassword = (String) beanWrapper.getPropertyValue(newPasswordPropertyName);
 
                Account account = accountSharedService.findOne(username);
                String currentPassword = account.getPassword();
 
-               boolean result = checkNewPasswordDifferentFromCurrentPassword(
-                       newPassword, currentPassword, context); // (4)
+               boolean result =
+                       checkNewPasswordDifferentFromCurrentPassword(newPassword, currentPassword, context); // (4)
                if (result && account.getRoles().contains(Role.ADMIN)) { // (5)
                    result = checkHistoricalPassword(username, newPassword, context);
                }
@@ -1550,9 +1563,8 @@ ER図
                return result;
            }
 
-           private boolean checkNewPasswordDifferentFromCurrentPassword(
-                   String newPassword, String currentPassword,
-                   ConstraintValidatorContext context) {
+           private boolean checkNewPasswordDifferentFromCurrentPassword(String newPassword,
+                   String currentPassword, ConstraintValidatorContext context) {
                if (!passwordEncoder.matches(newPassword, currentPassword)) {
                    return true;
                } else {
@@ -1563,34 +1575,31 @@ ER図
                }
            }
 
-           private boolean checkHistoricalPassword(String username,
-                   String newPassword, ConstraintValidatorContext context) {
+           private boolean checkHistoricalPassword(String username, String newPassword,
+                   ConstraintValidatorContext context) {
                LocalDateTime useFrom = dateFactory.newTimestamp().toLocalDateTime()
                        .minusMinutes(passwordHistoricalCheckingPeriod);
-               List<PasswordHistory> historyByTime = passwordHistorySharedService
-                       .findHistoriesByUseFrom(username, useFrom);
-               List<PasswordHistory> historyByCount = passwordHistorySharedService
-                       .findLatest(username, passwordHistoricalCheckingCount);
-               List<PasswordHistory> history = historyByCount.size() > historyByTime
-                       .size() ? historyByCount : historyByTime; // (6)
+               List<PasswordHistory> historyByTime =
+                       passwordHistorySharedService.findHistoriesByUseFrom(username, useFrom);
+               List<PasswordHistory> historyByCount =
+                       passwordHistorySharedService.findLatest(username, passwordHistoricalCheckingCount);
+               List<PasswordHistory> history =
+                       historyByCount.size() > historyByTime.size() ? historyByCount : historyByTime; // (6)
 
                List<PasswordData.Reference> historyData = new ArrayList<>();
                for (PasswordHistory h : history) {
-                   historyData.add(new PasswordData.HistoricalReference(h
-                           .getPassword())); // (7)
+                   historyData.add(new PasswordData.HistoricalReference(h.getPassword())); // (7)
                }
 
-               PasswordData passwordData = new PasswordData(username,
-                       newPassword, historyData); // (8)
-               RuleResult result = encodedPasswordHistoryValidator
-                       .validate(passwordData); // (9)
+               PasswordData passwordData = new PasswordData(username, newPassword, historyData); // (8)
+               RuleResult result = encodedPasswordHistoryValidator.validate(passwordData); // (9)
 
                if (result.isValid()) { // (10)
                    return true;
                } else {
                    context.disableDefaultConstraintViolation();
                    context.buildConstraintViolationWithTemplate(
-                           encodedPasswordHistoryValidator.getMessages(result).get(0)) // (11)
+                           encodedPasswordHistoryValidator.getMessages(result).get(0))
                            .addPropertyNode(newPasswordPropertyName).addConstraintViolation();
                    return false;
                }
@@ -1635,7 +1644,7 @@ ER図
 * パスワードの入力チェック
 
   Bean Validationアノテーションを使用してアプリケーション層で、パスワード入力チェックを行う。
-  Formクラスに付与されたアノテーションによってNullチェック以外の入力チェックが網羅されていることから、単項目チェックとしては\ ``@NotNull`` \のみを付与している。
+  Formクラスに付与されたアノテーションによってNullチェック以外の入力チェックが網羅されていることから、単項目チェックとしては\ ``@NotEmpty`` \のみを付与している。
 
   .. code-block:: java
 
@@ -1654,16 +1663,16 @@ ER図
 
          private static final long serialVersionUID = 1L;
 
-         @NotNull
+         @NotEmpty
          private String username;
 
-         @NotNull
+         @NotEmpty
          private String oldPassword;
 
-         @NotNull
+         @NotEmpty
          private String newPassword;
 
-         @NotNull
+         @NotEmpty
          private String confirmNewPassword;
 
      }
@@ -1699,22 +1708,20 @@ ER図
 
          // omitted
 
-         @RequestMapping(method = RequestMethod.POST)
+         @PostMapping
          public String change(@AuthenticationPrincipal LoggedInUser userDetails,
-                 @Validated PasswordChangeForm form, BindingResult bindingResult, // (1)
-                 Model model) {
+                 @Validated PasswordChangeForm form, BindingResult bindingResult, Model model) { // (1)
 
              Account account = userDetails.getAccount();
-             if (bindingResult.hasErrors()
-                     || !account.getUsername().equals(form.getUsername())) { // (2)
+             if (bindingResult.hasErrors() || !account.getUsername().equals(form.getUsername())) { // (2)
                  model.addAttribute(account);
                  return "passwordchange/changeForm";
              }
 
-             passwordService.updatePassword(form.getUsername(),
-                     form.getNewPassword());
+             passwordService.updatePassword(form.getUsername(), form.getNewPassword());
 
              return "redirect:/password?complete";
+
          }
 
          // omitted
@@ -1862,11 +1869,11 @@ ER図
 
       @Data
       public class FailedAuthentication implements Serializable {
-        private static final long serialVersionUID = 1L;
+          private static final long serialVersionUID = 1L;
 
-        private String username; // (1)
+          private String username; // (1)
 
-        private LocalDateTime authenticationTimestamp; // (2)
+          private LocalDateTime authenticationTimestamp; // (2)
       }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1893,12 +1900,12 @@ ER図
 
       public interface FailedAuthenticationRepository {
 
-        int create(FailedAuthentication event); // (1)
+          int create(FailedAuthentication event); // (1)
 
-        List<FailedAuthentication> findLatest(@Param("username") String username,
-                @Param("count") long count); // (2)
+          List<FailedAuthentication> findLatest(@Param("username") String username,
+                  @Param("count") long count); // (2)
 
-        int deleteByUsername(@Param("username") String username); // (3)
+          int deleteByUsername(@Param("username") String username); // (3)
       }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1920,52 +1927,51 @@ ER図
     .. code-block:: xml
 
       <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+      <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
       <mapper
-        namespace="com.example.securelogin.domain.repository.authenticationevent.FailedAuthenticationRepository">
+          namespace="com.example.securelogin.domain.repository.authenticationevent.FailedAuthenticationRepository">
 
-        <resultMap id="failedAuthenticationResultMap"
-                type="FailedAuthentication">
-                <id property="username" column="username" />
-                <id property="authenticationTimestamp" column="authentication_timestamp" />
-        </resultMap>
+          <resultMap id="failedAuthenticationResultMap"
+              type="FailedAuthentication">
+              <id property="username" column="username" />
+              <id property="authenticationTimestamp" column="authentication_timestamp" />
+          </resultMap>
 
-        <insert id="create" parameterType="FailedAuthentication">
+          <insert id="create" parameterType="FailedAuthentication">
           <![CDATA[
               INSERT INTO failed_authentication (
                   username,
                   authentication_timestamp
               ) VALUES (
-                #{username},
+                  #{username},
                   #{authenticationTimestamp}
               )
           ]]>
-        </insert>
+          </insert>
 
-        <select id="findLatest" resultMap="failedAuthenticationResultMap">
-             <![CDATA[
-                  SELECT
-                      username,
-                      authentication_timestamp
-                  FROM
-                      failed_authentication
-                  WHERE
-                      username = #{username}
-                  ORDER BY authentication_timestamp DESC
-                  LIMIT #{count}
-             ]]>
-        </select>
+          <select id="findLatest" resultMap="failedAuthenticationResultMap">
+          <![CDATA[
+              SELECT
+                  username,
+                  authentication_timestamp
+              FROM
+                  failed_authentication
+              WHERE
+                  username = #{username}
+              ORDER BY authentication_timestamp DESC
+              LIMIT #{count}
+          ]]>
+          </select>
 
-        <delete id="deleteByUsername">
-           <![CDATA[
-                DELETE FROM
-                    failed_authentication
-                WHERE
-                    username = #{username}
-           ]]>
-        </delete>
+          <delete id="deleteByUsername">
+          <![CDATA[
+              DELETE FROM
+                  failed_authentication
+              WHERE
+                  username = #{username}
+          ]]>
+          </delete>
       </mapper>
 
   * Serviceの実装
@@ -1980,10 +1986,7 @@ ER図
 
        @Service
        @Transactional
-       public class AuthenticationEventSharedServiceImpl implements
-               AuthenticationEventSharedService {
-
-           // omitted
+       public class AuthenticationEventSharedServiceImpl implements AuthenticationEventSharedService {
 
            @Inject
            ClassicDateFactory dateFactory;
@@ -1991,25 +1994,27 @@ ER図
            @Inject
            FailedAuthenticationRepository failedAuthenticationRepository;
 
+           // omitted
+
            @Inject
            AccountSharedService accountSharedService;
 
+           // omitted
+
            @Transactional(readOnly = true)
            @Override
-           public List<FailedAuthentication> findLatestFailureEvents(
-                           String username, int count) {
+           public List<FailedAuthentication> findLatestFailureEvents(String username, int count) {
                return failedAuthenticationRepository.findLatest(username, count);
            }
 
+           // omitted
 
-           @Transactional(propagation = Propagation.REQUIRES_NEW)
            @Override
            public void authenticationFailure(String username) { // (1)
                if (accountSharedService.exists(username)) {
                    FailedAuthentication failureEvents = new FailedAuthentication();
                    failureEvents.setUsername(username);
-                   failureEvents.setAuthenticationTimestamp(dateFactory.newTimestamp()
-                           .toLocalDateTime());
+                   failureEvents.setAuthenticationTimestamp(dateFactory.newTimestamp().toLocalDateTime());
 
                    failedAuthenticationRepository.create(failureEvents);
                }
@@ -2019,8 +2024,6 @@ ER図
            public int deleteFailureEventByUsername(String username) {
                return failedAuthenticationRepository.deleteByUsername(username);
            }
-
-           // omitted
 
        }
 
@@ -2050,15 +2053,13 @@ ER図
      // omitted
 
      @Component
-     public class AccountAuthenticationFailureBadCredentialsEventListener{
+     public class AccountAuthenticationFailureBadCredentialsEventListener {
 
          @Inject
          AuthenticationEventSharedService authenticationEventSharedService;
 
          @EventListener(AuthenticationFailureBadCredentialsEvent.class) // (1)
-         public void onApplicationEvent(
-                         AuthenticationFailureBadCredentialsEvent event) {
-
+         public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
              String username = (String) event.getAuthentication().getPrincipal(); // (2)
 
              authenticationEventSharedService.authenticationFailure(username); // (3)
@@ -2094,19 +2095,23 @@ ER図
      @Transactional
      public class AccountSharedServiceImpl implements AccountSharedService {
 
+         @Inject
+         AuthenticationEventSharedService authenticationEventSharedService;
+
          // omitted
 
          @Inject
          ClassicDateFactory dateFactory;
 
-         @Inject
-         AuthenticationEventSharedService authenticationEventSharedService;
+         // omitted
 
          @Value("${security.lockingDurationSeconds}") // (1)
          int lockingDurationSeconds;
 
          @Value("${security.lockingThreshold}") // (2)
          int lockingThreshold;
+
+         // omitted
 
          @Transactional(readOnly = true)
          @Override
@@ -2118,12 +2123,9 @@ ER図
                  return false;
              }
 
-             if (failureEvents
-                     .get(lockingThreshold - 1) // (5)
-                     .getAuthenticationTimestamp()
-                     .isBefore(
-                             dateFactory.newTimestamp().toLocalDateTime()
-                                     .minusSeconds(lockingDurationSeconds))) {
+             if (failureEvents.get(lockingThreshold - 1).getAuthenticationTimestamp() // (5)
+                     .isBefore(dateFactory.newTimestamp().toLocalDateTime()
+                             .minusSeconds(lockingDurationSeconds))) {
                  return false;
              }
 
@@ -2149,7 +2151,7 @@ ER図
      * - | (4)
        - | 取得した認証失敗イベントエンティティの個数がロックアウトの閾値より小さい場合、ロックアウト状態ではないと判定する。
      * - | (5)
-       - | 取得した認証失敗イベントエンティティのうち最も古い認証失敗時刻と現在時刻の差分が、ロックアウト継続時間よりも大きい場合には、ロックアウト状態ではないと判定する。
+       - | 取得した認証失敗イベントエンティティのうち過去3件の内一番古い認証失敗時刻と現在時刻の差分が、ロックアウト継続時間よりも大きい場合には、ロックアウト状態ではないと判定する。
 
   | \ ``UserDetails`` \の実装クラスである\ ``org.springframework.security.core.userdetails.User`` \では、コンストラクタにロックアウト状態を渡すことができる。
   | 本アプリケーションでは以下のように\ ``User`` \を継承したクラスと、\ ``org.springframework.security.core.userdetails.UserDetailsService`` \を実装したクラスを用いる。
@@ -2162,15 +2164,14 @@ ER図
 
      public class LoggedInUser extends User {
 
-        // omitted
-
         private final Account account;
 
-        public LoggedInUser(Account account, boolean isLocked,
-                LocalDateTime lastLoginDate,
+        // omitted
+
+        public LoggedInUser(Account account, boolean isLocked, LocalDateTime lastLoginDate,
                 List<SimpleGrantedAuthority> authorities) {
-            super(account.getUsername(), account.getPassword(), true, true, true,
-                    !isLocked, authorities); // (1)
+            super(account.getUsername(), account.getPassword(), true, true, true, !isLocked,
+                    authorities); // (1)
             this.account = account;
 
             // omitted
@@ -2207,19 +2208,15 @@ ER図
 
          @Transactional(readOnly = true)
          @Override
-         public UserDetails loadUserByUsername(String username)
-                 throws UsernameNotFoundException {
+         public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
              try {
-                Account account = accountSharedService.findOne(username);
-                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                for (Role role : account.getRoles()) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_"
-                            + role.getRoleValue()));
-                }
-                return new LoggedInUser(account,
-                        accountSharedService.isLocked(username), // (1)
-                        accountSharedService.getLastLoginDate(username),
-                        authorities);
+                 Account account = accountSharedService.findOne(username);
+                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                 for (Role role : account.getRoles()) {
+                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleValue()));
+                 }
+                 return new LoggedInUser(account, accountSharedService.isLocked(username), // (1)
+                         accountSharedService.getLastLoginDate(username), authorities);
              } catch (ResourceNotFoundException e) {
                  throw new UsernameNotFoundException("user not found", e);
              }
@@ -2246,7 +2243,10 @@ ER図
     <!-- omitted -->
 
     <sec:authentication-manager>
-        <sec:authentication-provider user-service-ref="loggedInUserDetailsService" /> <!-- (1) -->
+        <sec:authentication-provider
+            user-service-ref="loggedInUserDetailsService"> <!-- (1) -->
+            <!-- omitted -->
+        </sec:authentication-provider>
     </sec:authentication-manager>
 
     <!-- omitted -->
@@ -2276,8 +2276,7 @@ ER図
 
        @Service
        @Transactional
-       public class AuthenticationEventSharedServiceImpl implements
-               AuthenticationEventSharedService {
+       public class AuthenticationEventSharedServiceImpl implements AuthenticationEventSharedService {
 
            // omitted
 
@@ -2314,20 +2313,16 @@ ER図
        // omitted
 
        @Component
-       public class AccountAuthenticationSuccessEventListener{
+       public class AccountAuthenticationSuccessEventListener {
 
            @Inject
            AuthenticationEventSharedService authenticationEventSharedService;
 
            @EventListener(AuthenticationSuccessEvent.class) // (1)
-           public void onApplicationEvent(
-                           AuthenticationSuccessEvent event) {
-
-               LoggedInUser details = (LoggedInUser) event.getAuthentication()
-                       .getPrincipal();
+           public void onApplicationEvent(AuthenticationSuccessEvent event) {
+               LoggedInUser details = (LoggedInUser) event.getAuthentication().getPrincipal();
 
                authenticationEventSharedService.authenticationSuccess(details.getUsername()); // (2)
-
            }
 
        }
@@ -2360,16 +2355,15 @@ ER図
 
         <!-- omitted -->
 
-          <sec:http pattern="/resources/**" security="none" />
-          <sec:http once-per-request="false">
+        <sec:http once-per-request="false">
 
-              <!-- omitted -->
+            <!-- omitted -->
 
-              <sec:intercept-url pattern="/unlock/**" access="hasRole('ADMIN')" /> <!-- (1) -->
+            <sec:intercept-url pattern="/unlock/**" access="hasRole('ADMIN')" /> <!-- (1) -->
 
-              <!-- omitted -->
+            <!-- omitted -->
 
-          </sec:http>
+        </sec:http>
 
         <!-- omitted -->
 
@@ -2446,8 +2440,10 @@ ER図
 
                 <!--/* omitted */-->
 
-                <div sec:authorize-url="/unlock"> <!--/* (1) */-->
-                    <a id="unlock" th:href="@{/unlock?form}">Unlock Account</a>
+                <div sec:authorize="hasRole('ADMIN')"> <!--/* (1) */-->
+                    <a id="unlock" th:href="@{/unlock?form}">
+                        Unlock Account
+                    </a>
                 </div>
 
                 <!--/* omitted */-->
@@ -2465,7 +2461,7 @@ ER図
          * - 項番
            - 説明
          * - | (1)
-           - | /unlock 以下のアクセス権限を持つユーザに対してのみ表示する。
+           - | 管理ユーザのアクセス権限を持つユーザに対してのみ表示する。
 
       **ロックアウト解除フォーム(unlockForm.html)**
 
@@ -2476,25 +2472,20 @@ ER図
         <body>
             <div id="wrapper">
                 <h1>Unlock Account</h1>
-                <div th:if="${resultMessages} != null" id="expiredMessage"
-                    th:class="|alert alert-${resultMessages.type}|">
+                <div th:if="${resultMessages} != null" id="expiredMessage" th:class="|alert alert-${resultMessages.type}|">
                     <ul>
-                        <li th:each="message : ${resultMessages}"
-                            th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
+                        <li th:each="message : ${resultMessages}" th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
                     </ul>
                 </div>
-                <form th:action="@{/unlock}"
-                    method="POST" th:object="${unlockForm}">
+                <form th:action="@{/unlock}" method="POST" th:object="${unlockForm}">
                     <table>
                         <tr>
-                            <th><label for="username" th:errorclass="error-label">Username</label>
-                            </th>
-                            <td><input th:field="*{username}" th:errorclass="error-input"></td>
+                            <th><label for="username" name="username" th:errorclass="error-label">Username</label></th>
+                            <td><input th:field="*{username}" th:errorclass="error-input" /></td>
                             <td th:errors="*{username}" class="error-messages"></td>
                         </tr>
                     </table>
-
-                    <input id="submit" type="submit" value="Unlock">
+                    <input id="submit" type="submit" value="Unlock" />
                 </form>
                 <a th:href="@{/}">go to Top</a>
             </div>
@@ -2532,17 +2523,16 @@ ER図
              @Inject
              UnlockService unlockService;
 
-             @RequestMapping(params = "form")
+             @GetMapping(params = "form")
              public String showForm(UnlockForm form) {
                  return "unlock/unlockForm";
              }
 
-             @RequestMapping(method = RequestMethod.POST)
-             public String unlock(@Validated UnlockForm form,
-                     BindingResult bindingResult, Model model,
+             @PostMapping
+             public String unlock(@Validated UnlockForm form, BindingResult bindingResult, Model model,
                      RedirectAttributes attributes) {
                  if (bindingResult.hasErrors()) {
-                         return showForm(form);
+                     return showForm(form);
                  }
 
                  try {
@@ -2555,7 +2545,7 @@ ER図
                  }
              }
 
-             @RequestMapping(method = RequestMethod.GET, params = "complete")
+             @GetMapping(params = "complete")
              public String unlockComplete() {
                  return "unlock/unlockComplete";
              }
@@ -2659,8 +2649,8 @@ ER図
 
            int create(SuccessfulAuthentication event); // (1)
 
-           List<SuccessfulAuthentication> findLatest(
-                  @Param("username") String username, @Param("count") long count); // (2)
+           List<SuccessfulAuthentication> findLatest(@Param("username") String username,
+                   @Param("count") long count); // (2)
        }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -2680,14 +2670,13 @@ ER図
     .. code-block:: xml
 
        <?xml version="1.0" encoding="UTF-8"?>
-       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
            namespace="com.example.securelogin.domain.repository.authenticationevent.SuccessfulAuthenticationRepository">
 
            <resultMap id="successfulAuthenticationResultMap"
-                   type="SuccessfulAuthentication">
+               type="SuccessfulAuthentication">
                <id property="username" column="username" />
                <id property="authenticationTimestamp" column="authentication_timestamp" />
            </resultMap>
@@ -2731,35 +2720,38 @@ ER図
 
        @Service
        @Transactional
-       public class AuthenticationEventSharedServiceImpl implements
-            AuthenticationEventSharedService {
-
-           // omitted
+       public class AuthenticationEventSharedServiceImpl implements AuthenticationEventSharedService {
 
            @Inject
            ClassicDateFactory dateFactory;
 
+           // omitted
+
            @Inject
            SuccessfulAuthenticationRepository successAuthenticationRepository;
 
+           // omitted
+
            @Transactional(readOnly = true)
            @Override
-           public List<SuccessfulAuthentication> findLatestSuccessEvents(
-                   String username, int count) {
+           public List<SuccessfulAuthentication> findLatestSuccessEvents(String username, int count) {
                return successAuthenticationRepository.findLatest(username, count);
            }
 
+           // omitted
+
            @Transactional(propagation = Propagation.REQUIRES_NEW)
            @Override
-             public void authenticationSuccess(String username) {
-                 SuccessfulAuthentication successEvent = new SuccessfulAuthentication();
-                 successEvent.setUsername(username);
-                 successEvent.setAuthenticationTimestamp(dateFactory.newTimestamp()
-                         .toLocalDateTime());
+           public void authenticationSuccess(String username) {
+               SuccessfulAuthentication successEvent = new SuccessfulAuthentication();
+               successEvent.setUsername(username);
+               successEvent.setAuthenticationTimestamp(dateFactory.newTimestamp().toLocalDateTime());
 
-                 successAuthenticationRepository.create(successEvent);
-                 deleteFailureEventByUsername(username);
-             }
+               successAuthenticationRepository.create(successEvent);
+               deleteFailureEventByUsername(username);
+           }
+
+           // omitted
 
        }
 
@@ -2776,18 +2768,16 @@ ER図
      // omitted
 
      @Component
-     public class AccountAuthenticationSuccessEventListener{
+     public class AccountAuthenticationSuccessEventListener {
 
          @Inject
          AuthenticationEventSharedService authenticationEventSharedService;
 
          @EventListener(AuthenticationSuccessEvent.class) // (1)
          public void onApplicationEvent(AuthenticationSuccessEvent event) {
-             LoggedInUser details = (LoggedInUser) event.getAuthentication()
-                     .getPrincipal(); // (2)
+             LoggedInUser details = (LoggedInUser) event.getAuthentication().getPrincipal(); // (2)
 
-             authenticationEventSharedService.authenticationSuccess(details
-                     .getUsername()); // (3)
+             authenticationEventSharedService.authenticationSuccess(details.getUsername()); // (3)
          }
 
      }
@@ -2820,16 +2810,16 @@ ER図
       @Transactional
       public class AccountSharedServiceImpl implements AccountSharedService {
 
-          // omitted
-
           @Inject
           AuthenticationEventSharedService authenticationEventSharedService;
+
+          // omitted
 
           @Transactional(readOnly = true)
           @Override
           public LocalDateTime getLastLoginDate(String username) {
-              List<SuccessfulAuthentication> events = authenticationEventSharedService
-                      .findLatestSuccessEvents(username, 1); // (1)
+              List<SuccessfulAuthentication> events =
+                      authenticationEventSharedService.findLatestSuccessEvents(username, 1); // (1)
 
               if (events.isEmpty()) {
                   return null; // (2)
@@ -2865,22 +2855,23 @@ ER図
      // omitted
 
      public class LoggedInUser extends User {
+         private static final long serialVersionUID = 1L;
 
          private final Account account;
 
          private final LocalDateTime lastLoginDate; // (1)
 
-         public LoggedInUser(Account account, boolean isLocked,
-                 LocalDateTime lastLoginDate,
+         public LoggedInUser(Account account, boolean isLocked, LocalDateTime lastLoginDate,
                  List<SimpleGrantedAuthority> authorities) {
-
-             super(account.getUsername(), account.getPassword(), true, true, true,
-                     !isLocked, authorities);
+             super(account.getUsername(), account.getPassword(), true, true, true, !isLocked,
+                     authorities);
              this.account = account;
              this.lastLoginDate = lastLoginDate; // (2)
          }
 
-         // omitted
+         public Account getAccount() {
+             return account;
+         }
 
          public LocalDateTime getLastLoginDate() { // (3)
              return lastLoginDate;
@@ -2916,19 +2907,15 @@ ER図
 
          @Transactional(readOnly = true)
          @Override
-         public UserDetails loadUserByUsername(String username)
-                 throws UsernameNotFoundException {
+         public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
              try {
                  Account account = accountSharedService.findOne(username);
                  List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                  for (Role role : account.getRoles()) {
-                         authorities.add(new SimpleGrantedAuthority("ROLE_"
-                                + role.getRoleValue()));
+                     authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleValue()));
                  }
-                 return new LoggedInUser(account,
-                         accountSharedService.isLocked(username),
-                         accountSharedService.getLastLoginDate(username), // (1)
-                         authorities);
+                 return new LoggedInUser(account, accountSharedService.isLocked(username),
+                         accountSharedService.getLastLoginDate(username), authorities); // (1)
              } catch (ResourceNotFoundException e) {
                  throw new UsernameNotFoundException("user not found", e);
              }
@@ -2957,24 +2944,25 @@ ER図
      @Controller
      public class HomeController {
 
-        @Inject
-        AccountSharedService accountSharedService;
+         @Inject
+         AccountSharedService accountSharedService;
 
-        @RequestMapping(value = "/", method = { RequestMethod.GET,
-                RequestMethod.POST })
-        public String home(@AuthenticationPrincipal LoggedInUser userDetails, // (1)
-                Model model) {
+         /**
+          * Simply selects the home view to render by returning its name.
+          */
+         @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.POST})
+         public String home(@AuthenticationPrincipal LoggedInUser userDetails, Model model) { // (1)
 
-            // omitted
+             // omitted
 
-            LocalDateTime lastLoginDate = userDetails.getLastLoginDate(); // (2)
-            if (lastLoginDate != null) {
-                model.addAttribute("lastLoginDate", lastLoginDate); // (3)
-            }
+             LocalDateTime lastLoginDate = userDetails.getLastLoginDate(); // (2)
+             if (lastLoginDate != null) {
+                 model.addAttribute("lastLoginDate", lastLoginDate); // (3)
+             }
 
-            return "welcome/home";
+             return "welcome/home";
 
-        }
+         }
 
      }
 
@@ -2997,17 +2985,16 @@ ER図
   .. code-block:: html
 
     <body>
-      <div id="wrapper">
+        <div id="wrapper">
 
           <!--/* omitted */-->
 
-          <!--/* (1) */-->
-          <p id="lastLogin" th:if="${lastLoginDate} !=null"
-              th:text="|Last login date is ${#temporals.format(lastLoginDate, 'yyyy/MM/dd HH:mm:ss')}.|" ></p> <!--/* (2) */-->
+          <!--/* (1), (2) */-->
+          <p id="lastLogin" th:if="lastLoginDate !=null" th:text="|Last login date is ${#temporals.format(lastLoginDate, 'yyyy-MM-dd HH:mm:ss')}.|"></p>
 
           <!--/* omitted */-->
 
-      </div>
+        </div>
     </body>
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -3100,7 +3087,6 @@ ER図
            private String secret; // (3)
 
            private LocalDateTime expiryDate; // (4)
-
        }
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -3133,7 +3119,7 @@ ER図
 
            void create(PasswordReissueInfo info); // (1)
 
-           PasswordReissueInfo findOne(@Param("token") String token); // (2)
+           PasswordReissueInfo findById(@Param("token") String token); // (2)
 
            int deleteByToken(@Param("token") String token); // (3)
 
@@ -3160,8 +3146,7 @@ ER図
    .. code-block:: xml
 
       <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+      <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
       <mapper
           namespace="com.example.securelogin.domain.repository.passwordreissue.PasswordReissueInfoRepository">
@@ -3173,7 +3158,7 @@ ER図
               <id property="expiryDate" column="expiry_date" />
           </resultMap>
 
-          <select id="findOne" resultMap="PasswordReissueInfoResultMap">
+          <select id="findById" resultMap="PasswordReissueInfoResultMap">
           <![CDATA[
               SELECT
                   username,
@@ -3230,6 +3215,7 @@ ER図
     .. code-block:: xml
 
        <bean id="passwordGenerator" class="org.passay.PasswordGenerator" /> <!-- (1) -->
+
        <util:list id="passwordGenerationRules"> <!-- (2) -->
            <ref bean="upperCaseRule" />
            <ref bean="lowerCaseRule" />
@@ -3265,8 +3251,12 @@ ER図
            @Inject
            ClassicDateFactory dateFactory;
 
+           // omitted
+
            @Inject
            PasswordReissueInfoRepository passwordReissueInfoRepository;
+
+           // omitted
 
            @Inject
            AccountSharedService accountSharedService;
@@ -3298,8 +3288,8 @@ ER図
 
                    String token = UUID.randomUUID().toString(); // (8)
 
-                   LocalDateTime expiryDate = dateFactory.newTimestamp().toLocalDateTime()
-                           .plusSeconds(tokenLifeTimeSeconds); // (9)
+                   LocalDateTime expiryDate =
+                           dateFactory.newTimestamp().toLocalDateTime().plusSeconds(tokenLifeTimeSeconds); // (9)
 
                    PasswordReissueInfo info = new PasswordReissueInfo(); // (10)
                    info.setUsername(username);
@@ -3312,7 +3302,6 @@ ER図
                    // omitted (Send E-Mail)
 
                }
-
                return rowSecret; // (12)
 
            }
@@ -3386,24 +3375,24 @@ ER図
        <body>
            <div id="wrapper">
                <h1>Reissue password</h1>
-               <div th:if="${resultMessages} != null" id="expiredMessage"
-                   th:class="|alert alert-${resultMessages.type}|">
+               <div th:if="${resultMessages} != null" id="expiredMessage" th:class="|alret alert-${resultMessages.type}|">
                    <ul>
-                       <li th:each="message : ${resultMessages}"
-                           th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
+                       <li th:each="message : ${resultMessages}" th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
                    </ul>
                </div>
-               <form th:action="@{/reissue/create}"
-                   method="POST" th:object="${createReissueInfoForm}">
+               <form th:action="@{/reissue/create}" method="POST" th:object="${createReissueInfoForm}">
                    <table>
                        <tr>
-                           <th><label th:field="*{username}" th:errorclass="error-label">Username</label>
+                           <th>
+                               <label for="username" name="username" th:errorclass="error-label">Username</label>
                            </th>
-                           <td><input th:field="*{username}" th:errorclass="error-input"></td>
-                           <td th:errors="*{username}" class="error-messages"></td>
+                           <td>
+                               <input th:field="*{username}" th:errorclass="error-input" />
+                           </td>
+                           <td th:errors="*{username}" class="error-messages" />
                        </tr>
                    </table>
-                   <input id="submit" type="submit" value="Reissue password">
+                   <input id="submit" type="submit" value="Reissue password" />
                </form>
            </div>
        </body>
@@ -3425,15 +3414,16 @@ ER図
            @Inject
            PasswordReissueService passwordReissueService;
 
-           @RequestMapping(value = "create", params = "form")
+           // omitted
+
+           @GetMapping(value = "create", params = "form")
            public String showCreateReissueInfoForm(CreateReissueInfoForm form) {
                return "passwordreissue/createReissueInfoForm";
            }
 
-           @RequestMapping(value = "create", method = RequestMethod.POST)
+           @PostMapping("create")
            public String createReissueInfo(@Validated CreateReissueInfoForm form,
-                   BindingResult bindingResult, Model model,
-                   RedirectAttributes attributes) {
+                   BindingResult bindingResult, Model model, RedirectAttributes attributes) {
                if (bindingResult.hasErrors()) {
                    return showCreateReissueInfoForm(form);
                }
@@ -3443,7 +3433,7 @@ ER図
                return "redirect:/reissue/create?complete";
            }
 
-           @RequestMapping(value = "create", params = "complete", method = RequestMethod.GET)
+           @GetMapping(value = "create", params = "complete")
            public String createReissueInfoComplete() {
                return "passwordreissue/createReissueInfoComplete";
            }
@@ -3526,21 +3516,19 @@ ER図
 
          // omitted
 
-         @RequestMapping(value = "create", method = RequestMethod.POST)
+         @PostMapping("create")
          public String createReissueInfo(@Validated CreateReissueInfoForm form,
-                 BindingResult bindingResult, Model model,
-                 RedirectAttributes attributes) {
+                 BindingResult bindingResult, Model model, RedirectAttributes attributes) {
              if (bindingResult.hasErrors()) {
                  return showCreateReissueInfoForm(form);
              }
 
-             String rawSecret = passwordReissueService.createAndSendReissueInfo(form
-                     .getUsername()); // (1)
+             String rawSecret = passwordReissueService.createAndSendReissueInfo(form.getUsername()); // (1)
              attributes.addFlashAttribute("secret", rawSecret); // (2)
              return "redirect:/reissue/create?complete"; // (3)
          }
 
-         @RequestMapping(value = "create", params = "complete", method = RequestMethod.GET)
+         @GetMapping(value = "create", params = "complete")
          public String createReissueInfoComplete() {
              return "passwordreissue/createReissueInfoComplete";
          }
@@ -3603,8 +3591,7 @@ ER図
      // omitted
 
      @Service
-     public class PasswordReissueMailSharedServiceImpl implements
-             PasswordReissueMailSharedService {
+     public class PasswordReissueMailSharedServiceImpl implements PasswordReissueMailSharedService {
 
          @Inject
          JavaMailSender mailSender; // (1)
@@ -3622,6 +3609,8 @@ ER図
              message.setText(text);
              mailSender.send(message);
          }
+
+         // omitted
 
      }
 
@@ -3653,8 +3642,12 @@ ER図
          @Inject
          ClassicDateFactory dateFactory;
 
+         // omitted
+
          @Inject
          PasswordReissueMailSharedService mailSharedService;
+
+         // omitted
 
          @Inject
          AccountSharedService accountSharedService;
@@ -3662,11 +3655,19 @@ ER図
          @Inject
          PasswordEncoder passwordEncoder;
 
+         // omitted
+
          @Value("${security.tokenLifeTimeSeconds}")
          int tokenLifeTimeSeconds;
 
-         @Value("${app.applicationBaseUrl}") // (1)
-         String baseUrl;
+         @Value("${app.host}")
+         String host;
+
+         @Value("${app.port}")
+         String port;
+
+         @Value("${app.contextPath}")
+         String contextPath;
 
          @Value("${app.passwordReissueProtocol}")
          String protocol;
@@ -3676,37 +3677,37 @@ ER図
          @Override
          public String createAndSendReissueInfo(String username) {
 
-             String rowSecret = passwordGenerator.generatePassword(10,
-                     passwordGenerationRules);
+             String rowSecret = passwordGenerator.generatePassword(10, passwordGenerationRules);
 
-             if (!accountSharedService.exists(username)) {
-                 return rowSecret;
+             String encodeSecret = passwordEncoder.encode(rowSecret);
+
+             if (accountSharedService.exists(username)) {
+
+                 Account account = accountSharedService.findOne(username);
+
+                 String token = UUID.randomUUID().toString();
+
+                 LocalDateTime expiryDate =
+                         dateFactory.newTimestamp().toLocalDateTime().plusSeconds(tokenLifeTimeSeconds);
+
+                 PasswordReissueInfo info = new PasswordReissueInfo();
+                 info.setUsername(username);
+                 info.setToken(token);
+                 info.setSecret(encodeSecret);
+                 info.setExpiryDate(expiryDate);
+
+                 passwordReissueInfoRepository.create(info);
+
+                 UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+                 uriBuilder.scheme(protocol).host(host).port(port).path(contextPath)
+                         .pathSegment("reissue").pathSegment("resetpassword").queryParam("form")
+                         .queryParam("token", info.getToken()); // (1)
+                 String passwordResetUrl = uriBuilder.build().toString();
+
+                 mailSharedService.send(account.getEmail(), passwordResetUrl); // (2)
+
              }
-
-             Account account= accountSharedService.findOne(username);
-
-             String token = UUID.randomUUID().toString();
-
-             LocalDateTime expiryDate = dateFactory.newTimestamp().toLocalDateTime()
-                     .plusSeconds(tokenLifeTimeSeconds);
-
-             PasswordReissueInfo info = new PasswordReissueInfo();
-             info.setUsername(username);
-             info.setToken(token);
-             info.setSecret(passwordEncoder.encode(rowSecret));
-             info.setExpiryDate(expiryDate);
-
-             passwordReissueInfoRepository.create(info);
-
-             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(baseUrl);
-             uriBuilder.pathSegment("reissue").pathSegment("resetpassword")
-                     .queryParam("form").queryParam("token", info.getToken());  // (2)
-             String passwordResetUrl = uriBuilder.build().encode().toUriString();
-
-             mailSharedService.send(account.getEmail(), passwordResetUrl); // (3)
-
              return rowSecret;
-
          }
 
          // omitted
@@ -3721,12 +3722,10 @@ ER図
      * - 項番
        - 説明
      * - | (1)
-       - | パスワード再発行画面のURLに使用するベースURLをプロパティファイルから取得する。
-     * - | (2)
-       - | (1)で取得した値と、生成したパスワード再発行用の認証情報に含まれるトークンを使用して、ユーザに配布するパスワード再発行画面のURLを作成する。
+       - | 生成したパスワード再発行用の認証情報に含まれるトークンを使用して、ユーザに配布するパスワード再発行画面のURLを作成する。
          | URLの作成には \ ``org.springframework.web.util.UriComponentsBuilder`` \ を利用する。\ ``UriComponentsBuilder`` \ については、:ref:`RESTAppendixHyperMediaLink` の中で説明されている。
          | 上記例では、作成されるURLのパス以下は"reissue/resetpassword?form&token=512f1a33-da20-4b9f-9e26-8961e9071618"のようになる。（token部分はランダムに生成される。）
-     * - | (3)
+     * - | (2)
        - | ユーザの登録メールアドレス宛てに、パスワード再発行画面のURLを本文に記したメールを送付する。
 
 
@@ -3799,8 +3798,12 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Inject
            ClassicDateFactory dateFactory;
 
+           // omitted
+
            @Inject
            PasswordReissueInfoRepository passwordReissueInfoRepository;
+
+           // omitted
 
            @Value("${security.tokenLifeTimeSeconds}")
            int tokenLifeTimeSeconds; // (1)
@@ -3812,19 +3815,25 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
                // omitted
 
-               LocalDateTime expiryDate = dateFactory.newTimestamp().toLocalDateTime()
-                       .plusSeconds(tokenLifeTimeSeconds); // (2)
+               if (accountSharedService.exists(username)) {
 
-               PasswordReissueInfo info = new PasswordReissueInfo(); // (3)
-               info.setUsername(username);
-               info.setToken(token);
-               info.setSecret(passwordEncoder.encode(rowSecret));
-               info.setExpiryDate(expiryDate);
+                   // omitted
 
-               passwordReissueInfoRepository.create(info); // (4)
+                   LocalDateTime expiryDate =
+                           dateFactory.newTimestamp().toLocalDateTime().plusSeconds(tokenLifeTimeSeconds); // (2)
 
-               // omitted (Send E-Mail)
+                   PasswordReissueInfo info = new PasswordReissueInfo(); // (3)
+                   info.setUsername(username);
+                   info.setToken(token);
+                   info.setSecret(encodeSecret);
+                   info.setExpiryDate(expiryDate);
 
+                   passwordReissueInfoRepository.create(info); // (4)
+
+                   // omitted (Send E-Mail)
+
+               }
+               return rowSecret;
            }
 
            // omitted
@@ -3867,6 +3876,8 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Inject
            ClassicDateFactory dateFactory;
 
+           // omitted
+
            @Inject
            PasswordReissueInfoRepository passwordReissueInfoRepository;
 
@@ -3875,17 +3886,15 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Override
            @Transactional(readOnly = true)
            public PasswordReissueInfo findOne(String token) {
-               PasswordReissueInfo info = passwordReissueInfoRepository.findOne(token); // (1)
+               PasswordReissueInfo info = passwordReissueInfoRepository.findById(token).orElse(null); // (1)
 
                if (info == null) {
-                   throw new ResourceNotFoundException(ResultMessages.error().add(
-                           MessageKeys.E_SL_PR_5002, token));
+                   throw new ResourceNotFoundException(
+                           ResultMessages.error().add(MessageKeys.E_SL_PR_5002, token));
                }
 
-               if (dateFactory.newTimestamp().toLocalDateTime()
-                        .isAfter(info.getExpiryDate())) { // (2)
-                   throw new BusinessException(ResultMessages.error().add(
-                           MessageKeys.E_SL_PR_2001));
+               if (dateFactory.newTimestamp().toLocalDateTime().isAfter(info.getExpiryDate())) { // (2)
+                   throw new BusinessException(ResultMessages.error().add(MessageKeys.E_SL_PR_2001));
                }
 
                // omitted (attempts exceeded upper bounds)
@@ -3926,7 +3935,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            // omitted
 
-           @RequestMapping(value = "resetpassword", params = "form")
+           @GetMapping(value = "resetpassword", params = "form")
            public String showPasswordResetForm(PasswordResetForm form, Model model,
                    @RequestParam("token") String token) { // (1)
 
@@ -3971,8 +3980,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            // omitted
 
-           boolean resetPassword(String username, String token, String secret, // (1)
-                   String rawPassword);
+           boolean resetPassword(String username, String token, String secret, String rawPassword); // (1)
 
            // omitted
 
@@ -3999,14 +4007,22 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        @Transactional
        public class PasswordReissueServiceImpl implements PasswordReissueService {
 
+           // omitted
+
            @Inject
            PasswordReissueFailureSharedService passwordReissueFailureSharedService;
+
+           // omitted
 
            @Inject
            PasswordReissueInfoRepository passwordReissueInfoRepository;
 
+           // omitted
+
            @Inject
            AccountSharedService accountSharedService;
+
+           // omitted
 
            @Inject
            PasswordEncoder passwordEncoder;
@@ -4014,13 +4030,11 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            // omitted
 
            @Override
-           public boolean resetPassword(String username, String token, String secret,
-                   String rawPassword) {
+           public boolean resetPassword(String username, String token, String secret, String rawPassword) {
                PasswordReissueInfo info = this.findOne(token); // (1)
                if (!passwordEncoder.matches(secret, info.getSecret())) { // (2)
                    passwordReissueFailureSharedService.resetFailure(username, token);
-                   throw new BusinessException(ResultMessages.error().add(
-                       MessageKeys.E_SL_PR_5003));
+                   throw new BusinessException(ResultMessages.error().add(MessageKeys.E_SL_PR_5003));
                }
                failedPasswordReissueRepository.deleteByToken(token);
                passwordReissueInfoRepository.deleteByToken(token); // (3)
@@ -4051,7 +4065,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   * Formの実装
 
-    クラスに付与されたアノテーションによってNullチェック以外の入力チェックが網羅されていることから、単項目チェックとしては\ ``@NotNull`` \のみを付与している。
+    クラスに付与されたアノテーションによってNullチェック以外の入力チェックが網羅されていることから、単項目チェックとしては\ ``@NotEmpty`` \のみを付与している。
 
     .. code-block:: java
 
@@ -4067,19 +4081,19 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            private static final long serialVersionUID = 1L;
 
-           @NotNull
+           @NotEmpty
            private String username;
 
-           @NotNull
+           @NotEmpty
            private String token;
 
-           @NotNull
+           @NotEmpty
            private String secret;
 
-           @NotNull
+           @NotEmpty
            private String newPassword;
 
-           @NotNull
+           @NotEmpty
            private String confirmNewPassword;
        }
 
@@ -4104,45 +4118,36 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
        <body>
            <div id="wrapper">
                <h1>Reset Password</h1>
-                   <div th:if="${resultMessages} != null" id="expiredMessage"
-                       th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}">
-                       <ul>
-                           <li th:each="message : ${resultMessages}"
-                               th:text="${#messages.msgWithParams(message.code, message.args)}"></li>
-                       </ul>
-                   </div>
-                   <form th:action="@{/reissue/resetpassword}"
-                       method="POST" th:object="${passwordResetForm}">
-                       <input type="hidden" th:field="*{token}">  <!--/* (1) */-->
-                       <table>
-                           <tr>
-                               <th><label for="username">Username</label></th>
-                               <td th:field="*{username}"><input type="hidden" th:field="*{username}">  <!--/* (2) */-->
-                               </td>
-                               <td></td>
-                           </tr>
-                           <tr>
-                               <th><label for="secret" th:errorclass="error-label">Secret</label>
-                               </th>
-                               <td><input type="password" th:field="*{secret}" th:cssErrorClass="error-input"></td>  <!--/* (3) */-->
-                               <td th:errors="*{secret}" class="error-messages"></td>
-                           </tr>
-                           <tr>
-                               <th><label for="newPassword" th:errorclass="error-label">New password</label>
-                               </th>
-                               <td><input type="password" th:field="*{newPassword}"
-                                       th:cssErrorClass="error-input" /></td>
-                               <td th:errors="*{newPassword}" class="error-messages"></td>
-                           </tr>
-                           <tr>
-                               <th><label for="confirmNewPassword"
-                                       th:errorclass="error-label">New password(Confirm)</label></th>
-                               <td><input type="password" th:field="*{confirmNewPassword}"
-                                       th:errorclass="error-input" /></td>
-                               <td th:errors="*{confirmNewPassword}" class="error-messages"></td>
-                           </tr>
-                       </table>
-                   <input id="submit" type="submit" value="Reset password">
+               <div th:if="${resultMessages} != null" id="expiredMessage" th:class="|alert alert-${resultMessages.type}|">
+                   <ul>
+                       <li th:each="message : ${resultMessages}" th:text="${message.code} != null ? ${#messages.msgWithParams(message.code, message.args)} : ${message.text}"></li>
+                   </ul>
+               </div>
+               <form th:action="@{/reissue/resetpassword}" method="POST" th:object="${passwordResetForm}">
+                   <input type="hidden" th:field="*{token}" /> <!--/* (1) */-->
+                   <table>
+                       <tr>
+                           <th><label for="username">Username</label></th>
+                           <td th:text="*{username}"></td>
+                           <td><input type="hidden" th:field="*{username}" /></td> <!--/* (2) */-->
+                       </tr>
+                       <tr>
+                           <th><label for="secret" name="secret" th:errorclass="error-label">Secret</label></th>
+                           <td><input type="password" th:field="*{secret}" th:errorclass="error-input" /></td> <!--/* (3) */-->
+                           <td th:errors="*{secret}" class="error-messages"></td>
+                       </tr>
+                       <tr>
+                           <th><label for="newPassword" name="newPassword" th:errorclass="error-label">New password</label></th>
+                           <td><input type="password" th:field="*{newPassword}" th:errorclass="error-input" /></td>
+                           <td th:errors="*{newPassword}" class="error-messages"></td>
+                       </tr>
+                       <tr>
+                           <th><label for="confirmNewPassword" name="confirmNewPassword" th:errorclass="error-label">New password(Confirm)</label></th>
+                           <td><input type="password" th:field="*{confirmNewPassword}" th:errorclass="error-input" /></td>
+                           <td th:errors="*{confirmNewPassword}" class="error-messages"></td>
+                       </tr>
+                   </table>
+                   <input id="submit" type="submit" value="Reset password" />
                </form>
            </div>
        </body>
@@ -4189,16 +4194,16 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            // omitted
 
-           @RequestMapping(value = "resetpassword", method = RequestMethod.POST)
-           public String resetPassword(@Validated PasswordResetForm form,
-                   BindingResult bindingResult, Model model) {
+           @PostMapping("resetpassword")
+           public String resetPassword(@Validated PasswordResetForm form, BindingResult bindingResult,
+                   Model model) {
                if (bindingResult.hasErrors()) {
                    return showPasswordResetForm(form, model, form.getToken());
                }
 
                try {
-                   passwordReissueService.resetPassword(form.getUsername(),
-                           form.getToken(), form.getSecret(), form.getNewPassword()); // (1)
+                   passwordReissueService.resetPassword(form.getUsername(), form.getToken(),
+                           form.getSecret(), form.getNewPassword()); // (1)
                    return "redirect:/reissue/resetpassword?complete";
                } catch (BusinessException e) {
                    model.addAttribute(e.getResultMessages());
@@ -4206,12 +4211,10 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
                }
            }
 
-           @RequestMapping(value = "resetpassword", params = "complete", method = RequestMethod.GET)
+           @GetMapping(value = "resetpassword", params = "complete")
            public String resetPasswordComplete() {
                return "passwordreissue/passwordResetComplete";
            }
-
-           // omitted
 
        }
 
@@ -4344,13 +4347,12 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
     .. code-block:: xml
 
        <?xml version="1.0" encoding="UTF-8"?>
-       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+       <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
        <mapper
-        namespace="com.example.securelogin.domain.repository.passwordreissue.FailedPasswordReissueRepository">
+           namespace="com.example.securelogin.domain.repository.passwordreissue.FailedPasswordReissueRepository">
 
-        <select id="countByToken" resultType="_int">
+           <select id="countByToken" resultType="_int">
            <![CDATA[
                SELECT
                    COUNT(*)
@@ -4359,28 +4361,30 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
                WHERE
                    token = #{token}
            ]]>
-        </select>
+           </select>
 
-        <insert id="create" parameterType="FailedPasswordReissue">
+           <insert id="create" parameterType="FailedPasswordReissue">
            <![CDATA[
                INSERT INTO failed_password_reissue (
                    token,
                    attempt_date
                ) VALUES (
-                #{token},
+                   #{token},
                    #{attemptDate}
                )
            ]]>
-        </insert>
+           </insert>
 
-        <delete id="deleteByToken">
+           <delete id="deleteByToken">
            <![CDATA[
-            DELETE FROM
-                failed_password_reissue
-            WHERE
-                token = #{token}
+               DELETE FROM
+                   failed_password_reissue
+               WHERE
+                   token = #{token}
            ]]>
-        </delete>
+           </delete>
+
+           <!-- omitted -->
 
        </mapper>
 
@@ -4408,16 +4412,14 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      @Service
      @Transactional
-     public class PasswordReissueFailureSharedServiceImpl implements
-             PasswordReissueFailureSharedService {
+     public class PasswordReissueFailureSharedServiceImpl
+             implements PasswordReissueFailureSharedService {
 
          @Inject
          ClassicDateFactory dateFactory;
 
          @Inject
          FailedPasswordReissueRepository failedPasswordReissueRepository;
-
-         // omitted
 
          @Transactional(propagation = Propagation.REQUIRES_NEW) // (1)
          @Override
@@ -4457,11 +4459,17 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      @Transactional
      public class PasswordReissueServiceImpl implements PasswordReissueService {
 
+         // omitted
+
          @Inject
          PasswordReissueFailureSharedService passwordReissueFailureSharedService;
 
+         // omitted
+
          @Inject
          PasswordReissueInfoRepository passwordReissueInfoRepository;
+
+         // omitted
 
          @Inject
          AccountSharedService accountSharedService;
@@ -4472,13 +4480,11 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
          // omitted
 
          @Override
-         public boolean resetPassword(String username, String token, String secret,
-                 String rawPassword) {
+         public boolean resetPassword(String username, String token, String secret, String rawPassword) {
              PasswordReissueInfo info = this.findOne(token); // (1)
              if (!passwordEncoder.matches(secret, info.getSecret())) { // (2)
                  passwordReissueFailureSharedService.resetFailure(username, token); // (3)
-                 throw new BusinessException(ResultMessages.error().add(  // (4)
-                     MessageKeys.E_SL_PR_5003));
+                 throw new BusinessException(ResultMessages.error().add(MessageKeys.E_SL_PR_5003)); // (4)
              }
 
              //omitted
@@ -4519,11 +4525,15 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      @Transactional
      public class PasswordReissueServiceImpl implements PasswordReissueService {
 
-         @Inject
-         FailedPasswordReissueRepository failedPasswordReissueRepository;
+         // omitted
 
          @Inject
          PasswordReissueInfoRepository passwordReissueInfoRepository;
+
+         @Inject
+         FailedPasswordReissueRepository failedPasswordReissueRepository;
+
+         // omitted
 
          @Value("${security.tokenValidityThreshold}")
          int tokenValidityThreshold; // (1)
@@ -4538,8 +4548,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
              int count = failedPasswordReissueRepository.countByToken(token); // (2)
              if (count >= tokenValidityThreshold) { // (3)
-                 throw new BusinessException(ResultMessages.error().add(
-                         MessageKeys.E_SL_PR_5004));
+                 throw new BusinessException(ResultMessages.error().add(MessageKeys.E_SL_PR_5004));
              }
 
              return info;
@@ -4643,17 +4652,14 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
          private final List<Character> prohibitedCharsForFileName;
 
-         public InputValidationFilter(char[] prohibitedChars,
-                 char[] prohibitedCharsForFileName) {
+         public InputValidationFilter(char[] prohibitedChars, char[] prohibitedCharsForFileName) {
              this.prohibitedChars = Chars.asList(prohibitedChars); // (2)
-             this.prohibitedCharsForFileName = Chars
-                     .asList(prohibitedCharsForFileName); // (3)
+             this.prohibitedCharsForFileName = Chars.asList(prohibitedCharsForFileName); // (3)
          }
 
          @Override
-         protected void doFilterInternal(HttpServletRequest request,
-                 HttpServletResponse response, FilterChain filterChain)
-                 throws ServletException, IOException {
+         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                 FilterChain filterChain) throws ServletException, IOException {
              if (request != null) {
                  validateRequestParams(request); // (4)
 
@@ -4661,7 +4667,6 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
                      validateFileNames((MultipartRequest) request); // (5)
                  }
              }
-
              filterChain.doFilter(request, response); // (6)
          }
 
@@ -4676,10 +4681,8 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
          }
 
          private void validateFileNames(MultipartRequest request) {
-             for (Map.Entry<String, MultipartFile> entry : request.getFileMap()
-                     .entrySet()) {
-                 String filename = new File(entry.getValue().getOriginalFilename())
-                         .getName(); // (9)
+             for (Map.Entry<String, MultipartFile> entry : request.getFileMap().entrySet()) {
+                 String filename = new File(entry.getValue().getOriginalFilename()).getName(); // (9)
                  validate(filename, prohibitedCharsForFileName); // (10)
              }
          }
@@ -4687,10 +4690,10 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
          private void validate(String target, List<Character> prohibited) {
              if (StringUtils.hasLength(target)) {
                  List<Character> chars = Chars.asList(target.toCharArray());
-                 for(Character prohibitedChar : prohibited) { // (11)
+                 for (Character prohibitedChar : prohibited) { // (11)
                      if (chars.contains(prohibitedChar)) {
                          throw new InvalidCharacterException(
-                             "The request contains prohibited charcter.");
+                                 "The request contains prohibited charcter.");
                      }
                  }
              }
@@ -4791,7 +4794,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
   .. note::
 
-     ファイル名の入力チェックのために\ ``MultipartFilter`` \を利用しているため、ここに記述した内容に加えて :ref:`file-upload_how_to_usr_application_settings` に記したServlet 3.0のアップロード機能を有効化するための設定が必要となる。
+     ファイル名の入力チェックのために\ ``MultipartFilter`` \を利用しているため、ここに記述した内容に加えて :ref:`file-upload_how_to_usr_application_settings` に記したServletのアップロード機能を有効化するための設定が必要となる。
 
   **CommonErrorController.java**
 
@@ -4810,6 +4813,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
          public String invalidCharacterError(HttpServletResponse response) {
              return "common/error/invalidCharacterError";
          }
+
      }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -4840,8 +4844,8 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
   .. code-block:: xml
 
      <bean id="inputValidationFilter" class="com.example.securelogin.app.common.filter.InputValidationFilter">
-         <constructor-arg index="0" value="${app.security.prohibitedChars}"/>  <!-- (1) -->
-         <constructor-arg index="1" value="${app.security.prohibitedCharsForFileName}"/>  <!-- (2) -->
+         <constructor-arg index="0" value="${app.security.prohibitedChars}" /> <!-- (1) -->
+         <constructor-arg index="1" value="${app.security.prohibitedCharsForFileName}" /> <!-- (2) -->
      </bean>
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -4908,7 +4912,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                NotContainControlChars[] value();
            }
 
@@ -4950,7 +4954,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                NotContainControlCharsExceptNewlines[] value();
            }
 
@@ -5000,7 +5004,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                FileExtension[] value();
            }
        }
@@ -5023,8 +5027,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
        // omitted
 
-       public class FileExtensionValidator implements
-               ConstraintValidator<FileExtension, MultipartFile> {
+       public class FileExtensionValidator implements ConstraintValidator<FileExtension, MultipartFile> {
 
            private Set<String> extensions;
 
@@ -5032,27 +5035,24 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            @Override
            public void initialize(FileExtension constraintAnnotation) {
-               this.extensions = new HashSet<String>(
-                       Arrays.asList(constraintAnnotation.extensions()));
+               this.extensions = new HashSet<String>(Arrays.asList(constraintAnnotation.extensions()));
                this.ignoreCase = constraintAnnotation.ignoreCase();
            }
 
            @Override
-           public boolean isValid(MultipartFile value,
-                   ConstraintValidatorContext context) {
+           public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {
                if (value == null) {  // (1)
                    return true;
                }
 
-               String fileNameExtension = StringUtils.getFilenameExtension(value
-                       .getOriginalFilename());  // (2)
+               String fileNameExtension = StringUtils.getFilenameExtension(value.getOriginalFilename());  // (2)
                if (!StringUtils.hasLength(fileNameExtension)) {  // (3)
                    return false;
                }
 
                for (String extension : extensions) {  // (4)
-                   if (fileNameExtension.equals(extension) || ignoreCase
-                           && fileNameExtension.equalsIgnoreCase(extension)) {
+                   if (fileNameExtension.equals(extension)
+                           || (ignoreCase && fileNameExtension.equalsIgnoreCase(extension))) {
                        return true;
                    }
                }
@@ -5106,7 +5106,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                FileNamePattern[] value();
            }
 
@@ -5196,7 +5196,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                DomainRestrictedURL[] value();
            }
 
@@ -5222,31 +5222,28 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
        // omitted
 
-       public class DomainRestrictedURLValidator implements
-               ConstraintValidator<DomainRestrictedURL, String> {
+       public class DomainRestrictedURLValidator
+               implements ConstraintValidator<DomainRestrictedURL, CharSequence> {
 
-           private static final Pattern URL_REGEX = Pattern  // (1)
-               .compile( "(?i)^(?:[a-z](?:[-a-z0-9\\+\\.])*)" + // protocol
-                        ":(?:\\/\\/([^\\/:]+)" + // auth+host/ip
-                        "(?::([0-9]*))?" + // port
-                        "(?:\\/.*)*)$"
-                );
+           private static final Pattern URL_REGEX = Pattern.compile("(?i)^(?:[a-z](?:[-a-z0-9\\+\\.])*)" + // protocol
+                   ":(?:\\/\\/([^\\/:]+)" + // auth+host/ip
+                   "(?::([0-9]*))?" + // port
+                   "(?:\\/.*)*)$"); // (1)
 
            private Set<String> allowedDomains;
 
            @Override
            public void initialize(DomainRestrictedURL constraintAnnotation) {
-               allowedDomains = new HashSet<String>(Arrays.asList(constraintAnnotation
-                       .allowedDomains()));  // (2)
+               allowedDomains = new HashSet<>(Arrays.asList(constraintAnnotation.allowedDomains())); // (2)
            }
 
            @Override
-           public boolean isValid(String value, ConstraintValidatorContext context) {
+           public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
                Matcher urlMatcher = URL_REGEX.matcher(value);
-               if (urlMatcher.matches()) {  // (3)
+               if (urlMatcher.matches()) { // (3)
                    String host = urlMatcher.group(1);
-                   for(String domain : allowedDomains) {  // (4)
-                       if (StringUtils.hasLength(host) && host.endsWith("."+domain)) {
+                   for (String domain : allowedDomains) { // (4)
+                       if (StringUtils.hasLength(host) && host.endsWith("." + domain)) {
                            return true;
                        }
                    }
@@ -5305,7 +5302,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
            @Target(FIELD)
            @Retention(RUNTIME)
            @Documented
-           @interface List {
+           public @interface List {
                DomainRestrictedEmail[] value();
            }
 
@@ -5332,8 +5329,8 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
        // omitted
 
-       public class DomainRestrictedEmailValidator implements
-               ConstraintValidator<DomainRestrictedEmail, CharSequence> {
+       public class DomainRestrictedEmailValidator
+               implements ConstraintValidator<DomainRestrictedEmail, CharSequence> {
 
            private Set<String> allowedDomains;
 
@@ -5341,22 +5338,19 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
            @Override
            public void initialize(DomainRestrictedEmail constraintAnnotation) {
-               allowedDomains = new HashSet<String>(Arrays.asList(constraintAnnotation
-                       .allowedDomains()));  // (1)
-               allowSubDomain = constraintAnnotation.allowSubDomain();  // (2)
+               allowedDomains = new HashSet<String>(Arrays.asList(constraintAnnotation.allowedDomains())); // (1)
+               allowSubDomain = constraintAnnotation.allowSubDomain(); // (2)
            }
 
            @Override
-           public boolean isValid(CharSequence value,
-                   ConstraintValidatorContext context) {
-               if (value == null) {  // (3)
+           public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
+               if (value == null) { // (3)
                    return true;
                }
 
-               for (String domain : allowedDomains) {  // (4)
+               for (String domain : allowedDomains) { // (4)
                    if (value.toString().endsWith("@" + domain)
-                           || (allowSubDomain && value.toString().endsWith(
-                                   "." + domain))) {
+                           || (allowSubDomain && value.toString().endsWith("." + domain))) {
                        return true;
                    }
                }
@@ -5404,27 +5398,29 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
          @NotNull
          @NotContainControlChars
-         @Size(min=1, max=128)
-         @DomainRestrictedEmail(allowedDomains={ "domainexample.co.jp",
-                  "somedomainexample.co.jp" }, allowSubDomain=true)  // (2)
+         @Size(min = 1, max = 128)
+         @DomainRestrictedEmail(allowedDomains = {"domainexample.co.jp", "somedomainexample.co.jp"},
+                 allowSubDomain = true) // (2)
          private String email;
 
          // omitted
 
-         @NotNull
+         @NotEmpty
          @NotContainControlChars
-         @DomainRestrictedURL(allowedDomains={ "jp" })  // (3)
+         @DomainRestrictedURL(allowedDomains = {"jp"}) // (3)
          private String url;
 
-         @UploadFileRequired
-         @UploadFileNotEmpty
+         @UploadFileRequired(groups = Confirm.class)
+         @UploadFileNotEmpty(groups = Confirm.class)
          @UploadFileMaxSize
-         @FileExtension(extensions = { "jpg", "png", "gif" })  // (4)
-         @FileNamePattern(pattern = "[a-zA-Z0-9_-]+\\.[a-zA-Z]{3}")  // (5)
+         @FileExtension(extensions = {"jpg", "png", "gif"}) // (4)
+         @FileNamePattern(pattern = "[a-zA-Z0-9_-]+\\.[a-zA-Z]{3}") // (5)
          private transient MultipartFile image;
 
-         @NotNull
-         @NotContainControlCharsExceptNewlines  // (6)
+         // omitted
+
+         @NotEmpty
+         @NotContainControlCharsExceptNewlines // (6)
          private String profile;
 
      }
@@ -5515,7 +5511,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 * 操作結果：メソッドの処理を実行した結果例外が発生したか否か
 
 | すべてのサービスクラスのメソッド呼び出しに対してログ出力を行うといった、横断的な機能を実現するためには、Springが提供するAOP(Aspect Oriented Programming)の機能を利用することができる。
-| Springが提供しているAOPの実装方法は複数あるが、本アプリケーションでは `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.3.RELEASE>`_ で提供しているロギング関連の部品の実装と合わせることを重視し、\ ``org.aopalliance.intercept.MethodInterceptor`` \を実装する方式を採用する。
+| Springが提供しているAOPの実装方法は複数あるが、本アプリケーションでは `共通ライブラリ <https://github.com/terasolunaorg/terasoluna-gfw/tree/5.7.4.RELEASE>`_ で提供しているロギング関連の部品の実装と合わせることを重視し、\ ``org.aopalliance.intercept.MethodInterceptor`` \を実装する方式を採用する。
 | 具体的には以下の実装・設定を行うことで要件を実現する。
 
 * \ ``UserIdMDCPutFilter`` \ を設定する
@@ -5528,7 +5524,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
     アドバイスとは、AOPにおいて指定されたタイミングで実行する処理のことを指す。
     また、アドバイスを織り込むことのできる箇所のことをジョインポイントと呼び、どのジョインポイントにアドバイスを織り込むかを定義したものポイントカットと呼ぶ。
-    Springが提供するAOP機能に関しては、`Spring Framework Documentation -Aspect Oriented Programming with Spring- <https://docs.spring.io/spring-framework/docs/5.3.31/reference/html/core.html#aop>`_ を参照すること。
+    Springが提供するAOP機能に関しては、`Spring Framework Documentation -Aspect Oriented Programming with Spring- <https://docs.spring.io/spring-framework/docs/5.3.39/reference/html/core.html#aop>`_ を参照すること。
 
 コード解説
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -5574,9 +5570,9 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      <appender name="AUDIT_LOG_FILE"
          class="ch.qos.logback.core.rolling.RollingFileAppender">  <!-- (1) -->
-         <file>log/security-audit.log</file>
+         <file>${app.log.dir:-log}/security-audit.log</file>
          <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-             <fileNamePattern>log/security-audit-%d{yyyyMMdd}.log</fileNamePattern>
+             <fileNamePattern>${app.log.dir:-log}/security-audit-%d{yyyyMMdd}.log</fileNamePattern>
              <maxHistory>7</maxHistory>
          </rollingPolicy>
          <encoder>
@@ -5587,11 +5583,11 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      <!-- omitted -->
 
-     <logger 
+     <logger
         name="com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor"
-        additivity="false">  <!-- (3) -->
-        <level value="info" />
+        additivity="false" level="info">  <!-- (3) -->
         <appender-ref ref="AUDIT_LOG_FILE" />
+        <!-- omitted -->
      </logger>
 
      <!-- omitted -->
@@ -5621,30 +5617,27 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      // omitted
 
-     public class ServiceCallLoggingInterceptor implements MethodInterceptor {  // (1)
+     public class ServiceCallLoggingInterceptor implements MethodInterceptor { // (1)
 
-       private static final Logger logger = LoggerFactory
-               .getLogger(ServiceCallLoggingInterceptor.class);
+         private static final Logger logger =
+                 LoggerFactory.getLogger(ServiceCallLoggingInterceptor.class);
 
-       @Override
-       public Object invoke(MethodInvocation invocation) throws Throwable {  // (2)
-           String methodName = invocation.getMethod().getName();
-           String className = invocation.getMethod().getDeclaringClass()
-                   .getSimpleName();
-           logger.info("[START SERVICE]{}.{}", className, methodName);  // (3)
-           try {
-               Object result = invocation.proceed();  // (4)
-               logger.info("[COMPLETE SERVICE]{}.{}", className, methodName);  // (5)
-               return result;  // (6)
-           } catch (Throwable e) {
-               logger.info("[SERVICE THROWS EXCEPTION]{}.{}", className,  // (7)
-                       methodName);
-               logger.info(Exception : {}, Message : {}, e.getClass().getName(),
-                       e.getMessage()); // (8)
-               throw e;  // (9)
-           }
-       }
-   }
+         @Override
+         public Object invoke(MethodInvocation invocation) throws Throwable { // (2)
+             String methodName = invocation.getMethod().getName();
+             String className = invocation.getMethod().getDeclaringClass().getSimpleName();
+             logger.info("[START SERVICE]{}.{}", className, methodName); // (3)
+             try {
+                 Object result = invocation.proceed(); // (4)
+                 logger.info("[COMPLETE SERVICE]{}.{}", className, methodName); // (5)
+                 return result; // (6)
+             } catch (Throwable e) {
+                 logger.info("[SERVICE THROWS EXCEPTION]{}.{}", className, methodName); // (7)
+                 logger.info("Exception : {}, Message : {}", e.getClass().getName(), e.getMessage()); // (8)
+                 throw e; // (9)
+             }
+         }
+     }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
   .. list-table::
@@ -5690,10 +5683,10 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
      <!-- omitted -->
 
      <bean id="serviceCallLoggingInterceptor"
-         class="com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor" />  <!-- (1) -->
+         class="com.example.securelogin.domain.common.interceptor.ServiceCallLoggingInterceptor" /> <!-- (1) -->
      <aop:config>
          <aop:advisor advice-ref="serviceCallLoggingInterceptor"
-             pointcut="@within(org.springframework.stereotype.Service)" />  <!-- (2) -->
+             pointcut="@within(org.springframework.stereotype.Service)" /> <!-- (2) -->
      </aop:config>
 
      <!-- omitted -->
@@ -5715,7 +5708,7 @@ URLに含まれるトークンと秘密情報の組が正しい場合にのみ�
 
      SpringのAOPは、自動的に作成されたプロキシクラスがメソッド呼び出しをハンドリングする、プロキシ方式を採用している。
      プロキシ方式のAOPの制限として、可視性が\ ``public`` \以外のメソッドの呼び出しや、同一クラス内のメソッド呼び出しの際にはアドバイスが実行されない点に注意する必要がある。
-     詳細は `Spring Framework Documentation -Understanding AOP Proxies- <https://docs.spring.io/spring-framework/docs/5.3.31/reference/html/core.html#aop-understanding-aop-proxies>`_ を参照すること。
+     詳細は `Spring Framework Documentation -Understanding AOP Proxies- <https://docs.spring.io/spring-framework/docs/5.3.39/reference/html/core.html#aop-understanding-aop-proxies>`_ を参照すること。
 
   ログの出力結果を以下に示す。
 
@@ -5771,9 +5764,10 @@ Passayの機能を使用する場合は、pom.xmlに以下の定義を追加す�
      <dependency>
          <groupId>org.passay</groupId>
          <artifactId>passay</artifactId>
-         <version>1.6.4</version>
      </dependency>
    <dependencies>
+
+上記設定例は、依存ライブラリのバージョンをBOMプロジェクトである terasoluna-dependencies で管理する前提であるため、pom.xmlでのバージョンの指定は不要である。
 
 .. _password_validation:
 

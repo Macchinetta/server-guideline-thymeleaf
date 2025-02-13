@@ -322,7 +322,7 @@ NumberRangeCodeListの使用方法
 
 .. figure:: ./images/codelist-number.png
    :alt: codelist number
-   :width: 100%
+   :width: 90%
 
 .. tip::
 
@@ -548,10 +548,16 @@ JdbcCodeListの使用方法
 
 .. code-block:: html
 
-  <span th:each="authority : ${CL_AUTHORITIES}">
+  <span th:each="authority : ${CL_AUTHORITIES}" class="checkbox-wrapper"> <!--/* (9) */-->
       <input type="checkbox" th:field="*{authorities}" th:value="${authority.key}">
-      <label th:for="${#ids.prev('authorities')}" th:text="${authority.value}"></label> <!--/* (9) */-->
+      <label th:for="${#ids.prev('authorities')}" th:text="${authority.value}"></label> <!--/* (10) */-->
   </span>
+
+.. code-block:: css
+
+  .checkbox-wrapper { /* (9) */
+      display: block;
+  }
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -562,6 +568,8 @@ JdbcCodeListの使用方法
    * - 項番
      - 説明
    * - | (9)
+     - | CSSのclassセレクタで\ ``display: block;``\ を指定して改行させることができる。
+   * - | (10)
      - | ``#ids.prev`` メソッドを使用して、``input`` タグの ``id`` 名と対応付けることができる。詳細は、 :ref:`#ids.prevメソッドについて<Validation_ids_prev_method>` を参照されたい。
 
 **出力HTML**
@@ -627,7 +635,7 @@ EnumCodeListの使用方法
 
 .. figure:: ./images/codelist-enum.png
    :alt: codelist enum
-   :width: 100%
+   :width: 95%
 
 .. note::
 
@@ -790,7 +798,7 @@ I18nCodeListの使用方法
 
 .. figure:: ./images/codelist-i18n.png
    :alt: codelist i18n
-   :width: 100%
+   :width: 75%
 
 |
 
@@ -877,7 +885,6 @@ I18nCodeListの使用方法
     * - | (1)
       - | rowsByCodeListプロパティにkeyが\ ``java.lang.Locale``\ のMapを設定する。
         | Mapには、keyにロケール、value-refにロケールに対応したコードリストクラスの参照先を指定する。
-        | Mapのvalueは各ロケールに対応したコードリストクラスを参照する。
 
 |
 
@@ -1240,7 +1247,7 @@ Javaクラスでのコードリスト使用
 
 .. code-block:: html
 
-    <span th:text="${orderForm.orderStatus} != null ? |Order Status : ${CL_ORDERSTATUS.get(orderForm.orderStatus)}|"></span> <!--/* (1) */-->
+    <span th:text="${orderStatusForm.id} != null ? |Order Status : ${CL_ORDERSTATUS.get(orderStatusForm.id)}|"></span> <!--/* (1) */-->
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1251,7 +1258,7 @@ Javaクラスでのコードリスト使用
      - 説明
    * - | (1)
      - コードリストを定義したbeanID(この例では ``CL_ORDERSTATUS`` ) を属性名として、コードリスト( ``java.util.Map`` インタフェース)を取得する。
-       取得した ``Map`` インタフェースのキーとしてコード値(この例では ``orderStatus`` に格納された値) を指定することで、対応するコード名を表示することができる。
+       取得した ``Map`` インタフェースのキーとしてコード値(この例では ``orderStatusForm.id`` に格納された値) を指定することで、対応するコード名を表示することができる。
        キーとして利用する変数値は必ず\ ``null``\ チェックを行うことを推奨する。詳細は、\ :doc:`../WebApplicationDetail/Thymeleaf`\ の\ :ref:`SpEL評価時におけるnull-safetyの影響について <ThymeleafOverviewNullSafetyAtSpEL>`\ を参照されたい。
 
 |
@@ -1344,7 +1351,7 @@ How to extend
 #. Task Schedulerで実現する方法
 #. Controller(Service)クラスでrefreshメソッドを呼び出す方法
 
-本ガイドラインでは、\ `Springから提供されているTask Scheduler <https://docs.spring.io/spring-framework/docs/5.3.31/reference/html/integration.html#scheduling>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
+本ガイドラインでは、\ `Springから提供されているTask Scheduler <https://docs.spring.io/spring-framework/docs/5.3.39/reference/html/integration.html#scheduling>`_\ を使用して、コードリストを定期的にリロードする方式を基本的に推奨する。
 
 ただし、任意のタイミングでコードリストをリフレッシュする必要がある場合はControllerクラスでrefreshメソッドを呼び出す方法で実現すればよい。
 
@@ -1399,7 +1406,7 @@ Task Schedulerの設定例について、以下に示す。
        | 毎時実行               「0 0 \* \* \* \*」
        | 平日の9-17時の毎時実行 「0 0 9-17 \* \* MON-FRI」
        |
-       | cronの指定値の詳細については、\ `CronExpressionのJavaDoc <https://docs.spring.io/spring-framework/docs/5.3.31/javadoc-api/org/springframework/scheduling/support/CronExpression.html#parse-java.lang.String->`_\ を参照されたい。
+       | cronの指定値の詳細については、\ `CronExpressionのJavaDoc <https://docs.spring.io/spring-framework/docs/5.3.39/javadoc-api/org/springframework/scheduling/support/CronExpression.html#parse-java.lang.String->`_\ を参照されたい。
 
 |
 
@@ -1803,7 +1810,7 @@ NumberRangeCodeListのバリエーション
       - 説明
     * - | (1)
       - | 範囲開始の値を指定する。name属性"to"のvalue属性の値より大きい値を指定する。
-        | この指定によって、interval分減少した値を、To～Fromの範囲分のリストとして、降順に表示する。
+        | この指定によって、interval分減少した値を、From～Toの範囲分のリストとして、降順に表示する。
         | intervalは設定していないため、デフォルトの値1が適用される。
     * - | (2)
       - | 範囲終了の値を設定する。
@@ -1903,7 +1910,7 @@ NumberRangeCodeListのインターバルの変更
 
 .. note::
 
-    interval値分増加(減少)した値が、Form～Toの値が範囲を超えた場合は、コードリストに格納されない。
+    interval値分増加(減少)した値が、Form～Toの範囲を超えた場合は、コードリストに格納されない。
 
     具体的には、
 

@@ -10,7 +10,7 @@
 Overview
 --------------------------------------------------------------------------------
 
-| メッセージとは、画面や帳票等に表示する固定文言、またはユーザの画面操作の結果に応じて表示する動的文言を指す。
+| メッセージとは、画面や帳票等に表示する固定文言またはユーザの画面操作の結果に応じて表示する動的文言を指す。
 | また、エラーメッセージは、できるだけ細かく定義することを推奨する。
 
 \
@@ -21,8 +21,12 @@ Overview
        * エラーメッセージを、1つのみ定義している
        * エラーメッセージを、「重要」と「警告」の2つしか定義していない
 
-       その結果、開発メンバが少ない中で、メッセージの定義変更を行い、開発が進むにつれて、修正コストが増えることになる。
+       その結果、開発メンバが少ない中でメッセージの定義変更を行い、開発が進むにつれて修正コストが増えることになる。
        そのため、あらかじめメッセージは、細かい粒度で定義しておくことを推奨する。
+
+本節では、プロパティファイルに設定する際の命名規則やプロパティに設定したメッセージの表示方法、ユーザの画面操作に応じたメッセージの出力方法について説明する。
+
+|
 
 メッセージタイプ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -394,11 +398,11 @@ Overview
     .. code-block:: properties
 
         # 登録が成功した場合（正常メッセージ）
-        i.ex.fw.0001=Registered successfully.
+        i.xx.fw.0001=Registered successfully.
         # サーバリソース不足
-        w.ex.fw.9002=Server busy. Please, try again.
+        w.xx.fw.9002=Server busy. Please, try again.
         # システムエラー発生の場合（システムエラー）
-        e.ex.fw.9001=A system error has occurred.
+        e.xx.fw.9001=A system error has occurred.
 
 .. _message-properties-example:
 
@@ -475,13 +479,13 @@ Overview
     .. code-block:: properties
 
         # ファイルのアップロードが成功した場合
-        i.ex.an.0001={0} upload completed.
+        i.xx.yy.0001={0} upload completed.
         # パスワードの推奨変更期間が過ぎている場合
-        w.ex.an.2001=The recommended change interval of password has passed. Please change your password.
+        w.xx.yy.2001=The recommended change interval of password has passed. Please change your password.
         # ファイルサイズが制限を超えている場合
-        e.ex.an.8001=Cannot upload, Because the file size must be less than {0}MB.
+        e.xx.yy.8001=Cannot upload, Because the file size must be less than {0}MB.
         # データに不整合がある場合
-        e.ex.an.9001=There are inconsistencies in the data.
+        e.xx.yy.9001=There are inconsistencies in the data.
 
 |
 
@@ -507,6 +511,8 @@ How to use
 
 プロパティファイルに設定したメッセージの表示
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _MessageManagementPropertiesExample:
 
 プロパティを使用する際の設定
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -544,6 +550,9 @@ How to use
 プロパティに設定したメッセージの表示
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+デフォルト(ISO-8859-1)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 * application-messages.properties
 
     ここでは、\ :file:`application-messages.properties`\ にメッセージを定義する例を示す。
@@ -553,41 +562,6 @@ How to use
         label.aa.bb.year=Year
         label.aa.bb.month=Month
         label.aa.bb.day=Day
-
-
-    .. note::
-
-        文字コード「ISO-8859-1」では表現できない文字(日本語など)は\ ``native2ascii``\ コマンドで
-        ISO-8859-1に変換して使用することが多かった。しかし、JDK 6からは文字コードを指定できるようになったため、
-        変換する必要はない。文字コードUTF-8にすることで、propertiesファイルに直接日本語等を使用できる。
-
-        * application-messages.properties
-
-            .. code-block:: properties
-
-                label.aa.bb.year=年
-                label.aa.bb.month=月
-                label.aa.bb.day=日
-
-        この場合、以下のように、\ ``ResourceBundleMessageSource``\ にも読み込む文字コードを指定する必要がある。
-
-        * applicationContext.xml
-
-            .. code-block:: xml
-                :emphasize-lines: 8
-
-                <bean id="messageSource"
-                    class="org.springframework.context.support.ResourceBundleMessageSource">
-                    <property name="basenames">
-                        <list>
-                            <value>i18n/application-messages</value>
-                        </list>
-                    </property>
-                    <property name="defaultEncoding" value="UTF-8" />
-                </bean>
-
-        デフォルトではISO-8859-1が使用されるため、日本語等をpropertiesファイルに直接記述したい場合は、
-        必ず\ ``defaultEncoding``\ を設定すること。
 
 * テンプレートHTML
 
@@ -621,21 +595,59 @@ How to use
     .. figure:: ./images_MessageManagement/message-management-ymd.png
         :width: 40%
 
-    .. tip::
+    .. note::
 
-        国際化に対応する場合は、
+      日本語などISO-8859-1で表現できない文字は、\ ``native2ascii``\ コマンドでISO-8859-1に変換してからpropertiesファイルに設定する。または、次に記載する文字コードの指定を行うことで設定ができる。
 
-        .. code-block:: text
+|
 
-            src/main/resources/i18n
-                                ├ application-messages.properties (英語メッセージ)
-                                ├ application-messages_fr.properties (フランス語メッセージ)
-                                ├ ...
-                                └ application-messages_ja.properties (日本語メッセージ)
+文字コードの指定
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        というように各言語用のpropertiesファイルを作成すればよい。
-        詳細は、\ :doc:`../WebApplicationDetail/Internationalization`\ を参照されたい。
+文字コードにUTF-8を指定することでpropertiesファイルに直接日本語等を設定することが出来る。
 
+* application-messages.properties
+
+  .. code-block:: properties
+
+    label.aa.bb.year=年
+    label.aa.bb.month=月
+    label.aa.bb.day=日
+
+この場合、以下のように、\ ``ResourceBundleMessageSource``\ に読み込む文字コードを指定することでUTF-8として解釈される。
+
+* applicationContext.xml
+
+  .. code-block:: xml
+
+    <bean id="messageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>i18n/application-messages</value>
+            </list>
+        </property>
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
+|
+
+国際化
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+| 異なる言語で表示するためには、以下のようにそれぞれの言語に対応したpropertiesファイルを準備し、\ ``ResourceBundleMessageSource``\ に複数のpropertiesファイルを指定することで対応する。
+
+.. code-block:: text
+
+  src/main/resources/i18n
+                      ├ application-messages.properties (デフォルトで使用する言語)
+                      ├ application-messages_fr.properties (フランス語)
+                      ├ ...
+                      └ application-messages_ja.properties (日本語)
+
+詳細は、\ :doc:`../WebApplicationDetail/Internationalization`\ を参照されたい。
+
+|
 
 .. _message-display:
 
@@ -643,7 +655,7 @@ How to use
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | サーバサイドでの処理の成功や、失敗を示す結果メッセージを格納するクラスとして、
-| 共通ライブラリでは、\ ``org.terasoluna.gfw.common.message.ResultMessages``\ 、および\ ``org.terasoluna.gfw.common.message.ResultMessage``\ を提供している。
+| 共通ライブラリでは、\ ``org.terasoluna.gfw.common.message.ResultMessages``\ および\ ``org.terasoluna.gfw.common.message.ResultMessage``\ を提供している。
 
 .. tabularcolumns:: |p{0.20\linewidth}|p{0.80\linewidth}|
 .. list-table::
@@ -684,7 +696,7 @@ Controllerで\ ``ResultMessages``\ を生成して画面に渡し、結果メッ
 
           @RequestMapping(method = RequestMethod.GET)
           public String hello(Model model) {
-            ResultMessages messages = ResultMessages.error().add("e.ex.an.9001"); // (1)
+            ResultMessages messages = ResultMessages.error().add("e.xx.yy.9001"); // (1)
             model.addAttribute(messages); // (2)
             return "message/index";
           }
@@ -699,16 +711,20 @@ Controllerで\ ``ResultMessages``\ を生成して画面に渡し、結果メッ
       * - 項番
         - 説明
       * - | (1)
-        - | メッセージタイプが"error"である\ ``ResultMessages``\ を作成し、
-          | メッセージIDが"e.ex.an.9001"である結果メッセージを設定する。
-          | この処理は次と同義である。
-          | ``ResultMessages.error().add(ResultMessage.fromCode("e.ex.an.9001"));``
-          | メッセージIDを指定する場合は、\ ``ResultMessage``\ オブジェクトの生成を省略できるため、省略することを推奨する。
+        - | \ ``ResultMessages``\ にメッセージタイプとメッセージIDを設定する。
+          | 上記例では、メッセージタイプを"error"、メッセージIDを"e.xx.yy.9001"として\ ``ResultMessage``\ を設定している。
+
+          .. note::
+
+            メッセージIDを指定する場合は\ ``ResultMessage``\ オブジェクトの生成を省略できるが、省略しない場合の設定は以下となる。
+
+            \ ``ResultMessages.error().add(ResultMessage.fromCode("e.xx.yy.9001"));``\
+
       * - | (2)
         - | \ ``ResultMessages``\ をModelに追加する。
-          | 属性は指定しなくてよい。(属性名は"resultMessages"になる)
+          | 属性名はデフォルトで\ ``resultMessages``\ が設定される。
 
-
+|
 
 * テンプレートHTML
 
@@ -786,17 +802,24 @@ Controllerで\ ``ResultMessages``\ を生成して画面に渡し、結果メッ
 
     .. note::
 
-        \ ``ResultMessages.error().add(ResultMessage.fromText("There are inconsistencies in the data."));``\ というように、
-        メッセージの本文をハードコードすることもできるが、保守性を高めるため、メッセージキーを使用して\ ``ResultMessage``\ オブジェクトを作成し、
-        メッセージ本文はプロパティファイルから取得することを推奨する。
+        \ ``ResultMessages.error().add(ResultMessage.fromText("There are inconsistencies in the data."));``\ というように、メッセージの本文をハードコードすることもできるが、保守性を高めるため、メッセージIDを使用して\ ``ResultMessage``\ オブジェクトを作成し、メッセージ本文はプロパティファイルから取得することを推奨する。
 
 |
 
-メッセージのプレースホルダに値を埋める場合は、次のように\ ``add``\ メソッドの第二引数以降に設定すればよい。
+プレースホルダーを使用した結果メッセージの設定方法
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+以下のように、メッセージにプレースホルダーを指定することができる。
+
+.. code-block:: properties
+
+  e.xx.yy.8001=Cannot upload, Because the file size must be less than {0}MB.
+
+メッセージのプレースホルダに値を埋める場合は、次のように\ ``add``\ メソッドの第二引数以降に設定する。
 
 .. code-block:: java
 
-    ResultMessages messages = ResultMessages.error().add("e.ex.an.8001", 1024);
+    ResultMessages messages = ResultMessages.error().add("e.xx.yy.8001", 1024);
     model.addAttribute(messages);
 
 この場合、以下のようなHTMLが出力される。
@@ -809,28 +832,29 @@ Controllerで\ ``ResultMessages``\ を生成して画面に渡し、結果メッ
       </ul>
     </div>
 
-\
-
- .. note::
+.. note::
 
     \ ``ResourceBundleMessageSource``\ はメッセージを生成する際に\ ``java.text.MessageFormat``\ を使用するため、\ ``1024``\ は
     カンマ区切りで\ ``1,024``\ と表示される。カンマが不要な場合は、プロパティファイルには以下のように設定する。
 
         .. code-block:: properties
 
-            e.ex.an.8001=Cannot upload, Because the file size must be less than {0,number,#}MB.
+            e.xx.yy.8001=Cannot upload, Because the file size must be less than {0,number,#}MB.
 
     詳細は、\ `Javadoc <https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html>`_\ を参照されたい。
 
 |
+
+複数の結果メッセージの設定方法
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 以下のように、複数の結果メッセージを設定することもできる。
 
 .. code-block:: java
 
     ResultMessages messages = ResultMessages.error()
-        .add("e.ex.an.9001")
-        .add("e.ex.an.8001", 1024);
+        .add("e.xx.yy.9001")
+        .add("e.xx.yy.8001", 1024);
     model.addAttribute(messages);
 
 この場合は、次のようなHTMLが出力される(テンプレートHTMLの変更は、不要である)。
@@ -844,82 +868,70 @@ Controllerで\ ``ResultMessages``\ を生成して画面に渡し、結果メッ
       </ul>
     </div>
 
-infoメッセージを表示したい場合は、次のように\ ``ResultMessages.info()``\ メソッドで\ ``ResultMessages``\ オブジェクトを作成すればよい。
+|
 
-.. code-block:: java
+メッセージタイプの変更方法
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    ResultMessages messages = ResultMessages.info().add("i.ex.an.0001", "XXXX");
-    model.addAttribute(messages);
-
-以下のようなHTMLが、出力される。
-
-.. code-block:: html
-
-  <div class="alert alert-info"><!-- (1) -->
-    <ul>
-      <li>XXXX upload completed.</li>
-    </ul>
-  </div>
-
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-  :header-rows: 1
-  :widths: 10 90
-
-  * - 項番
-    - 説明
-  * - | (1)
-    - | メッセージタイプに対応して、出力されるclass名が"alert alert-**info**"に変わっている。
-
-標準では、以下のメッセージタイプが用意されている。
-標準のメッセージタイプはCSSフレームワークである\ `Bootstrap <https://getbootstrap.com/>`_ の\ `Alertsコンポーネント <https://getbootstrap.com/docs/5.0/components/alerts/>`_\ に対応しており、\ ``<t:messagesPanel />``\ のデフォルト設定で利用できる。
+| 標準では、以下のメッセージタイプが用意されている。
+| 標準のメッセージタイプはCSSフレームワークである\ `Bootstrap <https://getbootstrap.com/>`_\ の\ `Alertsコンポーネント <https://getbootstrap.com/docs/5.0/components/alerts/>`_\ に対応しており、\ ``<t:messagesPanel />``\ のデフォルト設定で利用できる。
 
 .. tabularcolumns:: |p{0.15\linewidth}|p{0.30\linewidth}|p{0.25\linewidth}|p{0.30\linewidth}|
 .. list-table::
   :header-rows: 1
-  :widths: 15 30 25 30
+  :widths: 10 25 25 10 30
 
   * - メッセージタイプ
     - \ ``ResultMessages``\ オブジェクトの作成
     - デフォルトで出力されるclass名
-    - 備考
+    - 分類
+    - 使い分け（例）
   * - | success
     - | ``ResultMessages.success()``\
     - | alert alert-success
-    - | \-
+    - | info
+    - | 成功メッセージやポジティブな通知。
   * - | info
     - | \ ``ResultMessages.info()``\
     - | alert alert-info
-    - | \-
-  * - | warning
-    - | \ ``ResultMessages.warning()``\
-    - | alert alert-warning
-    - | Bootstrap v3の「alert-warning」に対応するため、5.0.0から追加。
-  * - | error
-    - | \ ``ResultMessages.error()``\
-    - | alert alert-error
-    - | \-
-  * - | danger
-    - | \ ``ResultMessages.danger()``\
-    - | alert alert-danger
-    - | \-
+    - | info
+    - | 一般的な情報提供。
   * - | primary
     - | \ ``ResultMessages.primary()``\
     - | alert alert-primary
-    - | Bootstrap v4の「alert-primary」に対応するため、5.7.0から追加。
+    - | info
+    - | 主要な情報や重要な通知。
   * - | secondary
     - | \ ``ResultMessages.secondary()``\
     - | alert alert-secondary
-    - | Bootstrap v4の「alert-secondary」に対応するため、5.7.0から追加。
+    - | info
+    - | 補助的な情報やそれほど重要ではない通知。
+  * - | warning
+    - | \ ``ResultMessages.warning()``\
+    - | alert alert-warning
+    - | warning
+    - | 注意喚起や警告メッセージ。
   * - | light
     - | \ ``ResultMessages.light()``\
     - | alert alert-light
-    - | Bootstrap v4の「alert-light」に対応するため、5.7.0から追加。
+    - | warning
+    - | 軽いトーンの通知やメッセージ。
   * - | dark
     - | \ ``ResultMessages.dark()``\
     - | alert alert-dark
-    - | Bootstrap v4の「alert-dark」に対応するため、5.7.0から追加。
+    - | warning
+    - | 重いトーンの通知やメッセージ。
+  * - | danger
+    - | \ ``ResultMessages.danger()``\
+    - | alert alert-danger
+    - | error
+    - | 深刻なエラーメッセージや重要な警告。
+  * - | error
+    - | \ ``ResultMessages.error()``\
+    - | alert alert-error
+    - | error
+    - | 深刻なエラーメッセージや重要な警告。
+      | errorはBootstrapのAlertsコンポーネントには含まれていない。
 
 メッセージタイプに応じてCSSを定義されたい。以下に、CSSを適用した場合の例を示す。
 
@@ -948,55 +960,52 @@ infoメッセージを表示したい場合は、次のように\ ``ResultMessag
       border-color: rgba(216, 80, 48, 0.3);
     }
 
-* \ ``ResultMessages.error().add("e.ex.an.9001")``\ を出力した例
+* \ ``ResultMessages.error().add("e.xx.yy.9001")``\ を出力した例
 
 
     .. figure:: ./images_MessageManagement/message-management-resultmessage-error.jpg
         :width: 100%
 
 
-* \ ``ResultMessages.warning().add("w.ex.an.2001")``\ を出力した例
+* \ ``ResultMessages.warning().add("w.xx.yy.2001")``\ を出力した例
 
 
     .. figure:: ./images_MessageManagement/message-management-resultmessage-warn.jpg
         :width: 100%
 
 
-* \ ``ResultMessages.info().add("i.ex.an.0001", "XXXX")``\ を出力した例
+* \ ``ResultMessages.info().add("i.xx.yy.0001", "XXXX")``\ を出力した例
 
 
     .. figure:: ./images_MessageManagement/message-management-resultmessage-info.jpg
         :width: 100%
 
-    .. warning::
+.. caution::
 
-        本例では、メッセージキーをハードコードで設定している。しかしながら、保守性を高めるためにも、メッセージキーは、定数クラスにまとめることを推奨する。
+  本例では、メッセージIDをハードコードで設定しているが、保守性を高めるためにも、メッセージIDは定数クラスにまとめることを推奨する。
 
-        :ref:`message-management-messagekeysgen`\ を参照されたい。
+  \ :ref:`message-management-messagekeysgen`\ を参照されたい。
+
+|
 
 結果メッセージの属性名指定
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-| \ ``ResultMessages``\ をModelに追加する場合、基本的には属性名を省略できる。
-| ただし、\ ``ResultMessages``\ は一つのメッセージタイプしか表現できない。
-| 1画面に異なるメッセージタイプの\ ``ResultMessages``\ を\ **同時に**\ 表示したい場合は、明示的に属性名を指定してModelに設定する必要がある。
+| \ ``ResultMessages``\ をModelに追加する場合、属性名を省略することが出来る。
+| ただし、\ ``ResultMessages``\ は一つのメッセージタイプしか表現できないため、1画面に異なるメッセージタイプの\ ``ResultMessages``\ を同時に表示したい場合は、明示的に属性名を指定してModelに設定する必要がある。
 
-* Controller (MessageControllerに追加)
+* Controller
 
     .. code-block:: java
 
         @RequestMapping(value = "showMessages", method = RequestMethod.GET)
         public String showMessages(Model model) {
 
-            model.addAttribute("messages1",
-                        ResultMessages.warning().add("w.ex.an.2001")); // (1)
-            model.addAttribute("messages2",
-                        ResultMessages.error().add("e.ex.an.9001")); // (2)
+            model.addAttribute("messages1", ResultMessages.warning().add("w.xx.yy.2001")); // (1)
+            model.addAttribute("messages2", ResultMessages.error().add("e.xx.yy.9001")); // (2)
 
             return "message/showMessages";
         }
-
-
 
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
     .. list-table::
@@ -1006,57 +1015,21 @@ infoメッセージを表示したい場合は、次のように\ ``ResultMessag
       * - 項番
         - 説明
       * - | (1)
-        - | メッセージタイプが"warning"である、\ ``ResultMessages``\ を属性名"messages1"でModelに追加する。
+        - | メッセージタイプが"warning"である\ ``ResultMessages``\ を、属性名"messages1"でModelに追加する。
       * - | (2)
-        - | メッセージタイプが"info"である、\ ``ResultMessages``\ を属性名"messages2"でModelに追加する。
+        - | メッセージタイプが"info"である\ ``ResultMessages``\ を、属性名"messages2"でModelに追加する。
 
 
 * テンプレートHTML (WEB-INF/views/message/showMessages.html)
 
     .. code-block:: html
 
-        <!DOCTYPE HTML>
-        <html xmlns:th="http://www.thymeleaf.org"> <!-- (1) -->
-        <head>
-        <meta charset="utf-8">
-        <title>Result Message Example</title>
-        <style type="text/css">
-        .alert {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid;
-            border-radius: 4px;
-            text-shadow: 0 1px 0 #ffffff;
-        }
-
-        .alert-info {
-            background: #ebf7fd;
-            color: #2d7091;
-            border-color: rgba(45, 112, 145, 0.3);
-        }
-
-        .alert-warning {
-            background: #fffceb;
-            color: #e28327;
-            border-color: rgba(226, 131, 39, 0.3);
-        }
-
-        .alert-error {
-            background: #fff1f0;
-            color: #d85030;
-            border-color: rgba(216, 80, 48, 0.3);
-        }
-        </style>
-        </head>
-        <body>
-            <h1>Result Message</h1>
-            <h2>Messages1</h2>
-            <div th:if="${messages1 != null}" th:text="${messages1}" class="alert" th:classappend="|alert-${messages1.type}|" /><!-- (2) -->
-            <h2>Messages2</h2>
-            <div th:if="${messages2 != null}" th:text="${messages2}" class="alert" th:classappend="|alert-${messages2.type}|" /><!-- (3) -->
-        </body>
-        </html>
-
+        <h1>Result Message</h1>
+        <h2>Messages1</h2>
+        <div th:if="${messages1 != null}" th:text="${messages1}" class="alert" th:classappend="|alert-${messages1.type}|" /><!-- (1) -->
+        <h2>Messages2</h2>
+        <div th:if="${messages2 != null}" th:text="${messages2}" class="alert" th:classappend="|alert-${messages2.type}|" /><!-- (2) -->
+    
     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
     .. list-table::
       :header-rows: 1
@@ -1065,16 +1038,16 @@ infoメッセージを表示したい場合は、次のように\ ``ResultMessag
       * - 項番
         - 説明
       * - | (1)
-        - | スタンダードダイアレクトが提供する属性を使用したとき、EclipseなどのIDEでの警告を抑止するため、ネームスペースを付与する。
-      * - | (2)
         - | 属性名が"messages1"である\ ``ResultMessages``\ を表示する。
-      * - | (3)
+      * - | (2)
         - | 属性名が"messages2"である\ ``ResultMessages``\ を表示する。
 
     ブラウザで表示すると、以下のように出力される。
 
     .. figure:: ./images_MessageManagement/message-management-multiple-messages.jpg
         :width: 80%
+
+|
 
 業務例外メッセージの表示
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1099,8 +1072,7 @@ infoメッセージを表示したい場合は、次のように\ ``ResultMessag
 
                 if (...) {
                     // illegal state!
-                    ResultMessages messages = ResultMessages.error()
-                                                            .add("e.ex.an.9001"); // (1)
+                    ResultMessages messages = ResultMessages.error().add("e.ex.an.9001"); // (1)
                     throw new BusinessException(messages);
                 }
             }
@@ -1148,8 +1120,7 @@ infoメッセージを表示したい場合は、次のように\ ``ResultMessag
         - | \ ``BusinessException``\ が保持する\ ``ResultMessages``\ を取得し、Modelに追加する。
 
 
-通常、エラーメッセージ表示する場合は、Controllerで\ ``ResultMessages``\ オブジェクトを作成するのではなく、
-こちらの方法を使用する。
+通常は、用意されているメッセージタイプのみで十分であるが、採用しているCSSライブラリによってはメッセージタイプを追加したい場合がある。例えば"notice"というメッセージタイプを追加する場合を説明する。
 
 |
 
@@ -1208,7 +1179,7 @@ How to extend
 .. code-block:: java
 
     ResultMessages messages = new ResultMessages(ResultMessageTypes.NOTICE) // (1)
-            .add("w.ex.an.2001");
+            .add("w.xx.yy.2001");
     model.addAttribute(messages);
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1231,11 +1202,10 @@ How to extend
       </ul>
     </div>
 
-\
 
-    .. tip::
+.. tip::
 
-        拡張方法は、\ ``org.terasoluna.gfw.common.message.StandardResultMessageType``\ が参考になる。
+    拡張方法は、\ `org.terasoluna.gfw.common.message.StandardResultMessageType <https://github.com/terasolunaorg/terasoluna-gfw/blob/release/5.7.4.RELEASE/terasoluna-gfw-common-libraries/terasoluna-gfw-common/src/main/java/org/terasoluna/gfw/common/message/StandardResultMessageType.java>`_\ が参考になる。
 
 |
 
@@ -1340,21 +1310,21 @@ ResultMessagesを使用しない結果メッセージの表示
 
 .. _message-management-messagekeysgen:
 
-メッセージキー定数クラスの自動生成ツール
+メッセージID定数クラスの自動生成ツール
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-| これまでの例ではメッセージキーを文字列のハードコードで設定していたが、
-| メッセージキーは定数クラスにまとめることを推奨する。
+| これまでの例ではメッセージIDを文字列のハードコードで設定していたが、
+| メッセージIDは定数クラスにまとめることを推奨する。
 
-| ここでは、簡易ツールとして、propertiesファイルからメッセージキー定数クラスを
+| ここでは、簡易ツールとして、propertiesファイルからメッセージID定数クラスを
 | 自動生成するプログラムおよび使用方法を紹介する。必要に応じてカスタマイズして利用されたい。
 
 .. raw:: latex
 
    \newpage
 
-#. メッセージキー定数クラスの作成
+#. メッセージID定数クラスの作成
 
-    まず空のメッセージキー定数クラスを作成する。ここでは\ ``com.example.common.message.MessageKeys``\ とする。
+    まず空のメッセージID定数クラスを作成する。ここでは\ ``com.example.common.message.MessageIds``\ とする。
 
     .. code-block:: java
 
@@ -1371,55 +1341,58 @@ ResultMessagesを使用しない結果メッセージの表示
 
     .. code-block:: java
 
-        package com.example.common.message;
+      package com.example.common.message;
+      
+      import java.io.BufferedReader;
+      import java.io.IOException;
+      import java.io.InputStream;
+      import java.io.InputStreamReader;
+      import java.io.PrintWriter;
+      import java.nio.file.Files;
+      import java.nio.file.Path;
+      import java.nio.file.Paths;
+      
+      import org.springframework.core.io.ClassPathResource;
+      
+      public class MessageIdsGen {
+      
+          public static void main(String[] args) throws IOException {
+              // message properties file
+              Class<?> targetClazz = MessageIds.class;
+              Path output = Paths.get("src/main/java", targetClazz.getName().replace(".", "/") + ".java");
+      
+              try (InputStream inputStream =
+                      new ClassPathResource("i18n/application-messages-msmn.properties").getInputStream();
+                      BufferedReader bufferedReader =
+                              new BufferedReader(new InputStreamReader(inputStream));
+                      PrintWriter pw = new PrintWriter(Files.newBufferedWriter(output))) {
+      
+                  pw.println("package " + targetClazz.getPackage().getName() + ";");
+                  pw.println("");
+                  pw.println("/**");
+                  pw.println(" * Message Id");
+                  pw.println(" */");
+                  pw.println("public class " + targetClazz.getSimpleName() + " {");
+      
+                  String line = null;
+                  while ((line = bufferedReader.readLine()) != null) {
+                      String[] vals = line.split("=", 2);
+                      if (vals.length > 1) {
+                          String id = vals[0].trim();
+                          String value = vals[1].trim();
+                          pw.println("    /** " + id + "=" + value + " */");
+                          pw.println("    public static final String "
+                                  + id.toUpperCase().replace(".", "_").replace("-", "_") + " = \"" + id
+                                  + "\";");
+                      }
+                  }
+                  pw.println("");
+                  pw.println("    private " + targetClazz.getSimpleName() + "() {}");
+                  pw.println("}");
+              }
+          }
+      }
 
-        import java.io.BufferedReader;
-        import java.io.File;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.io.InputStreamReader;
-        import java.io.PrintWriter;
-        import java.util.regex.Pattern;
-
-        import org.apache.commons.io.FileUtils;
-        import org.springframework.core.io.ClassPathResource;
-
-        public class MessageKeysGen {
-            public static void main(String[] args) throws IOException {
-                // message properties file
-                Class<?> targetClazz = MessageKeys.class;
-                File output = new File("src/main/java/" + targetClazz.getName()
-                        .replaceAll(Pattern.quote("."), "/") + ".java");
-
-                try (InputStream inputStream = new ClassPathResource("i18n/application-messages.properties")
-                        .getInputStream();
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        PrintWriter pw = new PrintWriter(FileUtils.openOutputStream(
-                                output))) {
-                    pw.println("package " + targetClazz.getPackage().getName() + ";");
-                    pw.println("/**");
-                    pw.println(" * Message Id");
-                    pw.println(" */");
-                    pw.println("public class " + targetClazz.getSimpleName() + " {");
-
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        String[] vals = line.split("=", 2);
-                        if (vals.length > 1) {
-                            String key = vals[0].trim();
-                            String value = vals[1].trim();
-                            pw.println("    /** " + key + "=" + value + " */");
-                            pw.println("    public static final String " + key
-                                    .toUpperCase().replaceAll(Pattern.quote("."), "_")
-                                    .replaceAll(Pattern.quote("-"), "_") + " = \"" + key
-                                    + "\";");
-                        }
-                    }
-                    pw.println("}");
-                    pw.flush();
-                }
-            }
-        }
 
 #. メッセージプロパティファイルの用意
 
@@ -1428,10 +1401,10 @@ ResultMessagesを使用しない結果メッセージの表示
 
     .. code-block:: properties
 
-        i.ex.an.0001={0} upload completed.
-        w.ex.an.2001=The recommended change interval has passed password. Please change your password.
-        e.ex.an.8001=Cannot upload, Because the file size must be less than {0}MB.
-        e.ex.an.9001=There are inconsistencies in the data.
+        i.xx.yy.0001={0} upload completed.
+        w.xx.yy.2001=The recommended change interval has passed password. Please change your password.
+        e.xx.yy.8001=Cannot upload, Because the file size must be less than {0}MB.
+        e.xx.yy.9001=There are inconsistencies in the data.
 
 #. 自動生成クラスの実行
 
@@ -1439,7 +1412,7 @@ ResultMessagesを使用しない結果メッセージの表示
     .. figure:: ./images_MessageManagement/message-management-messagekeysgen.png
         :width: 60%
 
-    ``MessageKeys``\ クラスが、以下のように上書きされる。
+    \ ``MessageIds``\ クラスが、以下のように上書きされる。
 
 
     .. code-block:: java
@@ -1448,18 +1421,16 @@ ResultMessagesを使用しない結果メッセージの表示
         /**
          * Message Id
          */
-        public class MessageKeys {
-            /** i.ex.an.0001={0} upload completed. */
-            public static final String I_EX_AN_0001 = "i.ex.an.0001";
-            /** w.ex.an.2001=The recommended change interval has passed password. Please change your password. */
-            public static final String W_EX_AN_2001 = "w.ex.an.2001";
-            /** e.ex.an.8001=Cannot upload, Because the file size must be less than {0}MB. */
-            public static final String E_EX_AN_8001 = "e.ex.an.8001";
-            /** e.ex.an.9001=There are inconsistencies in the data. */
-            public static final String E_EX_AN_9001 = "e.ex.an.9001";
+        public class MessageIds {
+            /** i.xx.yy.0001={0} upload completed. */
+            public static final String I_XX_YY_0001 = "i.xx.yy.0001";
+            /** w.xx.yy.2001=The recommended change interval has passed password. Please change your password. */
+            public static final String W_XX_YY_2001 = "w.xx.yy.2001";
+            /** e.xx.yy.8001=Cannot upload, Because the file size must be less than {0}MB. */
+            public static final String E_XX_YY_8001 = "e.xx.yy.8001";
+            /** e.xx.yy.9001=There are inconsistencies in the data. */
+            public static final String E_XX_YY_9001 = "e.xx.yy.9001";
         }
-
-\
 
 .. raw:: latex
 
